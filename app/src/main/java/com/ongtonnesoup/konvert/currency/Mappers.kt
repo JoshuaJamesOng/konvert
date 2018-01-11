@@ -11,6 +11,6 @@ fun localToDomainMapper(): (List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepo
     ExchangeRepository.ExchangeRates(local.map { ExchangeRepository.ExchangeRate(it.currency, it.rate) })
 }
 
-fun networkToLocalMapper(): (FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates = { network ->
-    ExchangeRepository.ExchangeRates(network.rates.map { ExchangeRepository.ExchangeRate(it.currency, it.rate) })
+fun networkToDomainMapper(): (FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates = { network ->
+    ExchangeRepository.ExchangeRates(network.rates.map { ExchangeRepository.ExchangeRate(it.key, it.value) })
 }
