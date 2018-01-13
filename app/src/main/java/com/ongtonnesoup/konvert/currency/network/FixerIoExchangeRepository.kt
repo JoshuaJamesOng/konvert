@@ -11,10 +11,13 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
     override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
         return client.getLatest(BASE_CURRENCY)
                 .map { response ->
-                    Timber.d { "Mapping network model to domain model" }
+                    Timber.d { "Mapping network model to domain model on ${Thread.currentThread()}" }
                     networkToDomainMapper.invoke(response)
                 }
-                .onErrorReturn { ExchangeRepository.ExchangeRates(emptyList()) }
+                .onErrorReturn {
+                    Timber.e { "Error getting rates from network on ${Thread.currentThread()}" }
+                    ExchangeRepository.ExchangeRates(emptyList())
+                }
     }
 
     override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {

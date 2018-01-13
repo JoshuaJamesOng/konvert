@@ -25,7 +25,7 @@ class UpdateExchangeRatesTest : Spek({
         val cut = UpdateExchangeRates(network, local)
 
         on("getting exchange rates") {
-            val observer = cut.getExchangeRates().test()
+            val observer = cut.getExchangeRates().test().await()
 
             it("should complete") {
                 observer.assertComplete()

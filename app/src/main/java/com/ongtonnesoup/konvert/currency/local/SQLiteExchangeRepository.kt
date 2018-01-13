@@ -23,10 +23,12 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
     override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {
         Timber.d { "Creating local observable" }
         return Completable.fromAction {
-            Timber.d { "Inserting data into DB: $rates" }
+            Timber.d { "Inserting ${rates.rates.size} rates into DB on ${Thread.currentThread()}" }
             dao.clear()
-            domainToLocalMapper.invoke(rates)
-                    .forEach { dao.insert(it) }
+            domainToLocalMapper.invoke(rates).forEach {
+                Timber.d { "Inserting $it into DB" }
+                dao.insert(it)
+            }
         }
     }
 

@@ -1,18 +1,24 @@
 package com.ongtonnesoup.konvert.currency
 
+import android.os.Looper
+import android.support.annotation.UiThread
 import com.github.ajalt.timberkt.Timber
 import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class UpdateExchangeRates(private val network: ExchangeRepository,
                           private val local: ExchangeRepository) {
 
     fun getExchangeRates(): Completable {
-        Timber.d { "Creating local observable" }
+        Timber.d { "Creating local observable on ${Thread.currentThread()}" }
         return network.getExchangeRates()
+                .subscribeOn(Schedulers.io())
                 .flatMapCompletable {
-                    Timber.d { "Flat mapping network to local" }
+                    Timber.d { "Flat mapping network to local on ${Thread.currentThread()}}" }
                     local.putExchangeRates(it)
                 }
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
 }
