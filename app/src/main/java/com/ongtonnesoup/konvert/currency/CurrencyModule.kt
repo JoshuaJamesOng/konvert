@@ -10,9 +10,9 @@ import javax.inject.Named
 abstract class CurrencyModule {
 
     @Binds
-    @Named("network") abstract fun bindNetworkRepository(repository: FixerIoExchangeRepository) : ExchangeRepository
+    @Named("network") abstract fun bindNetworkRepository(repository: FixerIoExchangeRepository): ExchangeRepository
 
     @Binds
-    @Named("local") abstract fun bindLocalRepository(repository: SQLiteExchangeRepository) : ExchangeRepository
+    @Named("local") abstract fun bindLocalRepository(repository: SQLiteExchangeRepository): ExchangeRepository
 
 }

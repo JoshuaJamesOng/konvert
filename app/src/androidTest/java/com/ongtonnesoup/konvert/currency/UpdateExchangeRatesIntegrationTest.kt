@@ -13,7 +13,6 @@ import com.ongtonnesoup.konvert.default
 import okhttp3.OkHttpClient
 import org.junit.Test
 import retrofit2.Retrofit
-import java.util.concurrent.TimeUnit
 
 @LargeTest
 class UpdateExchangeRatesIntegrationTest {

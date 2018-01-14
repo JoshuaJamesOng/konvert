@@ -1,7 +1,5 @@
 package com.ongtonnesoup.konvert.currency
 
-import android.os.Looper
-import android.support.annotation.UiThread
 import com.github.ajalt.timberkt.Timber
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
