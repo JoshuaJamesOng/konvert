@@ -7,6 +7,7 @@ import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
+import javax.inject.Provider
 
 class UpdateExchangeRatesService : JobService() {
 
@@ -14,26 +15,22 @@ class UpdateExchangeRatesService : JobService() {
 
     private val disposables = CompositeDisposable()
 
-    init {
-        (application as ApplicationComponent).getJobComponent().inject(this)
-    }
-
     override fun onStartJob(params: JobParameters): Boolean {
-        params.let {
-            if (params.jobId == UpdateExchangeRatesJob.JOB_ID) {
-                val disposable = interactor.getExchangeRates().subscribe(
-                        {
-                            Timber.d { "Updated exchange rates" }
-                            jobFinished(params, false)
-                        },
-                        { error ->
-                            Timber.e(error)
-                            jobFinished(params, false)
-                        }
-                )
+        inject()
 
-                disposables.add(disposable)
-            }
+        if (params.jobId == UpdateExchangeRatesJob.JOB_ID) {
+            val disposable = interactor.getExchangeRates().subscribe(
+                    {
+                        Timber.d { "Updated exchange rates" }
+                        jobFinished(params, false)
+                    },
+                    { error ->
+                        Timber.e(error)
+                        jobFinished(params, false)
+                    }
+            )
+
+            disposables.add(disposable)
         }
         return true
     }
@@ -43,4 +40,10 @@ class UpdateExchangeRatesService : JobService() {
         return false
     }
 
+    private fun inject() {
+        val applicationComponent: Any = (application as Provider<*>).get()
+        if (applicationComponent is ApplicationComponent) {
+            applicationComponent.getJobComponent().inject(this)
+        }
+    }
 }

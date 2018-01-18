@@ -20,6 +20,7 @@ interface ExchangeRatesDao {
     data class ExchangeRate(
             val currency: String,
             val rate: Double,
+            val timestamp: Long = System.currentTimeMillis(),
             @PrimaryKey(autoGenerate = true) val id: Long = 0
     )
 }
