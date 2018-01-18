@@ -16,7 +16,6 @@ class UpdateExchangeRates(private val network: ExchangeRepository,
                     Timber.d { "Flat mapping network to local on ${Thread.currentThread()}}" }
                     local.putExchangeRates(it)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
     }
 
 }

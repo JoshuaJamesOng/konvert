@@ -16,7 +16,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                 }
                 .onErrorReturn {
                     Timber.e { "Error getting rates from network on ${Thread.currentThread()}" }
-                    ExchangeRepository.ExchangeRates(emptyList())
+                    ExchangeRepository.NO_DATA
                 }
     }
 

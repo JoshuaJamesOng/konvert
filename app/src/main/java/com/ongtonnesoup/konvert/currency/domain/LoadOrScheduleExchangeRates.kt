@@ -2,7 +2,6 @@ package com.ongtonnesoup.konvert.currency.domain
 
 import com.ongtonnesoup.konvert.currency.ExchangeRepository
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Named
 
@@ -18,7 +17,6 @@ class LoadOrScheduleExchangeRates(@Named("local") private val local: ExchangeRep
                         Single.just(ExchangeRateStatus.SCHEDULE_REFRESH)
                     }
                 }
-                .observeOn(AndroidSchedulers.mainThread())
     }
 
     enum class ExchangeRateStatus {

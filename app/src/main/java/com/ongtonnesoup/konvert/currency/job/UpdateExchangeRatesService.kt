@@ -5,6 +5,7 @@ import android.app.job.JobService
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.di.ApplicationComponent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 import javax.inject.Provider
@@ -19,16 +20,18 @@ class UpdateExchangeRatesService : JobService() {
         inject()
 
         if (params.jobId == UpdateExchangeRatesJob.JOB_ID) {
-            val disposable = interactor.getExchangeRates().subscribe(
-                    {
-                        Timber.d { "Updated exchange rates" }
-                        jobFinished(params, false)
-                    },
-                    { error ->
-                        Timber.e(error)
-                        jobFinished(params, false)
-                    }
-            )
+            val disposable = interactor.getExchangeRates()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            {
+                                Timber.d { "Updated exchange rates" }
+                                jobFinished(params, false)
+                            },
+                            { error ->
+                                Timber.e(error)
+                                jobFinished(params, false)
+                            }
+                    )
 
             disposables.add(disposable)
         }

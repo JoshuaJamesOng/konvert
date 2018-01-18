@@ -5,6 +5,10 @@ import io.reactivex.Single
 
 interface ExchangeRepository {
 
+    companion object {
+        val NO_DATA = ExchangeRepository.ExchangeRates(emptyList())
+    }
+
     fun getExchangeRates(): Single<ExchangeRates>
 
     fun putExchangeRates(rates: ExchangeRates): Completable

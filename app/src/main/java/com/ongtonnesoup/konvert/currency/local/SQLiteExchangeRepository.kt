@@ -16,8 +16,8 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
                     Timber.d { "Mapping database model to domain model" }
                     localToDomainMapper.invoke(it)
                 }
-                .single(ExchangeRepository.ExchangeRates(emptyList()))
-                .onErrorReturn { ExchangeRepository.ExchangeRates(emptyList()) }
+                .single(ExchangeRepository.NO_DATA)
+                .onErrorReturn { ExchangeRepository.NO_DATA }
     }
 
     override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {

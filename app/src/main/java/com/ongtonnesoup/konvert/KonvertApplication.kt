@@ -11,6 +11,7 @@ import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.di.ApplicationModule
 import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
 import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -45,6 +46,7 @@ class KonvertApplication : Application(), Provider<ApplicationComponent> {
                         }
                     }
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { Timber.d { "Loaded/scheduled exchange rates" } },
                         { Timber.e { "Could not determine whether to load or schedule" } }
