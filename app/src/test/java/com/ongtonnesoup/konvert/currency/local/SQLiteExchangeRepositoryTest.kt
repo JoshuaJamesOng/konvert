@@ -2,6 +2,12 @@ package com.ongtonnesoup.konvert.currency.local
 
 import com.nhaarman.mockito_kotlin.*
 import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.rubylichtenstein.rxtest.assertions.should
+import com.rubylichtenstein.rxtest.assertions.shouldEmit
+import com.rubylichtenstein.rxtest.assertions.shouldHave
+import com.rubylichtenstein.rxtest.extentions.test
+import com.rubylichtenstein.rxtest.matchers.complete
+import com.rubylichtenstein.rxtest.matchers.noErrors
 import io.reactivex.Flowable
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
@@ -25,12 +31,14 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observer = cut.getExchangeRates().test()
+        val observable = cut.getExchangeRates()
 
         // Then
-        observer.assertComplete()
-        observer.assertNoErrors()
-        observer.assertValue(mapperResponse)
+        observable.test {
+            it should complete()
+            it shouldHave noErrors()
+            it shouldEmit mapperResponse
+        }
         verify(dao).getAll()
         argumentCaptor<List<ExchangeRatesDao.ExchangeRate>>().apply {
             verify(localToDomainMapper).invoke(capture())
@@ -57,12 +65,14 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observer = cut.getExchangeRates().test()
+        val observable = cut.getExchangeRates()
 
         // Then
-        observer.assertComplete()
-        observer.assertNoErrors()
-        observer.assertValue(ExchangeRepository.ExchangeRates(emptyList()))
+        observable.test {
+            it should complete()
+            it shouldHave noErrors()
+            it shouldEmit ExchangeRepository.ExchangeRates(emptyList())
+        }
         verify(dao).getAll()
         verifyZeroInteractions(localToDomainMapper)
     }
@@ -83,11 +93,13 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observer = cut.putExchangeRates(rates).test()
+        val observable = cut.putExchangeRates(rates)
 
         // Then
-        observer.assertComplete()
-        observer.assertNoErrors()
+        observable.test {
+            it should complete()
+            it shouldHave noErrors()
+        }
         verify(dao).clear()
         verify(domainToLocalMapper).invoke(rates)
         verify(dao, times(4)).insert(mappedModel)

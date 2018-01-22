@@ -3,6 +3,9 @@ package com.ongtonnesoup.konvert.currency
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.rubylichtenstein.rxtest.assertions.should
+import com.rubylichtenstein.rxtest.extentions.test
+import com.rubylichtenstein.rxtest.matchers.complete
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.jetbrains.spek.api.Spek
@@ -25,10 +28,13 @@ class UpdateExchangeRatesTest : Spek({
         val cut = UpdateExchangeRates(network, local)
 
         on("getting exchange rates") {
-            val observer = cut.getExchangeRates().test().await()
+            val observable = cut.getExchangeRates()
 
             it("should complete") {
-                observer.assertComplete()
+                observable.test {
+                    it.await()
+                    it should complete()
+                }
             }
         }
     }

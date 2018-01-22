@@ -3,6 +3,13 @@ package com.ongtonnesoup.konvert.currency.domain
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.rubylichtenstein.rxtest.assertions.should
+import com.rubylichtenstein.rxtest.assertions.shouldEmit
+import com.rubylichtenstein.rxtest.assertions.shouldHave
+import com.rubylichtenstein.rxtest.extentions.test
+import com.rubylichtenstein.rxtest.matchers.complete
+import com.rubylichtenstein.rxtest.matchers.noErrors
+import com.rubylichtenstein.rxtest.matchers.valueCount
 import io.reactivex.Single
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
@@ -24,9 +31,13 @@ class LoadOrScheduleExchangeRatesTest : Spek({
             val observable = interactor.load()
 
             it("should return no data") {
-                val observer = observable.test().await()
-                observer.assertComplete()
-                observer.assertValue(LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA)
+                observable.test {
+                    it.await()
+                    it should complete()
+                    it shouldHave noErrors()
+                    it shouldHave valueCount(1)
+                    it shouldEmit LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA
+                }
             }
         }
 
@@ -36,9 +47,13 @@ class LoadOrScheduleExchangeRatesTest : Spek({
             val observable = interactor.load()
 
             it("should return schedule refresh") {
-                val observer = observable.test().await()
-                observer.assertComplete()
-                observer.assertValue(LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH)
+                observable.test {
+                    it.await()
+                    it should complete()
+                    it shouldHave noErrors()
+                    it shouldHave valueCount(1)
+                    it shouldEmit LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH
+                }
             }
         }
     }
