@@ -24,13 +24,13 @@ class FixerIoExchangeRepositoryTest {
     @Test
     fun getExchangeRates() {
         // Given
-        val networkResponse = FixerIoClient.FixerIoResponse("base", "date", emptyMap())
+        val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
             on { getLatest("GBP") } doReturn Single.just(networkResponse)
         }
 
         val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
-        val mapper = mock<(FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates> {
+        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
             on { invoke(networkResponse) } doReturn mappedResponse
         }
 
@@ -45,7 +45,7 @@ class FixerIoExchangeRepositoryTest {
             it shouldEmit mappedResponse
         }
         verify(client).getLatest("GBP")
-        argumentCaptor<FixerIoClient.FixerIoResponse>().apply {
+        argumentCaptor<FixerIoClient.Response>().apply {
             verify(mapper).invoke(capture())
 
             firstValue shouldEqual networkResponse
@@ -56,13 +56,13 @@ class FixerIoExchangeRepositoryTest {
     @Test
     fun getExchangeRatesClientErrorReturnsDefaultValue() {
         // Given
-        val networkResponse = FixerIoClient.FixerIoResponse("base", "date", emptyMap())
+        val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
-            on { getLatest("GBP") } doReturn Single.error<FixerIoClient.FixerIoResponse>(RuntimeException())
+            on { getLatest("GBP") } doReturn Single.error<FixerIoClient.Response>(RuntimeException())
         }
 
         val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
-        val mapper = mock<(FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates> {
+        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
             on { invoke(networkResponse) } doReturn mappedResponse
         }
 
@@ -83,12 +83,12 @@ class FixerIoExchangeRepositoryTest {
     @Test
     fun getExchangeRatesMapperErrorReturnsDefaultValue() {
         // Given
-        val networkResponse = FixerIoClient.FixerIoResponse("base", "date", emptyMap())
+        val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
             on { getLatest("GBP") } doReturn Single.just(networkResponse)
         }
 
-        val mapper = mock<(FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates> {
+        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
             on { invoke(networkResponse) } doThrow RuntimeException()
         }
 
@@ -103,7 +103,7 @@ class FixerIoExchangeRepositoryTest {
             it shouldEmit ExchangeRepository.ExchangeRates(emptyList())
         }
         verify(client).getLatest("GBP")
-        argumentCaptor<FixerIoClient.FixerIoResponse>().apply {
+        argumentCaptor<FixerIoClient.Response>().apply {
             verify(mapper).invoke(capture())
 
             firstValue shouldEqual networkResponse

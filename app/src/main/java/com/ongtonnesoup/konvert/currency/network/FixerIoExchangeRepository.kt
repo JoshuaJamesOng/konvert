@@ -6,13 +6,14 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 class FixerIoExchangeRepository(private val client: FixerIoClient,
-                                private val networkToDomainMapper: (FixerIoClient.FixerIoResponse) -> ExchangeRepository.ExchangeRates) : ExchangeRepository {
+                                private val fromNetworkMapper: (FixerIoClient.Response) ->
+                                            ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
     override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
         return client.getLatest(BASE_CURRENCY)
                 .map { response ->
                     Timber.d { "Mapping network model to domain model on ${Thread.currentThread()}" }
-                    networkToDomainMapper.invoke(response)
+                    fromNetworkMapper.invoke(response)
                 }
                 .onErrorReturn {
                     Timber.e { "Error getting rates from network on ${Thread.currentThread()}" }

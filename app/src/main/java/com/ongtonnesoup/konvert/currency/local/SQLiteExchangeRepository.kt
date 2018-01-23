@@ -6,8 +6,10 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
-                               private val domainToLocalMapper: (ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>,
-                               private val localToDomainMapper: (List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates) : ExchangeRepository {
+                               private val fromDomainMapper: (ExchangeRepository.ExchangeRates) ->
+                                            List<ExchangeRatesDao.ExchangeRate>,
+                               private val fromLocalMapper: (List<ExchangeRatesDao.ExchangeRate>) ->
+                                            ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
     override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
         Timber.d { "Creating network observable" }
@@ -15,7 +17,7 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
                 .limit(1)
                 .map {
                     Timber.d { "Mapping database model to domain model" }
-                    val mapped = localToDomainMapper.invoke(it)
+                    val mapped = fromLocalMapper.invoke(it)
                     Timber.d { "Mapped model $mapped" }
                     mapped
                 }
@@ -28,7 +30,7 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
         return Completable.fromAction {
             Timber.d { "Inserting ${rates.rates.size} rates into DB on ${Thread.currentThread()}" }
             dao.clear()
-            domainToLocalMapper.invoke(rates).forEach {
+            fromDomainMapper.invoke(rates).forEach {
                 Timber.d { "Inserting $it into DB" }
                 dao.insert(it)
             }
