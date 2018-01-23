@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency.network
+package com.ongtonnesoup.konvert.currency.data.network
 
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single

@@ -1,7 +1,7 @@
-package com.ongtonnesoup.konvert.currency.local
+package com.ongtonnesoup.konvert.currency.data.local
 
 import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import io.reactivex.Completable
 import io.reactivex.Single
 

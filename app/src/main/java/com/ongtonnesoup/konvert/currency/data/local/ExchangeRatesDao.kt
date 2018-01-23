@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency.local
+package com.ongtonnesoup.konvert.currency.data.local
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Entity

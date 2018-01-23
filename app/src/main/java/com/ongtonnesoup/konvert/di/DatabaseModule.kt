@@ -2,7 +2,7 @@ package com.ongtonnesoup.konvert.di
 
 import android.arch.persistence.room.Room
 import android.content.Context
-import com.ongtonnesoup.konvert.currency.local.AppDatabase
+import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import dagger.Module
 import dagger.Provides
 

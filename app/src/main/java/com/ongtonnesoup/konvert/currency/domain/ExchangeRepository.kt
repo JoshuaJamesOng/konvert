@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency
+package com.ongtonnesoup.konvert.currency.domain
 
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -6,7 +6,7 @@ import io.reactivex.Single
 interface ExchangeRepository {
 
     companion object {
-        val NO_DATA = ExchangeRepository.ExchangeRates(emptyList())
+        val NO_DATA = ExchangeRates(emptyList())
     }
 
     fun getExchangeRates(): Single<ExchangeRates>

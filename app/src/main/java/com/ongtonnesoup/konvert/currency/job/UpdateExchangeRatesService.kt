@@ -3,7 +3,7 @@ package com.ongtonnesoup.konvert.currency.job
 import android.app.job.JobParameters
 import android.app.job.JobService
 import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
+import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

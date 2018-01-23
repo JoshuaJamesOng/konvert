@@ -1,7 +1,8 @@
-package com.ongtonnesoup.konvert.currency
+package com.ongtonnesoup.konvert.currency.data
 
-import com.ongtonnesoup.konvert.currency.local.ExchangeRatesDao
-import com.ongtonnesoup.konvert.currency.network.FixerIoClient
+import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
+import com.ongtonnesoup.konvert.currency.data.local.ExchangeRatesDao
+import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 
 fun domainToLocalMapper(): (ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate> = { domain ->
     domain.rates.map { ExchangeRatesDao.ExchangeRate(it.currency, it.rate) }

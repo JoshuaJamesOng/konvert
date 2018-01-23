@@ -2,7 +2,6 @@ package com.ongtonnesoup.konvert.currency.domain
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.ongtonnesoup.konvert.currency.ExchangeRepository
 import com.rubylichtenstein.rxtest.assertions.should
 import com.rubylichtenstein.rxtest.assertions.shouldEmit
 import com.rubylichtenstein.rxtest.assertions.shouldHave

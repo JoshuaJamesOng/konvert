@@ -1,6 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
-import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
+import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates
 import com.ongtonnesoup.konvert.currency.job.UpdateExchangeRatesService
 import dagger.Subcomponent

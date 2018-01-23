@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency
+package com.ongtonnesoup.konvert.currency.domain
 
 import com.github.ajalt.timberkt.Timber
 import io.reactivex.Completable

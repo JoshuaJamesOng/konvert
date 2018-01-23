@@ -1,6 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
-import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates
 import dagger.Module
 import dagger.Provides

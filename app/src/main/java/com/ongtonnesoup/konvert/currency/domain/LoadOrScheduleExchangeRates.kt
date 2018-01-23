@@ -1,6 +1,5 @@
 package com.ongtonnesoup.konvert.currency.domain
 
-import com.ongtonnesoup.konvert.currency.ExchangeRepository
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Named

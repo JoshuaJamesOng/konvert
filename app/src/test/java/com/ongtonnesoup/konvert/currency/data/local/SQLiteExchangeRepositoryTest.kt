@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency.local
+package com.ongtonnesoup.konvert.currency.data.local
 
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.doReturn
@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
-import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import com.rubylichtenstein.rxtest.assertions.should
 import com.rubylichtenstein.rxtest.assertions.shouldEmit
 import com.rubylichtenstein.rxtest.assertions.shouldHave
