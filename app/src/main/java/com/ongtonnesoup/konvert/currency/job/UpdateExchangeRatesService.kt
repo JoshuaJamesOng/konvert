@@ -17,6 +17,7 @@ class UpdateExchangeRatesService : JobService() {
     private val disposables = CompositeDisposable()
 
     override fun onStartJob(params: JobParameters): Boolean {
+        Timber.d { "Starting update exchange rates job" }
         inject()
 
         if (params.jobId == UpdateExchangeRatesJob.JOB_ID) {
@@ -39,14 +40,15 @@ class UpdateExchangeRatesService : JobService() {
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
+        Timber.d { "Stopping update exchange rates job" }
         disposables.dispose()
-        return false
+        return true
     }
 
     private fun inject() {
         val applicationComponent: Any = (application as Provider<*>).get()
         if (applicationComponent is ApplicationComponent) {
-            applicationComponent.getJobComponent().inject(this)
+            applicationComponent.getUpdateExchangeRatesComponent().inject(this)
         }
     }
 }

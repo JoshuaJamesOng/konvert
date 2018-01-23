@@ -27,3 +27,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task testJobScheduler(type: Exec) {
+    // Use 'adb shell dumpsys jobscheduler' to inspect job status
+    commandLine 'adb', 'shell', 'cmd', 'jobscheduler', 'run', '-f com.ongtonnesoup.konvert', '1515888771'
+}

@@ -6,6 +6,7 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
+import com.github.ajalt.timberkt.Timber
 import java.util.concurrent.TimeUnit
 
 class UpdateExchangeRatesJob {
@@ -18,15 +19,23 @@ class UpdateExchangeRatesJob {
 
             val jobInfo = JobInfo.Builder(JOB_ID, jobService).apply {
                 setRequiredNetworkType(NETWORK_TYPE_ANY)
-                setRequiresDeviceIdle(true)
                 setPersisted(true)
-
-                val interval = TimeUnit.DAYS.toMillis(1)
-                if (Build.VERSION_CODES.N <= Build.VERSION.SDK_INT) setMinimumLatency(interval) else setPeriodic(interval)
+                setPeriodic(TimeUnit.MINUTES.toMillis(1))
             }.build()
 
             val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-            jobScheduler.schedule(jobInfo)
+
+            val pendingJob = jobScheduler.getPendingJob(JOB_ID)
+
+            if (pendingJob == null) {
+                val scheduled = jobScheduler.schedule(jobInfo)
+
+                if (scheduled != JobScheduler.RESULT_SUCCESS) {
+                    Timber.e { "Error while scheduling job" }
+                }
+            } else {
+                Timber.d { "Job already scheduled. Not re-scheduling so timer does not reset"}
+            }
         }
     }
 

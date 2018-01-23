@@ -2,8 +2,6 @@ package com.ongtonnesoup.konvert
 
 import android.app.Application
 import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
-import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH
 import com.ongtonnesoup.konvert.currency.job.UpdateExchangeRatesJob
@@ -12,12 +10,9 @@ import com.ongtonnesoup.konvert.di.ApplicationModule
 import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 import javax.inject.Provider
 
 class KonvertApplication : Application(), Provider<ApplicationComponent> {
-
-    @Inject protected lateinit var loadOrScheduleExchangeRates: LoadOrScheduleExchangeRates
 
     private lateinit var applicationComponent: ApplicationComponent
 
@@ -34,15 +29,28 @@ class KonvertApplication : Application(), Provider<ApplicationComponent> {
     override fun get(): ApplicationComponent = this.applicationComponent
 
     private fun loadOrScheduleExchangeRates() {
+        val updateExchangeRatesComponent = applicationComponent.getUpdateExchangeRatesComponent()
+        val loadOrScheduleExchangeRates = updateExchangeRatesComponent.loadOrSchedule
+
+        val schedule = {
+            UpdateExchangeRatesJob.schedule(this)
+            Completable.complete()
+        }
+
         loadOrScheduleExchangeRates.load()
                 .flatMapCompletable { status ->
                     when (status) {
                         NO_DATA -> {
-                            applicationComponent.getJobComponent().interactor.getExchangeRates()
+                            Timber.d { "No data. Fetching exchange rates" }
+                            updateExchangeRatesComponent.update.getExchangeRates()
+                                    .andThen {
+                                        Timber.d { "Scheduling job after force fetch" }
+                                        schedule()
+                                    }
                         }
                         SCHEDULE_REFRESH -> {
-                            UpdateExchangeRatesJob.schedule(this)
-                            Completable.complete()
+                            Timber.d { "Existing data. Scheduling Job" }
+                            schedule()
                         }
                     }
                 }

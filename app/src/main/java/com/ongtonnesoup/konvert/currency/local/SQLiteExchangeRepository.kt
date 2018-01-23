@@ -12,9 +12,12 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
     override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
         Timber.d { "Creating network observable" }
         return dao.getAll()
+                .limit(1)
                 .map {
                     Timber.d { "Mapping database model to domain model" }
-                    localToDomainMapper.invoke(it)
+                    val mapped = localToDomainMapper.invoke(it)
+                    Timber.d { "Mapped model $mapped" }
+                    mapped
                 }
                 .single(ExchangeRepository.NO_DATA)
                 .onErrorReturn { ExchangeRepository.NO_DATA }

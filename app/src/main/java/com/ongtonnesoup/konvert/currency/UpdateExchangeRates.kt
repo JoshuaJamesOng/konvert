@@ -2,7 +2,6 @@ package com.ongtonnesoup.konvert.currency
 
 import com.github.ajalt.timberkt.Timber
 import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class UpdateExchangeRates(private val network: ExchangeRepository,
