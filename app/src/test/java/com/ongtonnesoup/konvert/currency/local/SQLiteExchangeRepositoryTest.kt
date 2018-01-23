@@ -1,6 +1,11 @@
 package com.ongtonnesoup.konvert.currency.local
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.argumentCaptor
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.ongtonnesoup.konvert.currency.ExchangeRepository
 import com.rubylichtenstein.rxtest.assertions.should
 import com.rubylichtenstein.rxtest.assertions.shouldEmit
@@ -47,13 +52,12 @@ class SQLiteExchangeRepositoryTest {
         }
     }
 
-
     @Test
     fun getExchangeRatesDaoErrorReturnsDefaultValue() {
         // Given
         val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
         val dao = mock<ExchangeRatesDao> {
-            on { getAll() } doReturn  Flowable.error<List<ExchangeRatesDao.ExchangeRate>>(RuntimeException())
+            on { getAll() } doReturn Flowable.error<List<ExchangeRatesDao.ExchangeRate>>(RuntimeException())
         }
 
         val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))

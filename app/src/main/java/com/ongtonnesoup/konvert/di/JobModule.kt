@@ -1,10 +1,14 @@
 package com.ongtonnesoup.konvert.di
 
-import com.ongtonnesoup.konvert.currency.*
+import com.ongtonnesoup.konvert.currency.ExchangeRepository
+import com.ongtonnesoup.konvert.currency.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.local.SQLiteExchangeRepository
+import com.ongtonnesoup.konvert.currency.localToDomainMapper
 import com.ongtonnesoup.konvert.currency.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.network.FixerIoExchangeRepository
+import com.ongtonnesoup.konvert.currency.networkToDomainMapper
+import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.default
 import dagger.Module
 import dagger.Provides

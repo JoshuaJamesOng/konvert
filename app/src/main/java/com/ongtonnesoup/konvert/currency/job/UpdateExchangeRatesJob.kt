@@ -5,7 +5,6 @@ import android.app.job.JobInfo.NETWORK_TYPE_ANY
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
-import android.os.Build
 import com.github.ajalt.timberkt.Timber
 import java.util.concurrent.TimeUnit
 
@@ -34,7 +33,7 @@ class UpdateExchangeRatesJob {
                     Timber.e { "Error while scheduling job" }
                 }
             } else {
-                Timber.d { "Job already scheduled. Not re-scheduling so timer does not reset"}
+                Timber.d { "Job already scheduled. Not re-scheduling so timer does not reset" }
             }
         }
     }
