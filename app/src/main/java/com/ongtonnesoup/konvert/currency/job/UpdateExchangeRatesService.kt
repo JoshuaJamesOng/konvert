@@ -30,7 +30,7 @@ class UpdateExchangeRatesService : JobService() {
                             },
                             { error ->
                                 Timber.e(error)
-                                jobFinished(params, false)
+                                jobFinished(params, true)
                             }
                     )
 
