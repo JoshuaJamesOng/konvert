@@ -4,6 +4,8 @@ import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.HttpException
+import java.io.IOException
 
 class FixerIoExchangeRepository(private val client: FixerIoClient,
                                 private val fromNetworkMapper: (FixerIoClient.Response) ->
@@ -17,7 +19,12 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                 }
                 .onErrorReturn {
                     Timber.e { "Error getting rates from network on ${Thread.currentThread()}" }
-                    ExchangeRepository.NO_DATA
+
+                    if (it is HttpException || it is IOException) {
+                        ExchangeRepository.NO_DATA
+                    } else {
+                        throw it
+                    }
                 }
     }
 
