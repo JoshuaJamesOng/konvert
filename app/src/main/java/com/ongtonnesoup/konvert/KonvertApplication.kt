@@ -1,10 +1,12 @@
 package com.ongtonnesoup.konvert
 
 import android.app.Application
+import androidx.work.WorkManager
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA
 import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH
 import com.ongtonnesoup.konvert.currency.job.UpdateExchangeRatesJob
+import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorkRequest
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.di.ApplicationModule
 import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
@@ -33,7 +35,7 @@ class KonvertApplication : Application(), Provider<ApplicationComponent> {
         val loadOrScheduleExchangeRates = updateExchangeRatesComponent.loadOrSchedule
 
         val schedule = {
-            UpdateExchangeRatesJob.schedule(this)
+            UpdateExchangeRatesWorkRequest(WorkManager.getInstance()).schedule()
             Completable.complete()
         }
 
