@@ -37,7 +37,7 @@ class UpdateExchangeRatesWorkRequestIntegrationTest {
     @Test
     @UiThreadTest
     fun scheduleWork() {
-        assertTrue(appDatabase.exchangeRatesDao().getAll().blockingIterable().count() < 1)
+        assertTrue(appDatabase.exchangeRatesDao().getAll().blockingFirst().count() < 1)
         WorkManagerTestInitHelper.initializeTestWorkManager(InstrumentationRegistry.getTargetContext())
 
         val workRequest = UpdateExchangeRatesWorkRequest(WorkManager.getInstance())
@@ -52,7 +52,7 @@ class UpdateExchangeRatesWorkRequestIntegrationTest {
         WorkManagerTestInitHelper.getTestDriver().setAllConstraintsMet(uuid)
 
         assertTrue(workRan)
-        assertTrue(0 < appDatabase.exchangeRatesDao().getAll().blockingIterable().count())
+        assertTrue(0 < appDatabase.exchangeRatesDao().getAll().blockingFirst().count())
     }
 
 }
