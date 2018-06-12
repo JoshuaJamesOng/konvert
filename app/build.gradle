@@ -14,7 +14,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.ongtonnesoup.konvert.currency.TestJUnitRunner"
     }
     buildTypes {
         release {
@@ -64,5 +64,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestImplementation 'android.arch.work:work-testing:1.0.0-alpha02'
     androidTestImplementation 'android.arch.core:core-testing:1.0.0'
-
+    androidTestImplementation 'com.google.dagger:dagger:2.14.1'
+    kaptAndroidTest 'com.google.dagger:dagger-compiler:2.14.1'
 }

@@ -4,6 +4,7 @@ import androidx.work.Worker
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
 import com.ongtonnesoup.konvert.di.ApplicationComponent
+import com.ongtonnesoup.konvert.di.Injector
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -26,10 +27,7 @@ class UpdateExchangeRatesWorker : Worker() {
     }
 
     private fun inject() {
-        val applicationComponent: Any = (applicationContext as Provider<*>).get()
-        if (applicationComponent is ApplicationComponent) {
-            applicationComponent.getUpdateExchangeRatesComponent().inject(this)
-        }
+        (applicationContext as Injector<UpdateExchangeRatesWorker>).inject(this)
     }
 
 }
