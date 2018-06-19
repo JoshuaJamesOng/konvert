@@ -13,16 +13,16 @@ class UpdateExchangeRatesWorker : Worker() {
     @Inject
     protected lateinit var interactor: UpdateExchangeRates
 
-    override fun doWork(): WorkerResult {
+    override fun doWork(): Worker.Result {
         Timber.d { "Starting update exchange rates job" }
         inject()
 
         val throwable = interactor.getExchangeRates().blockingGet()
 
         return if (throwable == null) {
-            WorkerResult.SUCCESS
+            Worker.Result.SUCCESS
         } else {
-            WorkerResult.FAILURE
+            Worker.Result.FAILURE
         }
     }
 
