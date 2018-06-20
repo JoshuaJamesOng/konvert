@@ -22,6 +22,7 @@ class UpdateExchangeRatesWorker : Worker() {
         return if (throwable == null) {
             Worker.Result.SUCCESS
         } else {
+            Timber.e(throwable)
             Worker.Result.FAILURE
         }
     }

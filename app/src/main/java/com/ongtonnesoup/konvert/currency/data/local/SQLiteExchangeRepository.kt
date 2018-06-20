@@ -28,11 +28,13 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
     override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {
         Timber.d { "Creating local observable" }
         return Completable.fromAction {
+            // TODO We shouldn't clear exchange rates on errors
             Timber.d { "Inserting ${rates.rates.size} rates into DB on ${Thread.currentThread()}" }
             dao.clear()
             fromDomainMapper.invoke(rates).forEach {
                 Timber.d { "Inserting $it into DB" }
-                dao.insert(it)
+                val result = dao.insert(it)
+                Timber.d { "Inserted at: $result" }
             }
         }
     }

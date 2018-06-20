@@ -1,6 +1,9 @@
 package com.ongtonnesoup.konvert.currency.di
 
 import android.content.Context
+import com.ongtonnesoup.konvert.InteractorSchedulers
+import com.ongtonnesoup.konvert.Schedulers
+import com.ongtonnesoup.konvert.TestSchedulers
 import dagger.Module
 import dagger.Provides
 import timber.log.Timber
@@ -14,5 +17,8 @@ class TestApplicationModule(private val context: Context) {
 
     @Provides
     fun provideContext() = context
+
+    @Provides
+    fun provideSchedulers(): Schedulers = TestSchedulers()
 
 }

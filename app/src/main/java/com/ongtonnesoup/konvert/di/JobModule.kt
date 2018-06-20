@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
+import com.ongtonnesoup.konvert.Schedulers
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
@@ -54,8 +55,9 @@ object JobModule {
     @Provides
     @JvmStatic
     fun provideInteractor(@Named("network") network: ExchangeRepository,
-                          @Named("local") local: ExchangeRepository): UpdateExchangeRates {
-        return UpdateExchangeRates(network, local)
+                          @Named("local") local: ExchangeRepository,
+                          schedulers: Schedulers): UpdateExchangeRates {
+        return UpdateExchangeRates(network, local, schedulers)
     }
 
 }

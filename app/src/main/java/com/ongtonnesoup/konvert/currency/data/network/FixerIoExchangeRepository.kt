@@ -20,6 +20,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                     Timber.e { "Error getting rates from network on ${Thread.currentThread()}" }
 
                     if (it.isExpectedNetworkException()) {
+                        Timber.e { "Is expected network exception: $it" }
                         ExchangeRepository.NO_DATA
                     } else {
                         throw it

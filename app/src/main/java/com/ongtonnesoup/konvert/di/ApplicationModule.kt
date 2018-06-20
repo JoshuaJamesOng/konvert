@@ -1,6 +1,8 @@
 package com.ongtonnesoup.konvert.di
 
 import android.content.Context
+import com.ongtonnesoup.konvert.InteractorSchedulers
+import com.ongtonnesoup.konvert.Schedulers
 import dagger.Module
 import dagger.Provides
 import timber.log.Timber
@@ -14,5 +16,8 @@ class ApplicationModule(private val context: Context) {
 
     @Provides
     fun provideContext() = context
+
+    @Provides
+    fun provideSchedulers(): Schedulers = InteractorSchedulers()
 
 }

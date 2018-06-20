@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.annotation.UiThreadTest
 import android.support.test.filters.LargeTest
 import com.github.ajalt.timberkt.Timber
+import com.ongtonnesoup.konvert.InteractorSchedulers
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
@@ -41,7 +42,7 @@ class UpdateExchangeRatesIntegrationTest {
         val local = SQLiteExchangeRepository(database.exchangeRatesDao(), domainToLocalMapper(), localToDomainMapper())
 
         Timber.d { "${Thread.currentThread()}" }
-        val cut = UpdateExchangeRates(network, local)
+        val cut = UpdateExchangeRates(network, local, InteractorSchedulers())
 
         // When
         val observable = cut.getExchangeRates().test()

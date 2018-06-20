@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency
+package com.ongtonnesoup.konvert
 
 import android.app.Application
 import android.content.Context

@@ -7,9 +7,10 @@ import android.support.test.filters.LargeTest
 import androidx.work.State
 import androidx.work.WorkManager
 import androidx.work.test.WorkManagerTestInitHelper
-import com.ongtonnesoup.konvert.currency.TestApplication
+import com.ongtonnesoup.konvert.TestApplication
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.di.TestUpdateExchangeRatesComponent
+import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -32,27 +33,28 @@ class UpdateExchangeRatesWorkRequestIntegrationTest {
     fun setUp() {
         val application = InstrumentationRegistry.getTargetContext().applicationContext as TestApplication
         component = application.updateExchangeRatesComponent
+
+        assertTrue("No data", appDatabase.exchangeRatesDao().getAll().blockingFirst().count() < 1)
     }
 
     @Test
     @UiThreadTest
     fun scheduleWork() {
-        assertTrue(appDatabase.exchangeRatesDao().getAll().blockingFirst().count() < 1)
         WorkManagerTestInitHelper.initializeTestWorkManager(InstrumentationRegistry.getTargetContext())
 
         val workRequest = UpdateExchangeRatesWorkRequest(WorkManager.getInstance())
         val uuid = workRequest.schedule()
 
-        var workRan = false
+        val states = mutableListOf<State>()
         val data = WorkManager.getInstance().getStatusById(uuid!!)
         data.observeForever {
-            if (State.RUNNING == it!!.state) workRan = true
+            states.add(it!!.state)
         }
 
         WorkManagerTestInitHelper.getTestDriver().setAllConstraintsMet(uuid)
 
-        assertTrue(workRan)
-        assertTrue(0 < appDatabase.exchangeRatesDao().getAll().blockingFirst().count())
+        assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().blockingFirst().count())
+        assertEquals("Work is re-enqueued", listOf(State.ENQUEUED, State.RUNNING, State.ENQUEUED), states)
     }
 
 }

@@ -15,7 +15,7 @@ interface ExchangeRatesDao {
     fun getAll(): Flowable<List<ExchangeRate>>
 
     @Insert(onConflict = REPLACE)
-    fun insert(exchangeRates: ExchangeRate)
+    fun insert(exchangeRates: ExchangeRate): Long
 
     @Query("delete from exchange_rates")
     fun clear()

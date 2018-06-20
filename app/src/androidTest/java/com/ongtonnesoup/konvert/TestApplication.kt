@@ -1,6 +1,7 @@
-package com.ongtonnesoup.konvert.currency
+package com.ongtonnesoup.konvert
 
 import android.app.Application
+import android.os.StrictMode
 import com.ongtonnesoup.konvert.currency.di.DaggerTestApplicationComponent
 import com.ongtonnesoup.konvert.currency.di.TestApplicationComponent
 import com.ongtonnesoup.konvert.currency.di.TestApplicationModule
@@ -17,6 +18,8 @@ class TestApplication : Application(), Injector<UpdateExchangeRatesWorker> {
 
     override fun onCreate() {
         super.onCreate()
+
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
 
         applicationComponent = DaggerTestApplicationComponent.builder()
                 .testApplicationModule(TestApplicationModule(this))
