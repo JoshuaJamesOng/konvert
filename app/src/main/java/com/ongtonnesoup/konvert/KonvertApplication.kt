@@ -1,22 +1,27 @@
 package com.ongtonnesoup.konvert
 
 import android.app.Application
-import androidx.work.WorkManager
-import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA
-import com.ongtonnesoup.konvert.currency.domain.LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH
-import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorkRequest
 import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.di.ApplicationModule
 import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
 import com.ongtonnesoup.konvert.di.Injector
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.ongtonnesoup.konvert.initialisation.InitialiseApp
+import com.ongtonnesoup.konvert.state.AppState
+import javax.inject.Inject
 import javax.inject.Provider
 
 class KonvertApplication : Application(), Provider<ApplicationComponent>, Injector<UpdateExchangeRatesWorker> {
     private lateinit var applicationComponent: ApplicationComponent
+
+    @Inject
+    lateinit var appState: AppState
+
+    @Inject
+    lateinit var initialiseApp: InitialiseApp
+
+    @Inject
+    lateinit var schedulers: Schedulers
 
     override fun onCreate() {
         super.onCreate()
@@ -25,7 +30,12 @@ class KonvertApplication : Application(), Provider<ApplicationComponent>, Inject
                 .applicationModule(ApplicationModule(this))
                 .build()
 
-        loadOrScheduleExchangeRates()
+        appState.updates()
+                .filter { state -> !state.initialised }
+                .flatMapCompletable { initialiseApp.initialise() }
+                .subscribeOn(schedulers.getWorkerScheduler())
+                .observeOn(schedulers.getPostExecutionScheduler())
+                .subscribe()
     }
 
     override fun get() = applicationComponent
@@ -34,36 +44,4 @@ class KonvertApplication : Application(), Provider<ApplicationComponent>, Inject
         applicationComponent.getUpdateExchangeRatesComponent().inject(target)
     }
 
-    private fun loadOrScheduleExchangeRates() {
-        val updateExchangeRatesComponent = applicationComponent.getUpdateExchangeRatesComponent()
-        val loadOrScheduleExchangeRates = updateExchangeRatesComponent.loadOrSchedule
-
-        val schedule = {
-            UpdateExchangeRatesWorkRequest(WorkManager.getInstance()).schedule()
-            Completable.complete()
-        }
-
-        loadOrScheduleExchangeRates.load()
-                .flatMapCompletable { status ->
-                    when (status) {
-                        NO_DATA -> {
-                            Timber.d { "No data. Fetching exchange rates" }
-                            updateExchangeRatesComponent.update.getExchangeRates()
-                                    .andThen {
-                                        Timber.d { "Scheduling job after force fetch" }
-                                        schedule()
-                                    }
-                        }
-                        SCHEDULE_REFRESH -> {
-                            Timber.d { "Existing data. Scheduling Job" }
-                            schedule()
-                        }
-                    }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { Timber.d { "Loaded/scheduled exchange rates" } },
-                        { Timber.e { "Could not determine whether to load or schedule" } }
-                )
-    }
 }

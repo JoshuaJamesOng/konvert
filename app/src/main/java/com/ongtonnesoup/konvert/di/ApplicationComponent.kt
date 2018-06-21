@@ -5,7 +5,13 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(ApplicationModule::class, NetworkModule::class, DatabaseModule::class))
+@Component(modules = [
+    ApplicationModule::class,
+    NetworkModule::class,
+    DatabaseModule::class,
+    StateModule::class,
+    DataSourcesModule::class
+])
 interface ApplicationComponent {
 
     fun getUpdateExchangeRatesComponent(): UpdateExchangeRatesComponent

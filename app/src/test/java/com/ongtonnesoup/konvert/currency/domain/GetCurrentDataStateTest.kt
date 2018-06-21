@@ -18,11 +18,11 @@ import org.junit.platform.runner.JUnitPlatform
 import org.junit.runner.RunWith
 
 @RunWith(JUnitPlatform::class)
-class LoadOrScheduleExchangeRatesTest : Spek({
+class GetCurrentDataStateTest : Spek({
 
     given("load or schedule data") {
         val local = mock<ExchangeRepository>()
-        val interactor = LoadOrScheduleExchangeRates(local)
+        val interactor = GetCurrentDataState(local)
 
         on("load with no local data") {
 
@@ -35,7 +35,7 @@ class LoadOrScheduleExchangeRatesTest : Spek({
                     it should complete()
                     it shouldHave noErrors()
                     it shouldHave valueCount(1)
-                    it shouldEmit LoadOrScheduleExchangeRates.ExchangeRateStatus.NO_DATA
+                    it shouldEmit GetCurrentDataState.ExchangeRateStatus.NO_DATA
                 }
             }
         }
@@ -51,7 +51,7 @@ class LoadOrScheduleExchangeRatesTest : Spek({
                     it should complete()
                     it shouldHave noErrors()
                     it shouldHave valueCount(1)
-                    it shouldEmit LoadOrScheduleExchangeRates.ExchangeRateStatus.SCHEDULE_REFRESH
+                    it shouldEmit GetCurrentDataState.ExchangeRateStatus.SCHEDULE_REFRESH
                 }
             }
         }
