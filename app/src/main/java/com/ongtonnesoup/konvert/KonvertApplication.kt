@@ -1,7 +1,7 @@
 package com.ongtonnesoup.konvert
 
 import android.app.Application
-import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorker
+import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.di.ApplicationModule
 import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
@@ -11,7 +11,7 @@ import com.ongtonnesoup.konvert.state.AppState
 import javax.inject.Inject
 import javax.inject.Provider
 
-class KonvertApplication : Application(), Provider<ApplicationComponent>, Injector<UpdateExchangeRatesWorker> {
+class KonvertApplication : Application(), Provider<ApplicationComponent>, Injector<RefreshExchangeRatesWorker> {
     private lateinit var applicationComponent: ApplicationComponent
 
     @Inject
@@ -40,7 +40,7 @@ class KonvertApplication : Application(), Provider<ApplicationComponent>, Inject
 
     override fun get() = applicationComponent
 
-    override fun inject(target: UpdateExchangeRatesWorker) {
+    override fun inject(target: RefreshExchangeRatesWorker) {
         applicationComponent.getUpdateExchangeRatesComponent().inject(target)
     }
 

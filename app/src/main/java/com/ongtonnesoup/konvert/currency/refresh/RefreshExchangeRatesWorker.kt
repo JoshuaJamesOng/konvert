@@ -1,12 +1,11 @@
-package com.ongtonnesoup.konvert.currency.work
+package com.ongtonnesoup.konvert.currency.refresh
 
 import androidx.work.Worker
 import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.currency.refresh.RefreshThenRescheduleExchangeRates
 import com.ongtonnesoup.konvert.di.Injector
 import javax.inject.Inject
 
-class UpdateExchangeRatesWorker : Worker() {
+class RefreshExchangeRatesWorker : Worker() {
 
     @Inject
     lateinit var interactor: RefreshThenRescheduleExchangeRates
@@ -26,7 +25,7 @@ class UpdateExchangeRatesWorker : Worker() {
     }
 
     private fun inject() {
-        (applicationContext as Injector<UpdateExchangeRatesWorker>).inject(this)
+        (applicationContext as Injector<RefreshExchangeRatesWorker>).inject(this)
     }
 
 }

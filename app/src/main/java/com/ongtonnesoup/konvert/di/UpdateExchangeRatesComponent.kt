@@ -1,11 +1,11 @@
 package com.ongtonnesoup.konvert.di
 
-import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorker
+import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import dagger.Subcomponent
 
 @Subcomponent
 interface UpdateExchangeRatesComponent {
 
-    fun inject(target: UpdateExchangeRatesWorker)
+    fun inject(target: RefreshExchangeRatesWorker)
 
 }

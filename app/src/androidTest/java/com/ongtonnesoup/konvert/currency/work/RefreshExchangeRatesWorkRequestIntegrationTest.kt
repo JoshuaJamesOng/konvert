@@ -10,6 +10,7 @@ import androidx.work.test.WorkManagerTestInitHelper
 import com.ongtonnesoup.konvert.TestApplication
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.di.TestUpdateExchangeRatesComponent
+import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorkRequest
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import org.junit.Before
@@ -18,7 +19,7 @@ import org.junit.Test
 import org.junit.rules.TestRule
 
 @LargeTest
-class UpdateExchangeRatesWorkRequestIntegrationTest {
+class RefreshExchangeRatesWorkRequestIntegrationTest {
 
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
@@ -42,7 +43,7 @@ class UpdateExchangeRatesWorkRequestIntegrationTest {
     fun scheduleWork() {
         WorkManagerTestInitHelper.initializeTestWorkManager(InstrumentationRegistry.getTargetContext())
 
-        val workRequest = UpdateExchangeRatesWorkRequest(WorkManager.getInstance())
+        val workRequest = RefreshExchangeRatesWorkRequest(WorkManager.getInstance())
         val uuid = workRequest.schedule()
 
         val states = mutableListOf<State>()

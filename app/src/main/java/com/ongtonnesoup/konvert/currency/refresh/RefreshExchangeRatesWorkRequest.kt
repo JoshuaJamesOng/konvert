@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.currency.work
+package com.ongtonnesoup.konvert.currency.refresh
 
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -7,7 +7,7 @@ import androidx.work.WorkManager
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class UpdateExchangeRatesWorkRequest(private val workManager: WorkManager) {
+class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
 
     fun schedule(): UUID? {
         val constraint = Constraints.Builder()
@@ -15,7 +15,7 @@ class UpdateExchangeRatesWorkRequest(private val workManager: WorkManager) {
             .build()
 
         val update = PeriodicWorkRequest.Builder(
-            UpdateExchangeRatesWorker::class.java,
+            RefreshExchangeRatesWorker::class.java,
             1, TimeUnit.DAYS
         ).setConstraints(constraint).build()
 
