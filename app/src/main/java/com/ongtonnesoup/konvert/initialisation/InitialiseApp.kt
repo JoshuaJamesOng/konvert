@@ -41,6 +41,7 @@ class InitialiseApp @Inject constructor(
     private fun fetchNowThenScheduleRefresh(): Completable {
         return updateExchangeRates.getExchangeRates()
                 .doOnSubscribe { Timber.d { "No data. Fetching exchange rates" } }
+                .doOnComplete { updateDataState(appState, DataState.CACHED_DATA) }
                 .doOnComplete { Timber.d { "Scheduling job after force fetch" } }
                 .andThen(scheduleRefresh())
     }
