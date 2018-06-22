@@ -1,10 +1,9 @@
 package com.ongtonnesoup.konvert.initialisation
 
-import androidx.work.WorkManager
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.GetCurrentDataState
 import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
-import com.ongtonnesoup.konvert.currency.work.UpdateExchangeRatesWorkRequest
+import com.ongtonnesoup.konvert.currency.refresh.ScheduleRefresh
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
 import com.ongtonnesoup.konvert.state.updateDataState
@@ -16,6 +15,7 @@ import javax.inject.Inject
 class InitialiseApp @Inject constructor(
         private val getCurrentDataState: GetCurrentDataState,
         private val updateExchangeRates: UpdateExchangeRates,
+        private val scheduleRefresh: ScheduleRefresh,
         private val appState: AppState
 ) {
 
@@ -46,10 +46,8 @@ class InitialiseApp @Inject constructor(
     }
 
     private fun scheduleRefresh(): Completable {
-        return Completable.fromCallable {
-            UpdateExchangeRatesWorkRequest(WorkManager.getInstance()).schedule()
-            Completable.complete()
-        }.doOnSubscribe { Timber.d { "Scheduling Job" } }
+        return scheduleRefresh.scheduleRefresh()
+                .doOnSubscribe { Timber.d { "Scheduling Job" } }
     }
 
 }

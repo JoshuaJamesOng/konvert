@@ -10,7 +10,8 @@ import javax.inject.Singleton
     NetworkModule::class,
     DatabaseModule::class,
     StateModule::class,
-    DataSourcesModule::class
+    DataSourcesModule::class,
+    SchedulerModule::class
 ])
 interface ApplicationComponent {
 
