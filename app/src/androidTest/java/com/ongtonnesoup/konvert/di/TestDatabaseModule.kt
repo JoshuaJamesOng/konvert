@@ -3,14 +3,14 @@ package com.ongtonnesoup.konvert.currency.di
 import android.arch.persistence.room.Room
 import android.content.Context
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
+import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 object TestDatabaseModule {
 
-    @Singleton
+    @PerAppForegroundProcess
     @Provides
     @JvmStatic
     fun provideDatabase(context: Context): AppDatabase {

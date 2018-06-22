@@ -1,21 +1,17 @@
 package com.ongtonnesoup.konvert.di
 
 import com.ongtonnesoup.konvert.KonvertApplication
-import dagger.Component
-import javax.inject.Singleton
+import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
+import dagger.Subcomponent
 
-@Singleton
-@Component(modules = [
-    ApplicationModule::class,
-    NetworkModule::class,
+@PerAppForegroundProcess
+@Subcomponent(modules = [
     DatabaseModule::class,
-    StateModule::class,
     DataSourcesModule::class,
-    SchedulerModule::class
+    SchedulerModule::class,
+    ClientModule::class
 ])
 interface ApplicationComponent {
-
-    fun getUpdateExchangeRatesComponent(): UpdateExchangeRatesComponent
 
     fun inject(application: KonvertApplication)
 

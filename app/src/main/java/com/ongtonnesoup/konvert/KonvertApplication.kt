@@ -2,17 +2,13 @@ package com.ongtonnesoup.konvert
 
 import android.app.Application
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
-import com.ongtonnesoup.konvert.di.ApplicationComponent
-import com.ongtonnesoup.konvert.di.ApplicationModule
-import com.ongtonnesoup.konvert.di.DaggerApplicationComponent
-import com.ongtonnesoup.konvert.di.Injector
+import com.ongtonnesoup.konvert.di.*
 import com.ongtonnesoup.konvert.initialisation.InitialiseApp
 import com.ongtonnesoup.konvert.state.AppState
 import javax.inject.Inject
 import javax.inject.Provider
 
 class KonvertApplication : Application(), Provider<ApplicationComponent>, Injector<RefreshExchangeRatesWorker> {
-    private lateinit var applicationComponent: ApplicationComponent
 
     @Inject
     lateinit var appState: AppState
@@ -23,11 +19,15 @@ class KonvertApplication : Application(), Provider<ApplicationComponent>, Inject
     @Inject
     lateinit var schedulers: Schedulers
 
+    private lateinit var processComponent: ProcessComponent
+
+    private var applicationComponent: ApplicationComponent? = null
+
     override fun onCreate() {
         super.onCreate()
 
-        applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(ApplicationModule(this))
+        processComponent = DaggerProcessComponent.builder()
+                .processModule(ProcessModule(this))
                 .build()
 
         appState.updates()
@@ -38,10 +38,17 @@ class KonvertApplication : Application(), Provider<ApplicationComponent>, Inject
                 .subscribe()
     }
 
+    // TODO Hook this up to process lifecycle
+    fun onAppForegrounded() {
+        if (applicationComponent == null) {
+            applicationComponent = processComponent.getApplicationComponent()
+        }
+    }
+
     override fun get() = applicationComponent
 
     override fun inject(target: RefreshExchangeRatesWorker) {
-        applicationComponent.getUpdateExchangeRatesComponent().inject(target)
+        processComponent.getWorkerComponent().inject(target)
     }
 
 }
