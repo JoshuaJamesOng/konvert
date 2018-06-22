@@ -13,7 +13,6 @@ import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.networkToDomainMapper
-import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
 import com.ongtonnesoup.konvert.default
 import okhttp3.OkHttpClient
 import org.junit.Test

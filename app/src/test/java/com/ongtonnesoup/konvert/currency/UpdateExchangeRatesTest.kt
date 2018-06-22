@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
 import com.rubylichtenstein.rxtest.assertions.should
 import com.rubylichtenstein.rxtest.extentions.test
 import com.rubylichtenstein.rxtest.matchers.complete

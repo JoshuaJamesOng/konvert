@@ -2,7 +2,7 @@ package com.ongtonnesoup.konvert.initialisation
 
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.GetCurrentDataState
-import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
+import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.currency.refresh.ScheduleRefresh
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
@@ -41,7 +41,6 @@ class InitialiseApp @Inject constructor(
     private fun fetchNowThenScheduleRefresh(): Completable {
         return updateExchangeRates.getExchangeRates()
                 .doOnSubscribe { Timber.d { "No data. Fetching exchange rates" } }
-                .doOnComplete { updateDataState(appState, DataState.CACHED_DATA) }
                 .doOnComplete { Timber.d { "Scheduling job after force fetch" } }
                 .andThen(scheduleRefresh())
     }

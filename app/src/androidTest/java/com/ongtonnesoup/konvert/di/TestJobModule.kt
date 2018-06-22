@@ -7,7 +7,7 @@ import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import com.ongtonnesoup.konvert.currency.domain.UpdateExchangeRates
+import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.default
 import dagger.Module
 import dagger.Provides
