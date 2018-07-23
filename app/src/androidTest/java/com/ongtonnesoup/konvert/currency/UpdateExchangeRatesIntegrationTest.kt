@@ -14,6 +14,8 @@ import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.networkToDomainMapper
 import com.ongtonnesoup.konvert.default
+import com.ongtonnesoup.konvert.state.AppState
+import com.ongtonnesoup.konvert.state.State
 import okhttp3.OkHttpClient
 import org.junit.Test
 import retrofit2.Retrofit
@@ -40,8 +42,11 @@ class UpdateExchangeRatesIntegrationTest {
         val database = Room.databaseBuilder(InstrumentationRegistry.getTargetContext(), AppDatabase::class.java, "test-db").allowMainThreadQueries().build()
         val local = SQLiteExchangeRepository(database.exchangeRatesDao(), domainToLocalMapper(), localToDomainMapper())
 
+        val appState = AppState(State())
+        val getLatestExchangeRates = GetLatestExchangeRates(network, appState)
+        val saveExchangeRates = SaveExchangeRates(local, appState)
         Timber.d { "${Thread.currentThread()}" }
-        val cut = UpdateExchangeRates(network, local, InteractorSchedulers())
+        val cut = UpdateExchangeRates(getLatestExchangeRates, saveExchangeRates)
 
         // When
         val observable = cut.getExchangeRates().test()

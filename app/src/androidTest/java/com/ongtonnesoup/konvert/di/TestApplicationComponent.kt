@@ -1,12 +1,18 @@
 package com.ongtonnesoup.konvert.currency.di
 
-import dagger.Component
-import javax.inject.Singleton
+import com.ongtonnesoup.konvert.di.ClientModule
+import com.ongtonnesoup.konvert.di.DataSourcesModule
+import com.ongtonnesoup.konvert.di.SchedulerModule
+import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
+import dagger.Subcomponent
 
-@Singleton
-@Component(modules = arrayOf(TestApplicationModule::class, TestNetworkModule::class, TestDatabaseModule::class))
+@PerAppForegroundProcess
+@Subcomponent(modules = [
+    TestDatabaseModule::class,
+    DataSourcesModule::class,
+    SchedulerModule::class,
+    ClientModule::class
+])
 interface TestApplicationComponent {
-
-    fun getUpdateExchangeRatesComponent(): TestUpdateExchangeRatesComponent
 
 }

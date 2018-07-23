@@ -1,40 +1,24 @@
-package com.ongtonnesoup.konvert.currency.di
+package com.ongtonnesoup.konvert.di
 
-import com.ongtonnesoup.konvert.Schedulers
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
-import com.ongtonnesoup.konvert.default
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Completable
 import io.reactivex.Single
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
 import javax.inject.Named
 
 @Module
-object TestJobModule {
-
-    @Provides
-    @JvmStatic
-    fun provideRetrofit(okHttpClient: OkHttpClient): FixerIoClient {
-        return Retrofit.Builder()
-                .default()
-                .baseUrl("https://api.fixer.io/")
-                .client(okHttpClient)
-                .build()
-                .create(FixerIoClient::class.java)
-    }
+object TestDataSourcesModule {
 
     @Provides
     @Named("network")
     @JvmStatic
-    fun provideNetworkRepository(retrofitClient: FixerIoClient): ExchangeRepository {
+    fun provideNetworkRepository(): ExchangeRepository {
         return object : ExchangeRepository {
             override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
                 val rate = ExchangeRepository.ExchangeRate("T$", 1.0)
@@ -57,14 +41,6 @@ object TestJobModule {
                 domainToLocalMapper(),
                 localToDomainMapper()
         )
-    }
-
-    @Provides
-    @JvmStatic
-    fun provideInteractor(@Named("network") network: ExchangeRepository,
-                          @Named("local") local: ExchangeRepository,
-                          schedulers: Schedulers): UpdateExchangeRates {
-        return UpdateExchangeRates(network, local, schedulers)
     }
 
 }

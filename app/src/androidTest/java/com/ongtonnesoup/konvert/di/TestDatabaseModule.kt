@@ -10,7 +10,7 @@ import dagger.Provides
 @Module
 object TestDatabaseModule {
 
-    @PerAppForegroundProcess
+//    @PerAppForegroundProcess
     @Provides
     @JvmStatic
     fun provideDatabase(context: Context): AppDatabase {

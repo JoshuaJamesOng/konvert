@@ -2,18 +2,19 @@ package com.ongtonnesoup.konvert
 
 import android.app.Application
 import android.os.StrictMode
-import com.ongtonnesoup.konvert.currency.di.DaggerTestApplicationComponent
-import com.ongtonnesoup.konvert.currency.di.TestApplicationComponent
-import com.ongtonnesoup.konvert.currency.di.TestApplicationModule
-import com.ongtonnesoup.konvert.currency.di.TestUpdateExchangeRatesComponent
+import com.ongtonnesoup.konvert.currency.di.TestWorkerComponent
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
+import com.ongtonnesoup.konvert.di.DaggerTestProcessComponent
 import com.ongtonnesoup.konvert.di.Injector
+import com.ongtonnesoup.konvert.di.ProcessModule
+import com.ongtonnesoup.konvert.di.TestProcessComponent
 
 class TestApplication : Application(), Injector<RefreshExchangeRatesWorker> {
-    private lateinit var applicationComponent: TestApplicationComponent
 
-    val updateExchangeRatesComponent: TestUpdateExchangeRatesComponent by lazy {
-        applicationComponent.getUpdateExchangeRatesComponent()
+    private lateinit var processComponent: TestProcessComponent
+
+    val workerComponent: TestWorkerComponent by lazy {
+        processComponent.getWorkerComponent()
     }
 
     override fun onCreate() {
@@ -21,13 +22,13 @@ class TestApplication : Application(), Injector<RefreshExchangeRatesWorker> {
 
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
 
-        applicationComponent = DaggerTestApplicationComponent.builder()
-                .testApplicationModule(TestApplicationModule(this))
+        processComponent = DaggerTestProcessComponent.builder()
+                .processModule(ProcessModule(this))
                 .build()
     }
 
     override fun inject(target: RefreshExchangeRatesWorker) {
-        updateExchangeRatesComponent.inject(target)
+        workerComponent.inject(target)
     }
 
 }

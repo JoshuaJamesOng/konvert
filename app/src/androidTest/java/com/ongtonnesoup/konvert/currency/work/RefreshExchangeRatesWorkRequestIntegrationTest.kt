@@ -9,7 +9,7 @@ import androidx.work.WorkManager
 import androidx.work.test.WorkManagerTestInitHelper
 import com.ongtonnesoup.konvert.TestApplication
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
-import com.ongtonnesoup.konvert.currency.di.TestUpdateExchangeRatesComponent
+import com.ongtonnesoup.konvert.currency.di.TestWorkerComponent
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorkRequest
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
@@ -24,7 +24,7 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    private lateinit var component: TestUpdateExchangeRatesComponent
+    private lateinit var component: TestWorkerComponent
 
     private val appDatabase: AppDatabase by lazy {
         component.appDatabase()
@@ -33,7 +33,7 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
     @Before
     fun setUp() {
         val application = InstrumentationRegistry.getTargetContext().applicationContext as TestApplication
-        component = application.updateExchangeRatesComponent
+        component = application.workerComponent
 
         assertTrue("No data", appDatabase.exchangeRatesDao().getAll().blockingFirst().count() < 1)
     }
