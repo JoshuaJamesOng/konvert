@@ -11,7 +11,6 @@ import dagger.Provides
 import timber.log.Timber
 import javax.inject.Named
 
-@PerProcess
 @Module
 class ProcessModule(private val context: Context) {
 

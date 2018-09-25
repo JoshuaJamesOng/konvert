@@ -6,7 +6,6 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 
-@PerProcess
 @Module
 object NetworkModule {
 
