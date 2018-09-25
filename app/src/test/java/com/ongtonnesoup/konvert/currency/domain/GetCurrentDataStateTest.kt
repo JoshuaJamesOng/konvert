@@ -2,6 +2,8 @@ package com.ongtonnesoup.konvert.currency.domain
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import com.ongtonnesoup.konvert.state.AppState
+import com.ongtonnesoup.konvert.state.DataState
 import com.rubylichtenstein.rxtest.assertions.should
 import com.rubylichtenstein.rxtest.assertions.shouldEmit
 import com.rubylichtenstein.rxtest.assertions.shouldHave
@@ -22,7 +24,8 @@ class GetCurrentDataStateTest : Spek({
 
     given("load or schedule data") {
         val local = mock<ExchangeRepository>()
-        val interactor = GetCurrentDataState(local)
+        val appState = mock<AppState>()
+        val interactor = GetCurrentDataState(local, appState)
 
         on("load with no local data") {
 
@@ -35,7 +38,7 @@ class GetCurrentDataStateTest : Spek({
                     it should complete()
                     it shouldHave noErrors()
                     it shouldHave valueCount(1)
-                    it shouldEmit GetCurrentDataState.ExchangeRateStatus.NO_DATA
+                    it shouldEmit DataState.NO_DATA
                 }
             }
         }
@@ -51,7 +54,7 @@ class GetCurrentDataStateTest : Spek({
                     it should complete()
                     it shouldHave noErrors()
                     it shouldHave valueCount(1)
-                    it shouldEmit GetCurrentDataState.ExchangeRateStatus.SCHEDULE_REFRESH
+                    it shouldEmit DataState.CACHED_DATA
                 }
             }
         }
