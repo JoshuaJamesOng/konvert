@@ -1,13 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.20'
+    ext.kotlin_version = '1.2.71'
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -16,8 +16,7 @@ buildscript {
 }
 
 plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC6-2"
-    id "org.jlleitschuh.gradle.ktlint" version "3.0.0"
+    id "com.vanniktech.code.quality.tools" version "0.13.0"
 }
 
 allprojects {
@@ -38,17 +37,10 @@ task testJobScheduler(type: Exec) {
     commandLine 'adb', 'shell', 'cmd', 'jobscheduler', 'run', '-f com.ongtonnesoup.konvert', '1515888771'
 }
 
-detekt {
-    version = "1.0.0.RC6-2"
-    profile("main") {
-        input = "$projectDir/app/src/main/java"
-        config = "$projectDir/default-detekt-config.yml"
-        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
-        output = "$projectDir/app/build/reports"
-    }
-}
+codeQualityTools {
+    htmlReports = true
 
-ktlint {
-    android = true
-    reporter = "checkstyle"
+    detekt {
+        enabled = false // TODO Re-enable
+    }
 }
