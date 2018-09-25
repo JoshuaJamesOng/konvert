@@ -9,7 +9,7 @@ class AppState(defaultState: State) {
 
     private var updates: BehaviorSubject<State> = BehaviorSubject.createDefault(defaultState)
 
-    fun current(): State = updates.value
+    fun current(): State = updates.value!!
 
     fun updates(): Observable<State> = updates.hide()
 
