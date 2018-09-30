@@ -1,17 +1,18 @@
 package com.ongtonnesoup.konvert.currency.domain
 
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
-import com.rubylichtenstein.rxtest.assertions.should
-import com.rubylichtenstein.rxtest.assertions.shouldEmit
-import com.rubylichtenstein.rxtest.assertions.shouldHave
-import com.rubylichtenstein.rxtest.extentions.test
-import com.rubylichtenstein.rxtest.matchers.complete
-import com.rubylichtenstein.rxtest.matchers.noErrors
-import com.rubylichtenstein.rxtest.matchers.valueCount
+import com.ongtonnesoup.konvert.state.State
+import io.reactivex.Observable
 import io.reactivex.Single
+import org.amshove.kluent.Verify
+import org.amshove.kluent.VerifyNoInteractions
+import org.amshove.kluent.called
+import org.amshove.kluent.on
+import org.amshove.kluent.that
+import org.amshove.kluent.was
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -22,41 +23,79 @@ import org.junit.runner.RunWith
 @RunWith(JUnitPlatform::class)
 class GetCurrentDataStateTest : Spek({
 
-    given("load or schedule data") {
-        val local = mock<ExchangeRepository>()
-        val appState = mock<AppState>()
-        val interactor = GetCurrentDataState(local, appState)
-
-        on("load with no local data") {
-
-            whenever(local.getExchangeRates()).thenReturn(Single.just(ExchangeRepository.NO_DATA))
-            val observable = interactor.load()
-
-            it("should return no data") {
-                observable.test {
-                    it.await()
-                    it should complete()
-                    it shouldHave noErrors()
-                    it shouldHave valueCount(1)
-                    it shouldEmit DataState.NO_DATA
-                }
-            }
+    given("no data") {
+        val appState = mock<AppState> {
+            on { updates() } doReturn Observable.just(State(dataState = DataState.UNKNOWN))
         }
 
-        on("load with local data") {
+        val local = mock<ExchangeRepository> {
+            on { getExchangeRates() } doReturn Single.just(ExchangeRepository.ExchangeRates(emptyList()))
+        }
 
-            whenever(local.getExchangeRates()).thenReturn(Single.just(ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.1)))))
-            val observable = interactor.load()
+        val cut = GetCurrentDataState(local, appState)
 
-            it("should return schedule refresh") {
-                observable.test {
-                    it.await()
-                    it should complete()
-                    it shouldHave noErrors()
-                    it shouldHave valueCount(1)
-                    it shouldEmit DataState.CACHED_DATA
-                }
+        on("load") {
+
+            val test = cut.load().test()
+
+            it ("checks local repository") {
+                Verify on local that local.getExchangeRates() was called
+            }
+
+            it ("returns no data") {
+                test.assertResult(DataState.NO_DATA)
             }
         }
     }
+
+    given("cached local data") {
+        val appState = mock<AppState> {
+            on { updates() } doReturn Observable.just(State(dataState = DataState.UNKNOWN))
+        }
+
+        val local = mock<ExchangeRepository> {
+            on { getExchangeRates() } doReturn Single.just(ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("", 1.0))))
+        }
+
+        val cut = GetCurrentDataState(local, appState)
+
+        on("load") {
+
+            val test = cut.load().test()
+
+            it ("checks local repository") {
+                Verify on local that local.getExchangeRates() was called
+            }
+
+            it ("returns cached") {
+                test.assertResult(DataState.CACHED_DATA)
+            }
+        }
+    }
+
+    given("app state") {
+        val appState = mock<AppState> {
+            on { updates() } doReturn Observable.just(State(dataState = DataState.NO_DATA), State(dataState = DataState.CACHED_DATA))
+        }
+
+        val local = mock<ExchangeRepository> {
+            on { getExchangeRates() } doReturn Single.error(UnsupportedOperationException())
+        }
+
+        val cut = GetCurrentDataState(local, appState)
+
+        on ("load") {
+
+            val test = cut.load().test()
+
+            it ("doesn't check local repository") {
+                VerifyNoInteractions on local
+            }
+
+            it ("returns cached") {
+                test.assertResult(DataState.NO_DATA)
+            }
+        }
+    }
+
 })

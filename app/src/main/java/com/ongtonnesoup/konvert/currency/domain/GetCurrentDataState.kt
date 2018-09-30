@@ -14,7 +14,7 @@ class GetCurrentDataState @Inject constructor(
 
     fun load(): Single<DataState> {
         return getFromAppState()
-                .switchIfEmpty(checkLocalStorage())
+                .switchIfEmpty(Single.defer { checkLocalStorage() })
     }
 
     private fun getFromAppState(): Maybe<DataState> {
