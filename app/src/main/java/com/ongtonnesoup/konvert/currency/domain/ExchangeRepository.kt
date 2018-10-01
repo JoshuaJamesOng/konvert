@@ -1,7 +1,6 @@
 package com.ongtonnesoup.konvert.currency.domain
 
-import io.reactivex.Completable
-import io.reactivex.Single
+import java.util.Collections.emptyList
 
 interface ExchangeRepository {
 
@@ -9,9 +8,9 @@ interface ExchangeRepository {
         val NO_DATA = ExchangeRates(emptyList())
     }
 
-    fun getExchangeRates(): Single<ExchangeRates>
+    suspend fun getExchangeRates(): ExchangeRates
 
-    fun putExchangeRates(rates: ExchangeRates): Completable
+    suspend fun putExchangeRates(rates: ExchangeRates)
 
     data class ExchangeRates(
             val rates: List<ExchangeRate>

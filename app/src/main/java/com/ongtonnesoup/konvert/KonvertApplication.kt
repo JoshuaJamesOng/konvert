@@ -5,10 +5,17 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.arch.lifecycle.ProcessLifecycleOwner
+import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.*
 import com.ongtonnesoup.konvert.initialisation.InitialiseApp
 import com.ongtonnesoup.konvert.state.AppState
+import com.ongtonnesoup.konvert.state.InitialisationState
+import com.ongtonnesoup.konvert.state.updateInitialisedState
+import io.reactivex.Observable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -24,7 +31,7 @@ class KonvertApplication : Application(),
     lateinit var initialiseApp: InitialiseApp
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var dispatchers: Dispatchers
 
     private lateinit var processComponent: ProcessComponent
 
@@ -58,12 +65,17 @@ class KonvertApplication : Application(),
     }
 
     private fun initialiseApp() {
-        appState.updates()
-                .filter { state -> !state.initialised }
-                .flatMapCompletable { initialiseApp.initialise() }
-                .subscribeOn(schedulers.getWorkerScheduler())
-                .observeOn(schedulers.getPostExecutionScheduler())
+        listenForInitialisationRequired(appState)
+                .doOnNext {
+                    GlobalScope.launch {
+                        withContext(dispatchers.execution) {
+                            initialiseApp.initialise()
+                        }
+                    }
+                }
                 .subscribe()
+
+        updateInitialisedState(appState, InitialisationState.INITIALISE)
     }
 
     override fun get() = applicationComponent
@@ -72,4 +84,12 @@ class KonvertApplication : Application(),
         processComponent.getWorkerComponent().inject(target)
     }
 
+}
+
+private fun listenForInitialisationRequired(appState: AppState): Observable<InitialisationState> {
+    return appState.updates()
+            .doOnSubscribe { }
+            .map { state -> state.initialisationState }
+            .filter { initialisationState -> initialisationState == InitialisationState.INITIALISE }
+            .take(1)
 }

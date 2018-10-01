@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.default
 import dagger.Module
@@ -18,6 +19,7 @@ object ClientModule {
                 .default()
                 .baseUrl("https://api.fixer.io/")
                 .client(okHttpClient)
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
                 .create(FixerIoClient::class.java)
     }

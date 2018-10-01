@@ -20,13 +20,13 @@ object TestDataSourcesModule {
     @JvmStatic
     fun provideNetworkRepository(): ExchangeRepository {
         return object : ExchangeRepository {
-            override fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
+            override suspend fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
                 val rate = ExchangeRepository.ExchangeRate("T$", 1.0)
                 val exchangeRates = ExchangeRepository.ExchangeRates(listOf(rate))
                 return Single.just(exchangeRates)
             }
 
-            override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {
+            override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {
                 return Completable.error(UnsupportedOperationException())
             }
         }

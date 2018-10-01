@@ -1,7 +1,7 @@
 package com.ongtonnesoup.konvert.state
 
-fun updateInitialisedState(appState: AppState, initialised: Boolean) {
-    appState.update(appState.current().copy(initialised = initialised))
+fun updateInitialisedState(appState: AppState, initialisationState: InitialisationState) {
+    appState.update(appState.current().copy(initialisationState = initialisationState))
 }
 
 fun updateDataState(appState: AppState, dataState: DataState) {

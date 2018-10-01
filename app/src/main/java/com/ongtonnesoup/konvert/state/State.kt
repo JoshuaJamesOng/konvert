@@ -1,10 +1,17 @@
 package com.ongtonnesoup.konvert.state
 
 data class State(
-        val initialised: Boolean = false,
+        val initialisationState: InitialisationState = InitialisationState.NOT_INITIALISED,
         val dataState: DataState = DataState.UNKNOWN,
         val refreshState: RefreshState = RefreshState.UNKNOWN
 )
+
+enum class InitialisationState {
+    NOT_INITIALISED,
+    INITIALISE,
+    INITIALISING,
+    INITIALISED
+}
 
 enum class DataState {
     UNKNOWN,
