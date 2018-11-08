@@ -7,7 +7,8 @@ import dagger.Component
 @Component(modules = [
     ProcessModule::class,
     StateModule::class,
-    NetworkModule::class
+    NetworkModule::class,
+    DatabaseModule::class
 ])
 interface ProcessComponent {
 

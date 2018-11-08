@@ -8,7 +8,6 @@ import dagger.Subcomponent
 
 @PerAppForegroundProcess
 @Subcomponent(modules = [
-    TestDatabaseModule::class,
     DataSourcesModule::class,
     SchedulerModule::class,
     ClientModule::class

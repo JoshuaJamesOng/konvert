@@ -4,12 +4,9 @@ import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
-import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Completable
-import io.reactivex.Single
 import javax.inject.Named
 
 @Module
@@ -20,14 +17,13 @@ object TestDataSourcesModule {
     @JvmStatic
     fun provideNetworkRepository(): ExchangeRepository {
         return object : ExchangeRepository {
-            override suspend fun getExchangeRates(): Single<ExchangeRepository.ExchangeRates> {
+            override suspend fun getExchangeRates(): ExchangeRepository.ExchangeRates {
                 val rate = ExchangeRepository.ExchangeRate("T$", 1.0)
-                val exchangeRates = ExchangeRepository.ExchangeRates(listOf(rate))
-                return Single.just(exchangeRates)
+                return ExchangeRepository.ExchangeRates(listOf(rate))
             }
 
-            override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates): Completable {
-                return Completable.error(UnsupportedOperationException())
+            override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+                throw UnsupportedOperationException()
             }
         }
     }
