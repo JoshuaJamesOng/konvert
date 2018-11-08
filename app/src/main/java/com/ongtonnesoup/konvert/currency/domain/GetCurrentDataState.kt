@@ -11,7 +11,7 @@ class GetCurrentDataState @Inject constructor(
 ) {
     suspend fun load(): DataState {
         val appState = getFromAppState()
-        return if (appState == DataState.UNKNOWN) {
+        return if (appState != DataState.UNKNOWN) {
             appState
         } else {
             checkLocalStorage()

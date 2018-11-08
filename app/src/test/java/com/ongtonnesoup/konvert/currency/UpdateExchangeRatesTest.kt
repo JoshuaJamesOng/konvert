@@ -1,16 +1,10 @@
 package com.ongtonnesoup.konvert.currency
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import io.reactivex.Completable
-import io.reactivex.Single
-import io.reactivex.observers.TestObserver
-import org.amshove.kluent.Verify
-import org.amshove.kluent.called
-import org.amshove.kluent.on
-import org.amshove.kluent.that
-import org.amshove.kluent.was
+import kotlinx.coroutines.runBlocking
+import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -25,33 +19,24 @@ class UpdateExchangeRatesTest : Spek({
         val exchangeRates = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("network", 1.0)))
 
         val get = mock<GetLatestExchangeRates> {
-            on { getExchangeRates() } doReturn Single.just(exchangeRates)
+            onBlocking { getNetworkExchangeRates() } doReturn exchangeRates // TODO Confirm why we switched methods
         }
 
-        given("local storage available") {
-            val sideEffect = TestObserver<Any>()
-            val save = mock<SaveExchangeRates> {
-                on { save(exchangeRates) } doReturn Completable.complete().doOnSubscribe(sideEffect::onSubscribe)
+        val save = mock<SaveExchangeRates>()
+
+        val cut = UpdateExchangeRates(get, save)
+
+        on("get") {
+            runBlocking {
+                cut.getExchangeRates()
             }
 
-            val cut = UpdateExchangeRates(get, save)
+            it("should fetch") {
+                runBlocking { Verify on get that get.getNetworkExchangeRates() was called }
+            }
 
-            on("get") {
-                val test = cut.getExchangeRates().test()
-
-                it("should fetch") {
-                    Verify on get that get.getExchangeRates() was called
-                }
-
-                it("should save") {
-                    sideEffect.assertSubscribed()
-                    Verify on save that save.save(exchangeRates) was called
-                }
-
-                it("should complete") {
-                    test.assertComplete()
-                    test.assertNoErrors()
-                }
+            it("should save") {
+                runBlocking { Verify on save that save.save(exchangeRates) was called }
             }
         }
     }

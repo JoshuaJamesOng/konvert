@@ -10,10 +10,12 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
                                ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
     override suspend fun getExchangeRates(): ExchangeRepository.ExchangeRates {
-        val response = dao.getAll()
-        return fromLocalMapper.invoke(response)
-//                .single(ExchangeRepository.NO_DATA)
-//                .onErrorReturn { ExchangeRepository.NO_DATA }
+        return try {
+            val response = dao.getAll()
+            fromLocalMapper.invoke(response)
+        } catch (e: Exception) {
+            ExchangeRepository.NO_DATA
+        }
     }
 
     override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {

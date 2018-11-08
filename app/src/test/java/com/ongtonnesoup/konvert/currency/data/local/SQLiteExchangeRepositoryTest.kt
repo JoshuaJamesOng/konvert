@@ -1,19 +1,8 @@
 package com.ongtonnesoup.konvert.currency.data.local
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
+import com.nhaarman.mockito_kotlin.*
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import com.rubylichtenstein.rxtest.assertions.should
-import com.rubylichtenstein.rxtest.assertions.shouldEmit
-import com.rubylichtenstein.rxtest.assertions.shouldHave
-import com.rubylichtenstein.rxtest.extentions.test
-import com.rubylichtenstein.rxtest.matchers.complete
-import com.rubylichtenstein.rxtest.matchers.noErrors
-import io.reactivex.Flowable
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 
@@ -24,7 +13,7 @@ class SQLiteExchangeRepositoryTest {
         // Given
         val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
         val dao = mock<ExchangeRatesDao> {
-            on { getAll() } doReturn Flowable.just(localResponse)
+            on { getAll() } doReturn localResponse
         }
 
         val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))
@@ -36,14 +25,10 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observable = cut.getExchangeRates()
+        val result = runBlocking { cut.getExchangeRates() }
 
         // Then
-        observable.test {
-            it should complete()
-            it shouldHave noErrors()
-            it shouldEmit mapperResponse
-        }
+        result shouldEqual mapperResponse
         verify(dao).getAll()
         argumentCaptor<List<ExchangeRatesDao.ExchangeRate>>().apply {
             verify(localToDomainMapper).invoke(capture())
@@ -57,7 +42,7 @@ class SQLiteExchangeRepositoryTest {
         // Given
         val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
         val dao = mock<ExchangeRatesDao> {
-            on { getAll() } doReturn Flowable.error<List<ExchangeRatesDao.ExchangeRate>>(RuntimeException())
+            on { getAll() } doThrow RuntimeException()
         }
 
         val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))
@@ -69,14 +54,11 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observable = cut.getExchangeRates()
+        val result = runBlocking { cut.getExchangeRates() }
 
         // Then
-        observable.test {
-            it should complete()
-            it shouldHave noErrors()
-            it shouldEmit ExchangeRepository.ExchangeRates(emptyList())
-        }
+        result shouldEqual ExchangeRepository.ExchangeRates(emptyList())
+
         verify(dao).getAll()
         verifyZeroInteractions(localToDomainMapper)
     }
@@ -97,13 +79,9 @@ class SQLiteExchangeRepositoryTest {
 
         // When
         val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val observable = cut.putExchangeRates(rates)
+        runBlocking { cut.putExchangeRates(rates) }
 
         // Then
-        observable.test {
-            it should complete()
-            it shouldHave noErrors()
-        }
         verify(dao).clear()
         verify(domainToLocalMapper).invoke(rates)
         verify(dao, times(4)).insert(mappedModel)
