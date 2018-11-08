@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -18,6 +19,7 @@ fun Retrofit.Builder.default(): Retrofit.Builder {
     return this
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .validateEagerly(true)
 }
 

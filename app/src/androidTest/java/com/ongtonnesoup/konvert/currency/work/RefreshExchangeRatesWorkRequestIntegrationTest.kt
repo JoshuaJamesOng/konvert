@@ -35,7 +35,7 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
         val application = InstrumentationRegistry.getTargetContext().applicationContext as TestApplication
         component = application.workerComponent
 
-        assertTrue("No data", appDatabase.exchangeRatesDao().getAll().blockingFirst().count() < 1)
+        assertTrue("No data", appDatabase.exchangeRatesDao().getAll().count() < 1)
     }
 
     @Test
@@ -47,14 +47,14 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
         val uuid = workRequest.schedule()
 
         val states = mutableListOf<State>()
-        val data = WorkManager.getInstance().getStatusById(uuid!!)
+        val data = WorkManager.getInstance().getStatusByIdLiveData(uuid!!)
         data.observeForever {
             states.add(it!!.state)
         }
 
         WorkManagerTestInitHelper.getTestDriver().setAllConstraintsMet(uuid)
 
-        assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().blockingFirst().count())
+        assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().count())
         assertEquals("Work is re-enqueued", listOf(State.ENQUEUED, State.RUNNING, State.ENQUEUED), states)
     }
 
