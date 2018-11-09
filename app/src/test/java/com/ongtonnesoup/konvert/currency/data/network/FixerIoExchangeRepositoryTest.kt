@@ -8,6 +8,10 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import java.io.IOException
 
+private const val TEST_ACCESS_KEY = ""
+private val TEST_CLIENT_CONFIGURATION = FixerIoExchangeRepository.Configuration(TEST_ACCESS_KEY)
+private const val BASE_CURRENCY = "EUR"
+
 class FixerIoExchangeRepositoryTest {
 
     private lateinit var cut: FixerIoExchangeRepository
@@ -17,7 +21,7 @@ class FixerIoExchangeRepositoryTest {
         // Given
         val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
-            on { getLatest("GBP") } doReturn CompletableDeferred(networkResponse)
+            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn CompletableDeferred(networkResponse)
         }
 
         val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
@@ -26,12 +30,12 @@ class FixerIoExchangeRepositoryTest {
         }
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper)
+        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
         val result = runBlocking { cut.getExchangeRates() }
 
         // Then
         result shouldEqual mappedResponse
-        verify(client).getLatest("GBP")
+        verify(client).getLatest(BASE_CURRENCY, TEST_ACCESS_KEY)
         argumentCaptor<FixerIoClient.Response>().apply {
             verify(mapper).invoke(capture())
 
@@ -46,18 +50,18 @@ class FixerIoExchangeRepositoryTest {
         networkError.completeExceptionally(IOException())
 
         val client = mock<FixerIoClient> {
-            on { getLatest("GBP") } doReturn networkError
+            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn networkError
         }
 
         val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates>()
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper)
+        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
         val result = runBlocking { cut.getExchangeRates() }
 
         // Then
         result shouldEqual ExchangeRepository.ExchangeRates(emptyList())
-        verify(client).getLatest("GBP")
+        verify(client).getLatest(BASE_CURRENCY, TEST_ACCESS_KEY)
         verifyZeroInteractions(mapper)
     }
 
@@ -66,7 +70,7 @@ class FixerIoExchangeRepositoryTest {
         // Given
         val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
-            on { getLatest("GBP") } doReturn CompletableDeferred(networkResponse)
+            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn CompletableDeferred(networkResponse)
         }
 
         val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
@@ -74,7 +78,7 @@ class FixerIoExchangeRepositoryTest {
         }
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper)
+        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
         runBlocking { cut.getExchangeRates() }
 
         // Then
