@@ -19,5 +19,4 @@ interface TestProcessComponent {
     fun getApplicationComponent(): TestApplicationComponent
 
     fun getWorkerComponent(): TestWorkerComponent
-
 }

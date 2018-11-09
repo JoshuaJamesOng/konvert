@@ -17,5 +17,4 @@ interface TestWorkerComponent {
     fun inject(target: RefreshExchangeRatesWorker)
 
     fun appDatabase(): AppDatabase
-
 }

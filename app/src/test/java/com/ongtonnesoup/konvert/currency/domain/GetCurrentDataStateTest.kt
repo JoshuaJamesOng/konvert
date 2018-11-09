@@ -6,7 +6,13 @@ import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
 import com.ongtonnesoup.konvert.state.State
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.*
+import org.amshove.kluent.called
+import org.amshove.kluent.on
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.that
+import org.amshove.kluent.Verify
+import org.amshove.kluent.VerifyNoInteractions
+import org.amshove.kluent.was
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -113,5 +119,4 @@ class GetCurrentDataStateTest : Spek({
             }
         }
     }
-
 })

@@ -8,5 +8,4 @@ class InteractorSchedulers : Schedulers {
     override fun getWorkerScheduler(): Scheduler = io.reactivex.schedulers.Schedulers.io()
 
     override fun getPostExecutionScheduler(): Scheduler = AndroidSchedulers.mainThread()
-
 }

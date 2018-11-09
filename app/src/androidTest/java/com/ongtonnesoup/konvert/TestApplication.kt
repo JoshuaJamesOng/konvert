@@ -30,5 +30,4 @@ class TestApplication : Application(), Injector<RefreshExchangeRatesWorker> {
     override fun inject(target: RefreshExchangeRatesWorker) {
         workerComponent.inject(target)
     }
-
 }

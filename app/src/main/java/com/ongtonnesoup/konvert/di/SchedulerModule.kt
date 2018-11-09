@@ -19,5 +19,4 @@ abstract class SchedulerModule {
         @JvmStatic
         fun provideWorkManager() = WorkManager.getInstance()
     }
-
 }

@@ -5,5 +5,4 @@ import io.reactivex.Completable
 interface Scheduler {
 
     fun schedule(): Completable
-
 }

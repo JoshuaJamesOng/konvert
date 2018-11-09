@@ -8,7 +8,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                                 ExchangeRepository.ExchangeRates,
                                 private val configuration: Configuration) : ExchangeRepository {
 
-    override suspend fun getExchangeRates(): ExchangeRepository.ExchangeRates {
+    suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
         return try {
             val response = client.getLatest(BASE_CURRENCY, configuration.accessKey).await()
             fromNetworkMapper.invoke(response)
@@ -21,7 +21,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
         }
     }
 
-    override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+    suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
         UnsupportedOperationException()
     }
 
@@ -30,5 +30,4 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
     }
 
     data class Configuration(val accessKey: String)
-
 }

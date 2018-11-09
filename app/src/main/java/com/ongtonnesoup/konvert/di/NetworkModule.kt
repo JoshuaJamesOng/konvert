@@ -13,5 +13,4 @@ object NetworkModule {
     @Provides
     @JvmStatic
     fun provideOkHttpClient() = OkHttpClient.Builder().default()
-
 }

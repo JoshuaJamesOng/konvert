@@ -4,7 +4,11 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.*
+import org.amshove.kluent.called
+import org.amshove.kluent.on
+import org.amshove.kluent.that
+import org.amshove.kluent.Verify
+import org.amshove.kluent.was
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -40,5 +44,4 @@ class UpdateExchangeRatesTest : Spek({
             }
         }
     }
-
 })

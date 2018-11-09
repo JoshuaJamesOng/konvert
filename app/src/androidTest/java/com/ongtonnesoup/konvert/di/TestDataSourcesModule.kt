@@ -17,12 +17,12 @@ object TestDataSourcesModule {
     @JvmStatic
     fun provideNetworkRepository(): ExchangeRepository {
         return object : ExchangeRepository {
-            override suspend fun getExchangeRates(): ExchangeRepository.ExchangeRates {
+            suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
                 val rate = ExchangeRepository.ExchangeRate("T$", 1.0)
                 return ExchangeRepository.ExchangeRates(listOf(rate))
             }
 
-            override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+            suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
                 throw UnsupportedOperationException()
             }
         }
@@ -38,5 +38,4 @@ object TestDataSourcesModule {
                 localToDomainMapper()
         )
     }
-
 }

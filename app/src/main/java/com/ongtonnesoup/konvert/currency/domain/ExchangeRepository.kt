@@ -20,5 +20,4 @@ interface ExchangeRepository {
             val currency: String,
             val rate: Double
     )
-
 }

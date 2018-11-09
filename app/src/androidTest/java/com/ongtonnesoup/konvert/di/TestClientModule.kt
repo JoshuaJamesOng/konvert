@@ -20,5 +20,4 @@ object TestClientModule {
                 .build()
                 .create(FixerIoClient::class.java)
     }
-
 }

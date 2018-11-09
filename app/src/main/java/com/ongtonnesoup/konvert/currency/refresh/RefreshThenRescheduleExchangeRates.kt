@@ -15,5 +15,4 @@ class RefreshThenRescheduleExchangeRates @Inject constructor(
         updateExchangeRates.getExchangeRates()
         updateRefreshState(appState, RefreshState.SCHEDULED)
     }
-
 }

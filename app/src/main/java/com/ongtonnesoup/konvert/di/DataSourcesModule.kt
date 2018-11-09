@@ -37,5 +37,4 @@ object DataSourcesModule {
                 FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
         )
     }
-
 }

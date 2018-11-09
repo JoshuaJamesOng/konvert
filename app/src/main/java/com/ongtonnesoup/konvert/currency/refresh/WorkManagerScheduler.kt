@@ -12,5 +12,4 @@ class WorkManagerScheduler @Inject constructor(private val workManager: WorkMana
             request.schedule()
         }
     }
-
 }

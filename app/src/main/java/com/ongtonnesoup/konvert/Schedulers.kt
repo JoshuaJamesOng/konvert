@@ -7,5 +7,4 @@ interface Schedulers {
     fun getWorkerScheduler(): Scheduler
 
     fun getPostExecutionScheduler(): Scheduler
-
 }

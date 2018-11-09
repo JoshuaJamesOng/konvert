@@ -12,5 +12,4 @@ import dagger.Subcomponent
 interface WorkerComponent {
 
     fun inject(target: RefreshExchangeRatesWorker)
-
 }

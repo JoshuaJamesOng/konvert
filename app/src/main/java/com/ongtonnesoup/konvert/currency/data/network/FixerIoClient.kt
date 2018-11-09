@@ -15,5 +15,4 @@ interface FixerIoClient {
             @SerializedName("date") val date: String,
             @SerializedName("rates") val rates: Map<String, Double>
     )
-
 }

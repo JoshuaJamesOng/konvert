@@ -52,5 +52,4 @@ class UpdateExchangeRatesIntegrationTest {
         // Then
         // TODO assert something
     }
-
 }

@@ -29,5 +29,4 @@ class ProcessModule(private val context: Context) {
 
     @Provides
     fun provideAppState(@Named("defaultState") state: State): AppState = AppState(state)
-
 }

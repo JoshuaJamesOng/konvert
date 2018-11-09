@@ -12,5 +12,4 @@ object StateModule {
     @JvmStatic
     @Named("defaultState")
     fun provideDefaultState() = State()
-
 }

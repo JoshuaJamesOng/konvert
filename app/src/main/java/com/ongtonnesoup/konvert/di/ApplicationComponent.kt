@@ -13,5 +13,4 @@ import dagger.Subcomponent
 interface ApplicationComponent {
 
     fun inject(application: KonvertApplication)
-
 }

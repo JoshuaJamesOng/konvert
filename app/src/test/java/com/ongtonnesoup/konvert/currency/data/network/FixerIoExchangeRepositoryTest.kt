@@ -1,6 +1,11 @@
 package com.ongtonnesoup.konvert.currency.data.network
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
@@ -84,5 +89,4 @@ class FixerIoExchangeRepositoryTest {
         // Then
         // Throws
     }
-
 }

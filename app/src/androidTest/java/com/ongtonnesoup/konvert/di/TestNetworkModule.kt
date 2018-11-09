@@ -11,5 +11,4 @@ object TestNetworkModule {
     @Provides
     @JvmStatic
     fun provideOkHttpClient() = OkHttpClient.Builder().default()
-
 }

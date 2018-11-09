@@ -28,5 +28,4 @@ class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : W
     private fun inject() {
         (applicationContext as Injector<RefreshExchangeRatesWorker>).inject(this)
     }
-
 }

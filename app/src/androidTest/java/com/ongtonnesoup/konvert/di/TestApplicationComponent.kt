@@ -12,6 +12,4 @@ import dagger.Subcomponent
     SchedulerModule::class,
     ClientModule::class
 ])
-interface TestApplicationComponent {
-
-}
+interface TestApplicationComponent

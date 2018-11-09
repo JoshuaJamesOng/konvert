@@ -57,5 +57,4 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
         assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().count())
         assertEquals("Work is re-enqueued", listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED), states)
     }
-
 }

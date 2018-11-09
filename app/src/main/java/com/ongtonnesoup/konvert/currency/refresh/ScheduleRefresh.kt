@@ -9,5 +9,4 @@ class ScheduleRefresh @Inject constructor(
     fun scheduleRefresh() {
         scheduler.schedule()
     }
-
 }

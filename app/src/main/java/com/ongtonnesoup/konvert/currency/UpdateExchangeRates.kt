@@ -11,5 +11,4 @@ class UpdateExchangeRates @Inject constructor(
         val exchangeRates = getLatestExchangeRates.getNetworkExchangeRates()
         saveExchangeRates.save(exchangeRates) // TODO Only save if valid response
     }
-
 }

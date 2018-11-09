@@ -27,6 +27,4 @@ class GetCurrentDataState @Inject constructor(
             DataState.CACHED_DATA
         }
     }
-
-
 }

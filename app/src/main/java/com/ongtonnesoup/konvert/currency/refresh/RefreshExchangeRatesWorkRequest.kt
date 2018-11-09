@@ -4,7 +4,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
@@ -23,5 +23,4 @@ class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
 
         return update.id
     }
-
 }

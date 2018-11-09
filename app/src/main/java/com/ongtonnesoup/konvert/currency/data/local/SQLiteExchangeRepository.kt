@@ -9,7 +9,7 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
                                private val fromLocalMapper: (List<ExchangeRatesDao.ExchangeRate>) ->
                                ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
-    override suspend fun getExchangeRates(): ExchangeRepository.ExchangeRates {
+    suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
         return try {
             val response = dao.getAll()
             fromLocalMapper.invoke(response)
@@ -18,7 +18,7 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
         }
     }
 
-    override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+    suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
         Timber.d { "Creating local observable" }
         // TODO We shouldn't clear exchange rates on errors
         Timber.d { "Inserting ${rates.rates.size} rates into DB on ${Thread.currentThread()}" }
@@ -29,5 +29,4 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
             Timber.d { "Inserted at: $result" }
         }
     }
-
 }

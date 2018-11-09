@@ -14,5 +14,4 @@ class AppState(defaultState: State) {
     fun updates(): Observable<State> = updates.hide()
 
     fun update(newState: State) = updates.onNext(newState)
-
 }

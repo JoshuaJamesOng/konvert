@@ -21,5 +21,4 @@ object ClientModule {
                 .build()
                 .create(FixerIoClient::class.java)
     }
-
 }

@@ -15,5 +15,4 @@ interface ProcessComponent {
     fun getApplicationComponent(): ApplicationComponent
 
     fun getWorkerComponent(): WorkerComponent
-
 }

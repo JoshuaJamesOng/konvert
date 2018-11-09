@@ -13,5 +13,4 @@ class Dispatchers @Inject constructor() {
 
     val postExecution: CoroutineDispatcher
         get() = Dispatchers.Main
-
 }
