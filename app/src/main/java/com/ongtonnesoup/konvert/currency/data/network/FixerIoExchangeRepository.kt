@@ -26,7 +26,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
     }
 
     companion object {
-        private val BASE_CURRENCY = "GBP"
+        private val BASE_CURRENCY = "EUR"
     }
 
     data class Configuration(val accessKey: String)
