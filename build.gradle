@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id "com.vanniktech.code.quality.tools" version "0.13.0"
+    id "com.vanniktech.code.quality.tools" version "0.14.0"
 }
 
 allprojects {
@@ -40,7 +40,7 @@ task testJobScheduler(type: Exec) {
 codeQualityTools {
     htmlReports = true
 
-    detekt {
-        enabled = false // TODO Re-enable
+    findbugs {
+        enabled = false // Kotlin only project
     }
 }
