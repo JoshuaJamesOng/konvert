@@ -4,9 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.InstrumentationRegistry
 import androidx.test.annotation.UiThreadTest
 import androidx.test.filters.LargeTest
-import androidx.work.State
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.test.WorkManagerTestInitHelper
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.ongtonnesoup.konvert.TestApplication
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.di.TestWorkerComponent
@@ -46,8 +46,8 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
         val workRequest = RefreshExchangeRatesWorkRequest(WorkManager.getInstance())
         val uuid = workRequest.schedule()
 
-        val states = mutableListOf<State>()
-        val data = WorkManager.getInstance().getStatusByIdLiveData(uuid!!)
+        val states = mutableListOf<WorkInfo.State>()
+        val data = WorkManager.getInstance().getWorkInfoByIdLiveData(uuid!!)
         data.observeForever {
             states.add(it!!.state)
         }
@@ -55,7 +55,7 @@ class RefreshExchangeRatesWorkRequestIntegrationTest {
         WorkManagerTestInitHelper.getTestDriver().setAllConstraintsMet(uuid)
 
         assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().count())
-        assertEquals("Work is re-enqueued", listOf(State.ENQUEUED, State.RUNNING, State.ENQUEUED), states)
+        assertEquals("Work is re-enqueued", listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.ENQUEUED), states)
     }
 
 }
