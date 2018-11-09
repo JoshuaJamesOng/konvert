@@ -1,9 +1,9 @@
 package com.ongtonnesoup.konvert.currency.work
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.support.test.InstrumentationRegistry
-import android.support.test.annotation.UiThreadTest
-import android.support.test.filters.LargeTest
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.InstrumentationRegistry
+import androidx.test.annotation.UiThreadTest
+import androidx.test.filters.LargeTest
 import androidx.work.State
 import androidx.work.WorkManager
 import androidx.work.test.WorkManagerTestInitHelper

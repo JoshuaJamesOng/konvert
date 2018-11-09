@@ -1,9 +1,9 @@
 package com.ongtonnesoup.konvert.currency
 
-import android.arch.persistence.room.Room
-import android.support.test.InstrumentationRegistry
-import android.support.test.annotation.UiThreadTest
-import android.support.test.filters.LargeTest
+import androidx.room.Room
+import androidx.test.InstrumentationRegistry
+import androidx.test.annotation.UiThreadTest
+import androidx.test.filters.LargeTest
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper

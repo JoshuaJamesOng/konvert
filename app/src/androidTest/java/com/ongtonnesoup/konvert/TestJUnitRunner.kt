@@ -2,7 +2,7 @@ package com.ongtonnesoup.konvert
 
 import android.app.Application
 import android.content.Context
-import android.support.test.runner.AndroidJUnitRunner
+import androidx.test.runner.AndroidJUnitRunner
 
 class TestJUnitRunner : AndroidJUnitRunner() {
 
