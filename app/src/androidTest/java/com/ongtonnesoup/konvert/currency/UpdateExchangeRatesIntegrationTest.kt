@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.annotation.UiThreadTest
 import android.support.test.filters.LargeTest
 import com.github.ajalt.timberkt.Timber
+import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
@@ -31,11 +32,11 @@ class UpdateExchangeRatesIntegrationTest {
 
         val retrofitClient = Retrofit.Builder()
                 .default()
-                .baseUrl("https://api.fixer.io/")
+                .baseUrl("http://data.fixer.io/api/")
                 .client(okHttpClient)
                 .build()
                 .create(FixerIoClient::class.java)
-        val network = FixerIoExchangeRepository(retrofitClient, networkToDomainMapper())
+        val network = FixerIoExchangeRepository(retrofitClient, networkToDomainMapper(), FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY))
 
         val database = Room.databaseBuilder(InstrumentationRegistry.getTargetContext(), AppDatabase::class.java, "test-db").allowMainThreadQueries().build()
         val local = SQLiteExchangeRepository(database.exchangeRatesDao(), domainToLocalMapper(), localToDomainMapper())

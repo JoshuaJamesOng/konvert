@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
+import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
@@ -32,7 +33,8 @@ object DataSourcesModule {
     fun provideNetworkRepository(retrofitClient: FixerIoClient): ExchangeRepository {
         return FixerIoExchangeRepository(
                 retrofitClient,
-                networkToDomainMapper()
+                networkToDomainMapper(),
+                FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
         )
     }
 

@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface FixerIoClient {
 
     @GET("latest")
-    fun getLatest(@Query("base") base: String): Deferred<Response>
+    fun getLatest(@Query("base") base: String, @Query("access_key") accessKey: String): Deferred<Response>
 
     data class Response(
             @SerializedName("base") val base: String,

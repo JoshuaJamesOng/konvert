@@ -1,6 +1,5 @@
 package com.ongtonnesoup.konvert.di
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
 import com.ongtonnesoup.konvert.default
 import dagger.Module
@@ -16,7 +15,7 @@ object TestClientModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): FixerIoClient {
         return Retrofit.Builder()
                 .default()
-                .baseUrl("https://api.fixer.io/")
+                .baseUrl("http://data.fixer.io/api/")
                 .client(okHttpClient)
                 .build()
                 .create(FixerIoClient::class.java)

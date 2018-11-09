@@ -16,6 +16,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "com.ongtonnesoup.konvert.TestJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        buildConfigField("String", "ACCESS_KEY", "\"${ACCESS_KEY}\"")
     }
     buildTypes {
         release {

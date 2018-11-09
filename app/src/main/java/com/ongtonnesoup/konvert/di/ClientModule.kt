@@ -16,7 +16,7 @@ object ClientModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): FixerIoClient {
         return Retrofit.Builder()
                 .default()
-                .baseUrl("https://api.fixer.io/")
+                .baseUrl("http://data.fixer.io/api/")
                 .client(okHttpClient)
                 .build()
                 .create(FixerIoClient::class.java)
