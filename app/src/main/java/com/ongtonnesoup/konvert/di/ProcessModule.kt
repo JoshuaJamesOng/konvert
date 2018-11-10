@@ -3,6 +3,8 @@ package com.ongtonnesoup.konvert.di
 import android.content.Context
 import com.ongtonnesoup.konvert.InteractorSchedulers
 import com.ongtonnesoup.konvert.Schedulers
+import com.ongtonnesoup.konvert.di.qualifiers.ContextType
+import com.ongtonnesoup.konvert.di.qualifiers.Type
 import com.ongtonnesoup.konvert.di.scopes.PerProcess
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.State
@@ -21,6 +23,7 @@ class ProcessModule(private val context: Context) {
 
     @PerProcess
     @Provides
+    @ContextType(Type.APPLICATION)
     fun provideContext() = context
 
     @PerProcess
