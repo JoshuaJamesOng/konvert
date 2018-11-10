@@ -31,6 +31,17 @@ android {
     packagingOptions {
         exclude 'META-INF/proguard/androidx-annotations.pro'
     }
+    flavorDimensions "version"
+    productFlavors {
+        production {
+            dimension "version"
+            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "true"
+        }
+        development {
+            dimension "version"
+            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "false"
+        }
+    }
 }
 
 dependencies {

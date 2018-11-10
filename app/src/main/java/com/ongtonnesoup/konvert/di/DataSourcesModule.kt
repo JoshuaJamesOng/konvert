@@ -2,6 +2,7 @@ package com.ongtonnesoup.konvert.di
 
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
+import com.ongtonnesoup.konvert.currency.data.fixed.FixedExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
@@ -31,10 +32,14 @@ object DataSourcesModule {
     @Named("network")
     @JvmStatic
     fun provideNetworkRepository(retrofitClient: FixerIoClient): ExchangeRepository {
-        return FixerIoExchangeRepository(
-                retrofitClient,
-                networkToDomainMapper(),
-                FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
-        )
+        return if (BuildConfig.USE_FIXED_EXCHANGE_RATES) {
+            FixedExchangeRepository()
+        } else {
+            FixerIoExchangeRepository(
+                    retrofitClient,
+                    networkToDomainMapper(),
+                    FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
+            )
+        }
     }
 }
