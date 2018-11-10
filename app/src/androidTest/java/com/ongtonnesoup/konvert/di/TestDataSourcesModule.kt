@@ -1,9 +1,14 @@
 package com.ongtonnesoup.konvert.di
 
+import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.currency.data.domainToLocalMapper
+import com.ongtonnesoup.konvert.currency.data.fixed.FixedExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.local.AppDatabase
 import com.ongtonnesoup.konvert.currency.data.local.SQLiteExchangeRepository
 import com.ongtonnesoup.konvert.currency.data.localToDomainMapper
+import com.ongtonnesoup.konvert.currency.data.network.FixerIoClient
+import com.ongtonnesoup.konvert.currency.data.network.FixerIoExchangeRepository
+import com.ongtonnesoup.konvert.currency.data.networkToDomainMapper
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import dagger.Module
 import dagger.Provides
@@ -15,16 +20,15 @@ object TestDataSourcesModule {
     @Provides
     @Named("network")
     @JvmStatic
-    fun provideNetworkRepository(): ExchangeRepository {
-        return object : ExchangeRepository {
-            suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
-                val rate = ExchangeRepository.ExchangeRate("T$", 1.0)
-                return ExchangeRepository.ExchangeRates(listOf(rate))
-            }
-
-            suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
-                throw UnsupportedOperationException()
-            }
+    fun provideNetworkRepository(retrofitClient: FixerIoClient): ExchangeRepository {
+        return if (BuildConfig.USE_FIXED_EXCHANGE_RATES) {
+            FixedExchangeRepository()
+        } else {
+            FixerIoExchangeRepository(
+                    retrofitClient,
+                    networkToDomainMapper(),
+                    FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
+            )
         }
     }
 
