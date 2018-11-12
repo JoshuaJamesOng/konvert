@@ -11,10 +11,12 @@ import com.ongtonnesoup.konvert.detection.OcrGateway
 import com.ongtonnesoup.konvert.detection.ParsedText
 import com.ongtonnesoup.konvert.di.qualifiers.ContextType
 import com.ongtonnesoup.konvert.di.qualifiers.Type
+import com.ongtonnesoup.konvert.di.scopes.PerFragment
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import javax.inject.Inject
 
+@PerFragment
 class MobileVisionOcrGateway @Inject constructor(
         @ContextType(Type.APPLICATION) private val context: Context,
         @ContextType(Type.ACTIVITY) private val viewContext: Context
@@ -60,8 +62,9 @@ class MobileVisionOcrGateway @Inject constructor(
         var textRecognizer = TextRecognizer.Builder(context).build()
 
         fun checkOperational(): Boolean {
-            val lowstorageFilter = IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW)
-            return context.registerReceiver(null, lowstorageFilter) != null
+//            val lowStorageFilter = IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW)
+//            return textRecognizer.isOperational && context.registerReceiver(null, lowStorageFilter) != null
+            return textRecognizer.isOperational
         }
 
         val isOperational = checkOperational()
@@ -81,6 +84,7 @@ class MobileVisionOcrGateway @Inject constructor(
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1280, 1024)
                 .setRequestedFps(15.0f)
+                .setAutoFocusEnabled(true)
                 .build()
     }
 

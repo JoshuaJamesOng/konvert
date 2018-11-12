@@ -1,11 +1,12 @@
 package com.ongtonnesoup.konvert.detection
 
 import io.reactivex.Observable
+import javax.inject.Inject
 
 private const val CONTAINS_NUMBERS = ".*\\d+.*"
 private const val CONTAINS_SYMBOL = "\\p{Sc}"
 
-class DetectPrices(private val gateway: OcrGateway) {
+class DetectPrices @Inject constructor(private val gateway: OcrGateway) {
 
     fun detectPrices(): Observable<Price> {
         return gateway.init()

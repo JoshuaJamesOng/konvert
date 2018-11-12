@@ -1,17 +1,13 @@
 package com.ongtonnesoup.konvert
 
+import android.app.Activity
 import android.app.Application
-import androidx.lifecycle.Lifecycle
+import android.os.Bundle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
+import com.ongtonnesoup.konvert.android.ActivityCallbacks
 import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
-import com.ongtonnesoup.konvert.di.ApplicationComponent
-import com.ongtonnesoup.konvert.di.DaggerProcessComponent
-import com.ongtonnesoup.konvert.di.Injector
-import com.ongtonnesoup.konvert.di.ProcessComponent
-import com.ongtonnesoup.konvert.di.ProcessModule
+import com.ongtonnesoup.konvert.di.*
 import com.ongtonnesoup.konvert.initialisation.InitialiseApp
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.InitialisationState
@@ -40,15 +36,21 @@ class KonvertApplication : Application(),
     private lateinit var processComponent: ProcessComponent
 
     private var applicationComponent: ApplicationComponent? = null
+        set(value) {
+            if (field == null && value != null) {
+                onApplicationComponentCreated(value)
+                field = value
+            } else {
+                throw IllegalStateException()
+            }
+        }
 
     override fun onCreate() {
         super.onCreate()
 
         processComponent = createProcessComponent()
 
-        createAppComponentOnForeground()
-
-        initialiseApp()
+        createAppComponentOnFirstActivity()
     }
 
     private fun createProcessComponent(): ProcessComponent {
@@ -57,13 +59,22 @@ class KonvertApplication : Application(),
                 .build()
     }
 
-    private fun createAppComponentOnForeground() {
-        ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            fun onAppForegrounded() {
-                if (applicationComponent == null) {
-                    applicationComponent = processComponent.getApplicationComponent()
-                }
+    private fun createApplicationComponent() = processComponent.getApplicationComponent()
+
+    private fun onApplicationComponentCreated(applicationComponent: ApplicationComponent) {
+        applicationComponent.inject(this@KonvertApplication)
+
+        initialiseApp()
+    }
+
+    private fun createAppComponentOnFirstActivity() {
+        registerActivityLifecycleCallbacks(object : ActivityCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                unregisterActivityLifecycleCallbacks(this)
+
+                applicationComponent = createApplicationComponent()
+
+                initialiseApp()
             }
         })
     }

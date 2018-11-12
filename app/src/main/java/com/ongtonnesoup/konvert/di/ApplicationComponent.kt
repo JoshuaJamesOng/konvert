@@ -1,6 +1,8 @@
 package com.ongtonnesoup.konvert.di
 
 import com.ongtonnesoup.konvert.KonvertApplication
+import com.ongtonnesoup.konvert.detection.di.DetectionComponent
+import com.ongtonnesoup.konvert.detection.di.MobileVisionModule
 import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
 import dagger.Subcomponent
 
@@ -13,4 +15,7 @@ import dagger.Subcomponent
 interface ApplicationComponent {
 
     fun inject(application: KonvertApplication)
+
+    fun getDetectionComponent(module: MobileVisionModule) : DetectionComponent
+
 }
