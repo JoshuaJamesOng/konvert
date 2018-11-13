@@ -18,7 +18,11 @@ import com.ongtonnesoup.konvert.detection.di.MobileVisionModule
 import com.ongtonnesoup.konvert.detection.mobileVision.MobileVisionOcrGateway
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.Subject
 import kotlinx.android.synthetic.main.detection_fragment.*
 import javax.inject.Provider
 
@@ -28,9 +32,9 @@ class DetectionFragment : Fragment(), MobileVisionOcrGateway.View {
         val TAG: String = DetectionFragment::class.java.name
     }
 
-    private val disposables: CompositeDisposable by lazy {
-        CompositeDisposable()
-    }
+    private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
+    private val cameraSources: Subject<Optional<CameraSource>> = BehaviorSubject.create()
+    private val disposables: CompositeDisposable = CompositeDisposable()
 
     private lateinit var vm: DetectionViewModel
 
@@ -43,16 +47,34 @@ class DetectionFragment : Fragment(), MobileVisionOcrGateway.View {
 
         vm = ViewModelProviders.of(this, viewModelFactory).get(DetectionViewModel::class.java)
 
-        vm.liveData.observe(this, Observer<DetectionViewModel.UiModel> {
-            when (it) {
-                is DetectionViewModel.UiModel.Price -> Timber.d { it.toString() }
-                is DetectionViewModel.UiModel.Error -> Timber.e { it.toString() }
+        vm.liveData.observe(this, Observer<DetectionViewModel.UiModel> { uiModel ->
+            when (uiModel) {
+                is DetectionViewModel.UiModel.Price -> Timber.d { uiModel.toString() }
+                is DetectionViewModel.UiModel.Error -> Timber.e { uiModel.toString() }
             }
         })
+
+        listenToSurfaceAndSourceReady()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.detection_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                surfaces.onNext(Optional(holder))
+            }
+
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                surfaces.onNext(Optional())
+            }
+        })
     }
 
     override fun onStart() {
@@ -66,7 +88,32 @@ class DetectionFragment : Fragment(), MobileVisionOcrGateway.View {
     }
 
     @SuppressLint("CheckResult")
+    private fun listenToSurfaceAndSourceReady() {
+        fun <T> Subject<Optional<T>>.presentValuesOnly(): Observable<T> {
+            return this.filter { it.data != null }.map { it.data!! }
+        }
+
+        val readyUpdates = Observable.zip(
+                surfaces.presentValuesOnly(),
+                cameraSources.presentValuesOnly(),
+                BiFunction<SurfaceHolder, CameraSource, SurfaceAndSource> { surfaceHolder, cameraSource ->
+                    SurfaceAndSource(surfaceHolder, cameraSource)
+                }
+        )
+
+        readyUpdates
+                .doOnSubscribe { disposable -> disposables.add(disposable) }
+                .subscribe {
+                    onSurfaceAndCameraSourceReady(it.surface, it.cameraSource)
+                }
+    }
+
     override fun onCameraSourceAvailable(cameraSource: CameraSource) {
+        cameraSources.onNext(Optional(cameraSource))
+    }
+
+    @SuppressLint("CheckResult", "MissingPermission")
+    private fun onSurfaceAndCameraSourceReady(surface: SurfaceHolder, cameraSource: CameraSource) {
         fun onPermissionGranted(function: (Boolean) -> Unit) {
             RxPermissions(this)
                     .request(Manifest.permission.CAMERA)
@@ -79,22 +126,12 @@ class DetectionFragment : Fragment(), MobileVisionOcrGateway.View {
         }
 
         onPermissionGranted {
-            showCameraPreview(cameraSource)
+            cameraSource.start(surface)
         }
     }
 
-    private fun showCameraPreview(cameraSource: CameraSource) {
-        surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                cameraSource.start(holder)
-            }
-
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                cameraSource.stop()
-            }
-        })
+    override fun onCameraSourceReleased() {
+        cameraSources.onNext(Optional())
     }
 }
 
@@ -107,3 +144,7 @@ private fun getDetectionComponent(fragment: DetectionFragment) : DetectionCompon
     val applicationComponent = getApplicationComponent(fragment)
     return applicationComponent.getDetectionComponent(MobileVisionModule(fragment))
 }
+
+private class Optional<T>(val data: T? = null)
+
+private class SurfaceAndSource(val surface: SurfaceHolder, val cameraSource: CameraSource)

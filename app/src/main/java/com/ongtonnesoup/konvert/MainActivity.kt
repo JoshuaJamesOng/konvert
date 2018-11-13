@@ -23,4 +23,11 @@ class MainActivity : AppCompatActivity(), MobileVisionOcrGateway.View {
             (it as DetectionFragment).onCameraSourceAvailable(cameraSource)
         }
     }
+
+    override fun onCameraSourceReleased() {
+        val fragment = supportFragmentManager.findFragmentByTag(DetectionFragment.TAG)
+        fragment?.let {
+            (it as DetectionFragment).onCameraSourceReleased()
+        }
+    }
 }

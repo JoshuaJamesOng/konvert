@@ -1,8 +1,6 @@
 package com.ongtonnesoup.konvert.detection.mobileVision
 
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.vision.CameraSource
@@ -53,6 +51,9 @@ class MobileVisionOcrGateway @Inject constructor(
     override fun release() {
         detector?.release()
         detector = null
+        if (viewContext is View) {
+            viewContext.onCameraSourceReleased()
+        }
     }
 
     private fun hasGoogleServices() = GoogleApiAvailability.getInstance()
@@ -91,6 +92,8 @@ class MobileVisionOcrGateway @Inject constructor(
     interface View {
 
         fun onCameraSourceAvailable(cameraSource: CameraSource)
+
+        fun onCameraSourceReleased()
 
     }
 }
