@@ -15,7 +15,7 @@ import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
 import com.ongtonnesoup.konvert.detection.di.DetectionComponent
 import com.ongtonnesoup.konvert.detection.di.MobileVisionModule
-import com.ongtonnesoup.konvert.detection.mobileVision.MobileVisionOcrGateway
+import com.ongtonnesoup.konvert.detection.mobilevision.MobileVisionOcrGateway
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -140,7 +140,7 @@ private fun getApplicationComponent(fragment: Fragment): ApplicationComponent {
     return provider.get()
 }
 
-private fun getDetectionComponent(fragment: DetectionFragment) : DetectionComponent {
+private fun getDetectionComponent(fragment: DetectionFragment): DetectionComponent {
     val applicationComponent = getApplicationComponent(fragment)
     return applicationComponent.getDetectionComponent(MobileVisionModule(fragment))
 }

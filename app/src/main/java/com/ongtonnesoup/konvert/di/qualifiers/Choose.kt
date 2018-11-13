@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.di.qualifiers;
+package com.ongtonnesoup.konvert.di.qualifiers
 
 import javax.inject.Qualifier
 

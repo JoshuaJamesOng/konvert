@@ -10,5 +10,4 @@ interface OcrGateway {
     fun release()
 
     class InitializationError : RuntimeException()
-
 }

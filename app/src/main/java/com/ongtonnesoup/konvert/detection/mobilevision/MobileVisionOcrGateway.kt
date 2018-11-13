@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.detection.mobileVision
+package com.ongtonnesoup.konvert.detection.mobilevision
 
 import android.content.Context
 import com.google.android.gms.common.ConnectionResult
@@ -22,6 +22,7 @@ class MobileVisionOcrGateway @Inject constructor(
 
     private var detector: OcrDetectorProcessor? = null
 
+    @Suppress("ReturnCount")
     override fun init(): Observable<ParsedText> {
         return Observable.create<ParsedText> { emitter ->
             if (!hasGoogleServices()) {
@@ -94,6 +95,5 @@ class MobileVisionOcrGateway @Inject constructor(
         fun onCameraSourceAvailable(cameraSource: CameraSource)
 
         fun onCameraSourceReleased()
-
     }
 }

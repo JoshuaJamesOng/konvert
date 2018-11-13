@@ -16,6 +16,5 @@ interface ApplicationComponent {
 
     fun inject(application: KonvertApplication)
 
-    fun getDetectionComponent(module: MobileVisionModule) : DetectionComponent
-
+    fun getDetectionComponent(module: MobileVisionModule): DetectionComponent
 }

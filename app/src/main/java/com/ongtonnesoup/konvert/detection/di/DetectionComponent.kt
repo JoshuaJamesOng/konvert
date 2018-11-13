@@ -11,5 +11,4 @@ import dagger.Subcomponent
 interface DetectionComponent {
 
     fun inject(target: DetectionViewModelFactory)
-
 }

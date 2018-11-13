@@ -7,7 +7,11 @@ import androidx.lifecycle.LifecycleObserver
 import com.ongtonnesoup.konvert.android.ActivityCallbacks
 import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
-import com.ongtonnesoup.konvert.di.*
+import com.ongtonnesoup.konvert.di.ApplicationComponent
+import com.ongtonnesoup.konvert.di.DaggerProcessComponent
+import com.ongtonnesoup.konvert.di.Injector
+import com.ongtonnesoup.konvert.di.ProcessComponent
+import com.ongtonnesoup.konvert.di.ProcessModule
 import com.ongtonnesoup.konvert.initialisation.InitialiseApp
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.InitialisationState

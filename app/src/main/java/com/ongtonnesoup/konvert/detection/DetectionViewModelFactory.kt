@@ -17,5 +17,4 @@ class DetectionViewModelFactory(private val component: DetectionComponent) : Vie
     }
 
     override fun <T : ViewModel?> create(modelClass: Class<T>) = viewModel as T
-
 }

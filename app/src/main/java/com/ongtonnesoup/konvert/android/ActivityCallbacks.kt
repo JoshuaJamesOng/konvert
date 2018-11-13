@@ -19,5 +19,4 @@ interface ActivityCallbacks : Application.ActivityLifecycleCallbacks {
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) = Unit
 
     override fun onActivityStopped(activity: Activity) = Unit
-
 }

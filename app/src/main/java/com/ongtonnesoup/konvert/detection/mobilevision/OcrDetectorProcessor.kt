@@ -1,4 +1,4 @@
-package com.ongtonnesoup.konvert.detection.mobileVision
+package com.ongtonnesoup.konvert.detection.mobilevision
 
 import android.util.SparseArray
 import com.google.android.gms.vision.Detector

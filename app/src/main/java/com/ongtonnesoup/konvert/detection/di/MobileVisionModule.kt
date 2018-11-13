@@ -3,7 +3,7 @@ package com.ongtonnesoup.konvert.detection.di
 import android.content.Context
 import com.ongtonnesoup.konvert.detection.DetectionFragment
 import com.ongtonnesoup.konvert.detection.OcrGateway
-import com.ongtonnesoup.konvert.detection.mobileVision.MobileVisionOcrGateway
+import com.ongtonnesoup.konvert.detection.mobilevision.MobileVisionOcrGateway
 import com.ongtonnesoup.konvert.di.qualifiers.ContextType
 import com.ongtonnesoup.konvert.di.qualifiers.Type
 import dagger.Module

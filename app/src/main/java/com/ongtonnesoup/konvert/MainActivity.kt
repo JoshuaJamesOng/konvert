@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.detection.DetectionFragment
-import com.ongtonnesoup.konvert.detection.mobileVision.MobileVisionOcrGateway
+import com.ongtonnesoup.konvert.detection.mobilevision.MobileVisionOcrGateway
 
 class MainActivity : AppCompatActivity(), MobileVisionOcrGateway.View {
     override fun onCreate(savedInstanceState: Bundle?) {
