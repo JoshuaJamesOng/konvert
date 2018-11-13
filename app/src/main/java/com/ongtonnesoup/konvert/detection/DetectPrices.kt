@@ -8,10 +8,19 @@ private const val CONTAINS_SYMBOL = "\\p{Sc}"
 
 class DetectPrices @Inject constructor(private val gateway: OcrGateway) {
 
-    fun detectPrices(): Observable<Price> {
+    fun detectPrices(): Observable<Number> {
         return gateway.init()
                 .filter { isNumber(it) }
-                .map { Price(it.text, getCurrency(it)) }
+                .map { parsedText ->
+                    val currency = getCurrency(parsedText)
+
+                    // TODO Check symbol is near numbers and not e.g. 'Save £££ on the 13/10/2018`
+                    currency?.let { symbol ->
+                        Number.Price(parsedText.text, symbol)
+                    } ?: run {
+                        Number.PossiblePrice(parsedText.text)
+                    }
+                }
                 .doOnDispose { gateway.release() }
     }
 

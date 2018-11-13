@@ -11,40 +11,41 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import java.lang.reflect.Type
 
 class DetectPricesTest : Spek({
 
     val testCases = mapOf(
-            "Product Name" to Pair(false, null),
-            "12" to Pair(true, null),
-            "12.00" to Pair(true, null),
-            "£12" to Pair(true, "£"),
-            "$12.00" to Pair(true, "$"),
-            "Reduced to €12.00" to Pair(true, "€"),
-            "Was ¥12 now ¥10" to Pair(true, "¥")
+            "Product Name" to Metadata(containsNumber = false),
+            "12" to Metadata(containsNumber = true),
+            "12.00" to Metadata(containsNumber = true),
+            "£12" to Metadata(expectedSymbol = "£"),
+            "$12.00" to Metadata(expectedSymbol = "$"),
+            "Reduced to €12.00" to Metadata(expectedSymbol = "€"),
+            "Was ¥12 now ¥10" to Metadata(expectedSymbol = "¥")
     )
 
     given("price detector") {
         val gateway = mock<OcrGateway>()
         val cut = DetectPrices(gateway)
 
-        testCases.forEach { detectedText, expected ->
+        testCases.forEach { detectedText, metadata ->
 
             on("$detectedText") {
                 val parsedText = ParsedText(detectedText)
                 whenever(gateway.init()).thenReturn(Observable.just(parsedText))
 
-                val containsNumber = expected.first
+                val containsNumber = metadata.containsNumber
 
                 it(if (containsNumber) "it is returned" else "it is not returned") {
                     cut.detectPrices().test {
                         if (containsNumber) {
-                            val hasSymbol = expected.second != null
+                            val hasSymbol = metadata.expectedSymbol != null
                             if (hasSymbol) {
-                                val symbol = expected.second
-                                it shouldEmit Price(parsedText.text, Currency(symbol!!))
+                                val symbol = metadata.expectedSymbol
+                                it shouldEmit Number.Price(parsedText.text, Currency(symbol!!))
                             } else {
-                                it shouldEmit Price(parsedText.text, null)
+                                it shouldEmit Number.PossiblePrice(parsedText.text)
                             }
                         } else {
                             it should values() // Not emit
@@ -55,3 +56,11 @@ class DetectPricesTest : Spek({
         }
     }
 })
+
+private class Metadata(
+        val containsNumber: Boolean = true,
+        val expectedSymbol: String? = null
+) {
+    fun containsNumber() = expectedSymbol != null
+}
+

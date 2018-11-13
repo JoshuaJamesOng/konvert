@@ -18,7 +18,7 @@ class DetectionViewModel @Inject constructor(private val detectPrices: DetectPri
 
     @SuppressLint("CheckResult")
     fun startPresenting() {
-        fun showPrice(price: Price) {
+        fun showPrice(price: Number) {
             _liveData.postValue(UiModel.Price(price.text))
         }
 
