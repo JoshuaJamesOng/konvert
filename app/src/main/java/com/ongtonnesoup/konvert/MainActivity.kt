@@ -11,10 +11,6 @@ class MainActivity : AppCompatActivity(), MobileVisionOcrGateway.View {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-
-        supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, DetectionFragment(), DetectionFragment.TAG)
-                .commit()
     }
 
     override fun onCameraSourceAvailable(cameraSource: CameraSource) {

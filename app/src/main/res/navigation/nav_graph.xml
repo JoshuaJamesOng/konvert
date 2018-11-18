@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/detectionFragment">
+
+    <fragment
+        android:id="@+id/detectionFragment"
+        android:name="com.ongtonnesoup.konvert.detection.DetectionFragment"
+        android:label="DetectionFragment"
+        tools:layout="@layout/detection_fragment">
+        <action
+            android:id="@+id/action_show_licenses"
+            app:destination="@id/licensesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/licensesFragment"
+        android:name="com.ongtonnesoup.konvert.LicensesFragment"
+        android:label="fragment_licenses"
+        tools:layout="@layout/fragment_licenses">
+        <argument
+            android:name="fromSettings"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+</navigation>

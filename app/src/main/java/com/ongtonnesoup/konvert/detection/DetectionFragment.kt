@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.NavHostFragment
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
@@ -75,6 +76,13 @@ class DetectionFragment : Fragment(), MobileVisionOcrGateway.View {
                 surfaces.onNext(Optional())
             }
         })
+
+        licensesLink.setOnClickListener {
+            val showLicenses = DetectionFragmentDirections.actionShowLicenses().apply {
+                setFromSettings(false)
+            }
+            NavHostFragment.findNavController(this).navigate(showLicenses)
+        }
     }
 
     override fun onStart() {

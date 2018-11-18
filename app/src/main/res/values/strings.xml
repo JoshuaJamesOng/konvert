@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Konvert</string>
+
+    <!-- Settings -->
+    <string name="licenses_link">Licenses</string>
+
 </resources>
