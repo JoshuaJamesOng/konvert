@@ -1,6 +1,5 @@
 package com.ongtonnesoup.konvert.detection
 
-
 sealed class Number(val text: String) {
     data class PossiblePrice(val parsedText: String) : Number(parsedText)
 
@@ -8,7 +7,6 @@ sealed class Number(val text: String) {
             val parsedText: String,
             val currency: Currency?
     ) : Number(parsedText)
-
 }
 
 data class Currency(
