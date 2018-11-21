@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/detectionFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/detectionFragment"
@@ -25,5 +25,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ongtonnesoup.konvert.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home" />
 
 </navigation>
