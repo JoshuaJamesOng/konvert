@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.commit
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
-import com.ongtonnesoup.konvert.android.KonvertFragmentFactory
+import com.ongtonnesoup.konvert.android.InitializerFragmentFactory
+import com.ongtonnesoup.konvert.android.addInitializer
+import com.ongtonnesoup.konvert.detection.DetectionFragment
+import com.ongtonnesoup.konvert.detection.DetectionViewModel
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import javax.inject.Provider
 
@@ -23,11 +26,19 @@ class HomeFragment : Fragment() {
             val component = getApplicationComponent(requireActivity())
 
             childFragmentManager.apply {
+                fun createDetectionFragment(bundle: Bundle?): DetectionFragment {
+                    val vm = DetectionViewModel(component)
+                    return DetectionFragment(bundle, vm)
+                }
 
-                val konvertFragmentFactory = KonvertFragmentFactory(component)
-                fragmentFactory = konvertFragmentFactory
+                val fragmentFactory = InitializerFragmentFactory().apply {
+                    addInitializer {bundle ->
+                        createDetectionFragment(bundle)
+                    }
+                }
+                this.fragmentFactory = fragmentFactory
                 commit {
-                    add(R.id.fragment_container, konvertFragmentFactory.createDetectionFragment()) // TODO should we go through FF methods
+                    add(R.id.fragment_container, createDetectionFragment(null)) // TODO should we go through FF methods
                 }
             }
         }

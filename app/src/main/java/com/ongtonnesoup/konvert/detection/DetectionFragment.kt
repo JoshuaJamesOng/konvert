@@ -23,7 +23,10 @@ import io.reactivex.subjects.Subject
 import kotlinx.android.synthetic.main.detection_fragment.*
 
 @SuppressLint("ValidFragment")
-class DetectionFragment(private val vm: DetectionViewModel) : Fragment() {
+class DetectionFragment(
+        private val bundle: Bundle?,
+        private val vm: DetectionViewModel
+) : Fragment() {
 
     private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
     private val disposables: CompositeDisposable = CompositeDisposable()
