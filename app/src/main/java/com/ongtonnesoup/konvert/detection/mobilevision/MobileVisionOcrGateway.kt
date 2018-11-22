@@ -17,7 +17,7 @@ import javax.inject.Inject
 @PerFragment
 class MobileVisionOcrGateway @Inject constructor(
         @ContextType(Type.APPLICATION) private val context: Context,
-        @ContextType(Type.ACTIVITY) private val viewContext: Context
+        private val view: View
 ) : OcrGateway {
 
     private var detector: OcrDetectorProcessor? = null
@@ -41,20 +41,14 @@ class MobileVisionOcrGateway @Inject constructor(
             textRecognizer.setProcessor(detector)
             val cameraSource = createCameraSource(textRecognizer)
 
-            if (viewContext is View) {
-                viewContext.onCameraSourceAvailable(cameraSource)
-            } else {
-                throw IllegalStateException("Mobile Vision view contract not met")
-            }
+            view.onCameraSourceAvailable(cameraSource)
         }
     }
 
     override fun release() {
         detector?.release()
         detector = null
-        if (viewContext is View) {
-            viewContext.onCameraSourceReleased()
-        }
+        view.onCameraSourceReleased()
     }
 
     private fun hasGoogleServices() = GoogleApiAvailability.getInstance()

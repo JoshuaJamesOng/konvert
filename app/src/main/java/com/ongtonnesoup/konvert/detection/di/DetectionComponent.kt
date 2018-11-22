@@ -1,6 +1,6 @@
 package com.ongtonnesoup.konvert.detection.di
 
-import com.ongtonnesoup.konvert.detection.DetectionViewModelFactory
+import com.ongtonnesoup.konvert.detection.DetectionViewModel
 import com.ongtonnesoup.konvert.di.scopes.PerFragment
 import dagger.Subcomponent
 
@@ -10,5 +10,5 @@ import dagger.Subcomponent
 ])
 interface DetectionComponent {
 
-    fun inject(target: DetectionViewModelFactory)
+    fun inject(target: DetectionViewModel)
 }
