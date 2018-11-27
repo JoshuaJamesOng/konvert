@@ -10,7 +10,6 @@ import com.ongtonnesoup.konvert.detection.mobilevision.MobileVisionOcrGateway
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import javax.inject.Inject
 
@@ -24,7 +23,8 @@ class DetectionViewModel(component: ApplicationComponent) : ViewModel(), MobileV
 
     private val disposables = CompositeDisposable()
 
-    val cameraSources: Subject<Optional<CameraSource>> = BehaviorSubject.create() // TODO Confirm if we can re-se or if this only work because we re-init on resume
+    val cameraSources: Subject<Optional<CameraSource>> = BehaviorSubject.create()
+    // TODO Confirm if we can re-se or if this only work because we re-init on resume
 
     init {
         component.getDetectionComponent(MobileVisionModule(this)).inject(this)

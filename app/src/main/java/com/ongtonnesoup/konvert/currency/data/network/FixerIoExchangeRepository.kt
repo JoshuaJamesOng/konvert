@@ -9,10 +9,10 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                                 private val configuration: Configuration) : ExchangeRepository {
 
     suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
-        return try {
+        return runCatching {
             val response = client.getLatest(BASE_CURRENCY, configuration.accessKey).await()
             fromNetworkMapper.invoke(response)
-        } catch (e: Throwable) {
+        }.getOrElse { e ->
             if (e.isExpectedNetworkException()) {
                 ExchangeRepository.NO_DATA
             } else {

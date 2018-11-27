@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
                 }
 
                 val fragmentFactory = InitializerFragmentFactory().apply {
-                    addInitializer {bundle ->
+                    addInitializer { bundle ->
                         createDetectionFragment(bundle)
                     }
                 }

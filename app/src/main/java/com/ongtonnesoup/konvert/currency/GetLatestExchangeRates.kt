@@ -16,14 +16,14 @@ class GetLatestExchangeRates @Inject constructor(
 
         result.value = Resource.Loading()
 
-        try {
+        return runCatching {
             val exchangeRates = getNetworkExchangeRates()
             result.value = Resource.Success(exchangeRates)
-        } catch (e: Exception) {
+            result
+        }.getOrElse { e ->
             result.value = Resource.Error(e)
+            result
         }
-
-        return result
     }
 
     suspend fun getNetworkExchangeRates(): ExchangeRepository.ExchangeRates {
