@@ -26,6 +26,10 @@ class DetectionFragment(
         private val vm: DetectionViewModel
 ) : Fragment() {
 
+    companion object {
+        val TAG: String = DetectionFragment::class.java.name
+    }
+
     private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
     private val disposables: CompositeDisposable = CompositeDisposable()
 

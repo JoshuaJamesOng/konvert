@@ -29,9 +29,19 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (BuildConfig.USE_OCR) {
-            // TODO This nicely
+        fun createDetectionFragment(bundle: Bundle?): DetectionFragment {
+            val vm = DetectionViewModel(getApplicationComponent(requireActivity()))
+            return DetectionFragment(bundle, vm)
+        }
 
+        val fragmentFactory = InitializerFragmentFactory().apply {
+            addInitializer { bundle ->
+                createDetectionFragment(bundle)
+            }
+        }
+
+        childFragmentManager.apply {
+            this.fragmentFactory = fragmentFactory
         }
     }
 
@@ -80,19 +90,17 @@ class HomeFragment : Fragment() {
         val component = getApplicationComponent(requireActivity())
 
         childFragmentManager.apply {
-            fun createDetectionFragment(bundle: Bundle?): DetectionFragment {
-                val vm = DetectionViewModel(component)
-                return DetectionFragment(bundle, vm)
+            findFragmentByTag(DetectionFragment.TAG)?.let {
+                if (isAdded) return@apply
             }
 
-            val fragmentFactory = InitializerFragmentFactory().apply {
-                addInitializer { bundle ->
-                    createDetectionFragment(bundle)
-                }
-            }
-            this.fragmentFactory = fragmentFactory
+            val fragment = fragmentFactory.instantiate(
+                    requireActivity().classLoader,
+                    DetectionFragment::class.java.name,
+                    null)
+
             commit {
-                add(R.id.fragment_container, createDetectionFragment(null)) // TODO should we go through FF methods
+                replace(R.id.fragment_container, fragment, DetectionFragment.TAG)
             }
         }
     }
