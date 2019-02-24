@@ -18,8 +18,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "com.ongtonnesoup.konvert.TestJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
-
-        buildConfigField("String", "ACCESS_KEY", "\"${ACCESS_KEY}\"")
     }
     buildTypes {
         release {
@@ -37,11 +35,11 @@ android {
     productFlavors {
         production {
             dimension "environment"
-            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "true"
+            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "false"
         }
         development {
             dimension "environment"
-            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "false"
+            buildConfigField "boolean", "USE_FIXED_EXCHANGE_RATES", "true"
         }
         ocr {
             dimension "version"

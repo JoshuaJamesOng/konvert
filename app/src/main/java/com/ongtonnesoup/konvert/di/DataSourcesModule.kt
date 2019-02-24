@@ -37,8 +37,7 @@ object DataSourcesModule {
         } else {
             FixerIoExchangeRepository(
                     retrofitClient,
-                    networkToDomainMapper(),
-                    FixerIoExchangeRepository.Configuration(BuildConfig.ACCESS_KEY)
+                    networkToDomainMapper()
             )
         }
     }

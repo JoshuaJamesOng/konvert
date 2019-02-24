@@ -5,12 +5,11 @@ import com.ongtonnesoup.konvert.isExpectedNetworkException
 
 class FixerIoExchangeRepository(private val client: FixerIoClient,
                                 private val fromNetworkMapper: (FixerIoClient.Response) ->
-                                ExchangeRepository.ExchangeRates,
-                                private val configuration: Configuration) : ExchangeRepository {
+                                ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
     suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
         return runCatching {
-            val response = client.getLatest(BASE_CURRENCY, configuration.accessKey).await()
+            val response = client.getLatest(BASE_CURRENCY).await()
             fromNetworkMapper.invoke(response)
         }.getOrElse { e ->
             if (e.isExpectedNetworkException()) {
@@ -26,8 +25,6 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
     }
 
     companion object {
-        private val BASE_CURRENCY = "EUR"
+        private val BASE_CURRENCY = "GBP"
     }
-
-    data class Configuration(val accessKey: String)
 }
