@@ -2,13 +2,11 @@ package com.ongtonnesoup.konvert.home
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
@@ -17,6 +15,7 @@ import com.ongtonnesoup.konvert.android.addInitializer
 import com.ongtonnesoup.konvert.detection.DetectionFragment
 import com.ongtonnesoup.konvert.detection.DetectionViewModel
 import com.ongtonnesoup.konvert.di.ApplicationComponent
+import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Provider
 
 class HomeFragment : Fragment() {
@@ -45,18 +44,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
-        activity?.run {
-            ViewModelProviders.of(this)
-                    .get(DetectionFragment.SharedViewModel::class.java)
-                    .action
-                    .observe(this, Observer<DetectionFragment.SharedViewModel.Action> { action ->
-                        when (action) {
-                            DetectionFragment.SharedViewModel.Action.Settings -> onSettingsClicked()
-                            else -> throw IllegalAccessException()
-                        }
-                    })
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +51,12 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    private fun onSettingsClicked() {
-        val showSettings = HomeFragmentDirections.actionShowSettings()
-        findNavController().navigate(showSettings)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        settingsLink.setOnClickListener {
+            val showSettings = HomeFragmentDirections.actionShowSettings()
+            findNavController().navigate(showSettings)
+        }
     }
 }
 

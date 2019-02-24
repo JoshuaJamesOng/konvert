@@ -9,12 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
-import com.ongtonnesoup.konvert.android.SingleLiveEvent
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -63,14 +60,6 @@ class DetectionFragment(
                 surfaces.onNext(Optional())
             }
         })
-
-        settingsLink.setOnClickListener {
-            activity?.run {
-                ViewModelProviders.of(this)
-                        .get(SharedViewModel::class.java)
-                        .onAction(SharedViewModel.Action.Settings)
-            }
-        }
     }
 
     override fun onStart() {
@@ -119,18 +108,6 @@ class DetectionFragment(
 
         onPermissionGranted {
             cameraSource.start(surface)
-        }
-    }
-
-    class SharedViewModel : ViewModel() {
-        sealed class Action {
-            object Settings : Action()
-        }
-
-        val action = SingleLiveEvent<Action>()
-
-        fun onAction(action: Action) {
-            this.action.value = action
         }
     }
 }
