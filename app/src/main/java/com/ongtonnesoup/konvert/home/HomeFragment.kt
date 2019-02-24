@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
 import com.ongtonnesoup.konvert.android.InitializerFragmentFactory
@@ -16,7 +17,11 @@ import com.ongtonnesoup.konvert.detection.DetectionViewModel
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import javax.inject.Provider
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), DetectionFragment.Listener {
+    override fun onSettingsClicked() {
+        val showSettings = HomeFragmentDirections.actionShowSettings()
+        findNavController().navigate(showSettings)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

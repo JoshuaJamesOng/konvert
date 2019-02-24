@@ -2,6 +2,6 @@
     <string name="app_name">Konvert</string>
 
     <!-- Settings -->
-    <string name="licenses_link">Licenses</string>
+    <string name="settings_link">Settings</string>
 
 </resources>

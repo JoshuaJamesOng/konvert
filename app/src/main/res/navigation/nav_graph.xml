@@ -6,10 +6,29 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ongtonnesoup.konvert.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_show_settings"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/detectionFragment"
         android:name="com.ongtonnesoup.konvert.detection.DetectionFragment"
         android:label="DetectionFragment"
-        tools:layout="@layout/detection_fragment">
+        tools:layout="@layout/detection_fragment" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.ongtonnesoup.konvert.settings.SettingsFragment"
+        android:label="fragment_settings">
+        <argument
+            android:name="fromSettings"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_show_licenses"
             app:destination="@id/licensesFragment" />
@@ -25,10 +44,5 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.ongtonnesoup.konvert.home.HomeFragment"
-        android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" />
 
 </navigation>

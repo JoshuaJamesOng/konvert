@@ -9,10 +9,10 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:id="@+id/licensesLink"
+        android:id="@+id/settingsLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:text="@string/licenses_link" />
+        android:text="@string/settings_link" />
 
 </FrameLayout>

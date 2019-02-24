@@ -2,6 +2,7 @@ package com.ongtonnesoup.konvert.detection
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
@@ -29,6 +31,15 @@ class DetectionFragment(
 
     private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
     private val disposables: CompositeDisposable = CompositeDisposable()
+
+    private var listener: DetectionFragment.Listener? = null
+        get() {
+            return when {
+                activity is Listener -> activity as Listener
+                parentFragment is Listener -> parentFragment as Listener
+                else -> null
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +73,8 @@ class DetectionFragment(
             }
         })
 
-        licensesLink.setOnClickListener {
-            val showLicenses = DetectionFragmentDirections.actionShowLicenses().apply {
-                setFromSettings(false)
-            }
-            NavHostFragment.findNavController(this).navigate(showLicenses)
+        settingsLink.setOnClickListener {
+            listener?.onSettingsClicked()
         }
     }
 
@@ -117,6 +125,10 @@ class DetectionFragment(
         onPermissionGranted {
             cameraSource.start(surface)
         }
+    }
+
+    interface Listener {
+        fun onSettingsClicked()
     }
 }
 
