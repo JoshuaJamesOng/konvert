@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
@@ -17,11 +19,7 @@ import com.ongtonnesoup.konvert.detection.DetectionViewModel
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import javax.inject.Provider
 
-class HomeFragment : Fragment(), DetectionFragment.Listener {
-    override fun onSettingsClicked() {
-        val showSettings = HomeFragmentDirections.actionShowSettings()
-        findNavController().navigate(showSettings)
-    }
+class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +45,28 @@ class HomeFragment : Fragment(), DetectionFragment.Listener {
                 }
             }
         }
+
+        activity?.run {
+            ViewModelProviders.of(this)
+                    .get(DetectionFragment.SharedViewModel::class.java)
+                    .action
+                    .observe(this, Observer<DetectionFragment.SharedViewModel.Action> { action ->
+                        when (action) {
+                            DetectionFragment.SharedViewModel.Action.Settings -> onSettingsClicked()
+                            else -> throw IllegalAccessException()
+                        }
+                    })
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    private fun onSettingsClicked() {
+        val showSettings = HomeFragmentDirections.actionShowSettings()
+        findNavController().navigate(showSettings)
     }
 }
 
