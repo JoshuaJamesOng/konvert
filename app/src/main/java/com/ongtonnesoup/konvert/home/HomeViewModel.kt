@@ -2,6 +2,7 @@ package com.ongtonnesoup.konvert.home
 
 import android.os.Parcelable
 import com.github.ajalt.timberkt.Timber
+import com.ongtonnesoup.common.plusAssign
 import com.ongtonnesoup.konvert.android.SingleLiveEvent
 import com.ww.roxie.BaseAction
 import com.ww.roxie.BaseState
@@ -68,6 +69,3 @@ class HomeViewModel(
     }
 }
 
-private operator fun CompositeDisposable.plusAssign(disposable: Disposable) {
-    this.add(disposable)
-}

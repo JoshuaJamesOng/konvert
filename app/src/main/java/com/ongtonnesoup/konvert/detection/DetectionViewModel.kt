@@ -1,57 +1,88 @@
 package com.ongtonnesoup.konvert.detection
 
-import android.annotation.SuppressLint
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.os.Parcelable
+import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
+import com.ongtonnesoup.common.plusAssign
 import com.ongtonnesoup.konvert.detection.di.MobileVisionModule
 import com.ongtonnesoup.konvert.detection.mobilevision.MobileVisionOcrGateway
 import com.ongtonnesoup.konvert.di.ApplicationComponent
-import io.reactivex.disposables.CompositeDisposable
+import com.ww.roxie.BaseAction
+import com.ww.roxie.BaseState
+import com.ww.roxie.BaseViewModel
+import com.ww.roxie.Reducer
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
+import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
 
-class DetectionViewModel(component: ApplicationComponent) : ViewModel(), MobileVisionOcrGateway.View {
+sealed class State : BaseState, Parcelable {
+    @Parcelize object Idle : State()
+    @Parcelize object Ready : State()
+    @Parcelize data class Price(val price: String) : State()
+    @Parcelize object Error : State()
+}
+
+sealed class Action : BaseAction {
+    object OnViewAvailable : Action()
+    object OnViewUnavailable : Action()
+    object Ready : Action()
+    data class PriceDetected(val price: String) : Action()
+    data class Error(val throwable: Throwable) : Action()
+}
+
+sealed class Change {
+    data class ShowPrice(val price: String) : Change()
+}
+
+class DetectionViewModel(
+        initialState: State?,
+        component: ApplicationComponent
+) : BaseViewModel<Action, State>(), MobileVisionOcrGateway.View {
 
     @Inject
     lateinit var detectPrices: DetectPrices
 
-    private val _liveData = MutableLiveData<UiModel>()
-    val liveData: LiveData<UiModel> = _liveData
-
-    private val disposables = CompositeDisposable()
+    override val initialState = initialState ?: State.Idle
 
     val cameraSources: Subject<Optional<CameraSource>> = BehaviorSubject.create()
     // TODO Confirm if we can re-se or if this only work because we re-init on resume
 
+    private val reducer: Reducer<State, Change> = { state, change ->
+        when (change) {
+            is Change.ShowPrice -> State.Price(change.price)
+        }
+    }
+
     init {
-        component.getDetectionComponent(MobileVisionModule(this)).inject(this)
+        inject(component)
+        bindSources()
+        bindActions()
     }
 
-    @SuppressLint("CheckResult")
-    fun startPresenting() {
-        fun showPrice(price: Number) {
-            _liveData.postValue(UiModel.Price(price.text))
-        }
+    private fun inject(component: ApplicationComponent) {
+        component.getDetectionComponent(MobileVisionModule(this))
+                .inject(this)
+    }
 
-        fun showError(error: Throwable) {
-            when (error) {
-                is OcrGateway.InitializationError -> _liveData.postValue(UiModel.Error)
-                else -> {
-                    throw error
+    private fun bindSources() {
+        disposables += detectPrices.detectPrices()
+                .subscribe({ price -> dispatch(Action.PriceDetected(price.text)) }, { error -> dispatch(Action.Error(error)) })
+    }
+
+    private fun bindActions() {
+        val showPriceChange: Observable<Change> = actions.ofType<Action.PriceDetected>(Action.PriceDetected::class.java)
+                .switchMap {
+                    Observable.just(Change.ShowPrice(it.price))
                 }
-            }
-        }
 
-        detectPrices.detectPrices()
-                .doOnSubscribe { disposable -> disposables.add(disposable) }
-                .subscribe(::showPrice, ::showError)
-    }
-
-    fun stopPresenting() {
-        disposables.clear()
+        disposables += showPriceChange
+                .scan(initialState, reducer)
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(state::setValue, Timber::e)
     }
 
     override fun onCameraSourceAvailable(cameraSource: CameraSource) {
@@ -61,12 +92,7 @@ class DetectionViewModel(component: ApplicationComponent) : ViewModel(), MobileV
     override fun onCameraSourceReleased() {
         cameraSources.onNext(Optional())
     }
-
-    // TODO Name better
-    sealed class UiModel {
-        data class Price(val price: String) : UiModel()
-        object Error : UiModel()
-    }
 }
 
+// TODO Use Arrow
 class Optional<T>(val data: T? = null)

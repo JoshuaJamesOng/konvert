@@ -9,9 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
+import com.ongtonnesoup.konvert.android.getApplicationComponent
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -19,12 +21,10 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 import kotlinx.android.synthetic.main.detection_fragment.*
+import com.ongtonnesoup.konvert.android.BUNDLE_KEY_SAVED_VIEWMODEL_STATE as SAVED_STATE
 
 @SuppressLint("ValidFragment")
-class DetectionFragment(
-        private val bundle: Bundle?,
-        private val vm: DetectionViewModel
-) : Fragment() {
+class DetectionFragment : Fragment() {
 
     companion object {
         val TAG: String = DetectionFragment::class.java.name
@@ -33,17 +33,29 @@ class DetectionFragment(
     private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
     private val disposables: CompositeDisposable = CompositeDisposable()
 
+    private lateinit var viewModel: DetectionViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        vm.liveData.observe(this, Observer<DetectionViewModel.UiModel> { uiModel ->
+        val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE) ?: State.Idle
+        viewModel = ViewModelProviders.of(this, DetectionViewModelFactory(initialState, getApplicationComponent(this))).get(DetectionViewModel::class.java)
+
+        viewModel.observableState.observe(this, Observer<State> { uiModel ->
             when (uiModel) {
-                is DetectionViewModel.UiModel.Price -> Timber.d { uiModel.toString() }
-                is DetectionViewModel.UiModel.Error -> Timber.e { uiModel.toString() }
+                is State.Idle -> Timber.d { uiModel.toString() }
+                is State.Ready -> Timber.d { uiModel.toString() }
+                is State.Price -> Timber.d { uiModel.toString() }
+                is State.Error -> Timber.e { uiModel.toString() }
             }
         })
 
         listenToSurfaceAndSourceReady()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(SAVED_STATE, viewModel.observableState.value)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,16 +78,6 @@ class DetectionFragment(
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.startPresenting()
-    }
-
-    override fun onStop() {
-        vm.stopPresenting()
-        super.onStop()
-    }
-
     @SuppressLint("CheckResult")
     private fun listenToSurfaceAndSourceReady() {
         fun <T> Subject<Optional<T>>.presentValuesOnly(): Observable<T> {
@@ -84,7 +86,7 @@ class DetectionFragment(
 
         val readyUpdates = Observable.zip(
                 surfaces.presentValuesOnly(),
-                vm.cameraSources.presentValuesOnly(),
+                viewModel.cameraSources.presentValuesOnly(),
                 BiFunction<SurfaceHolder, CameraSource, SurfaceAndSource> { surfaceHolder, cameraSource ->
                     SurfaceAndSource(surfaceHolder, cameraSource)
                 }
