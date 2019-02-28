@@ -15,11 +15,7 @@ import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
 import com.ongtonnesoup.konvert.android.getApplicationComponent
 import com.tbruyelle.rxpermissions2.RxPermissions
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.Subject
 import kotlinx.android.synthetic.main.detection_fragment.*
 import com.ongtonnesoup.konvert.android.BUNDLE_KEY_SAVED_VIEWMODEL_STATE as SAVED_STATE
 
@@ -30,10 +26,10 @@ class DetectionFragment : Fragment() {
         val TAG: String = DetectionFragment::class.java.name
     }
 
-    private val surfaces: Subject<Optional<SurfaceHolder>> = BehaviorSubject.create()
     private val disposables: CompositeDisposable = CompositeDisposable()
 
     private lateinit var viewModel: DetectionViewModel
+    private var surface: SurfaceHolder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,15 +40,13 @@ class DetectionFragment : Fragment() {
         viewModel.observableState.observe(this, Observer<State> { uiModel ->
             when (uiModel) {
                 is State.Idle -> Timber.d { uiModel.toString() }
-                is State.Ready -> Timber.d { uiModel.toString() }
+                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, uiModel.cameraSource) // TODO Bang bang
                 is State.Price -> Timber.d { uiModel.toString() }
                 is State.Error -> Timber.e { uiModel.toString() }
             }
         })
 
         lifecycle.addObserver(viewModel)
-
-        listenToSurfaceAndSourceReady()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -69,36 +63,16 @@ class DetectionFragment : Fragment() {
 
         surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                surfaces.onNext(Optional(holder))
+                surface = holder
+                viewModel.dispatch(Action.CameraAvailable)
             }
 
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
-                surfaces.onNext(Optional())
+                surface = null
             }
         })
-    }
-
-    @SuppressLint("CheckResult")
-    private fun listenToSurfaceAndSourceReady() {
-        fun <T> Subject<Optional<T>>.presentValuesOnly(): Observable<T> {
-            return this.filter { it.data != null }.map { it.data!! }
-        }
-
-        val readyUpdates = Observable.zip(
-                surfaces.presentValuesOnly(),
-                viewModel.cameraSources.presentValuesOnly(),
-                BiFunction<SurfaceHolder, CameraSource, SurfaceAndSource> { surfaceHolder, cameraSource ->
-                    SurfaceAndSource(surfaceHolder, cameraSource)
-                }
-        )
-
-        readyUpdates
-                .doOnSubscribe { disposable -> disposables.add(disposable) }
-                .subscribe {
-                    onSurfaceAndCameraSourceReady(it.surface, it.cameraSource)
-                }
     }
 
     @SuppressLint("CheckResult", "MissingPermission")
@@ -119,5 +93,3 @@ class DetectionFragment : Fragment() {
         }
     }
 }
-
-private class SurfaceAndSource(val surface: SurfaceHolder, val cameraSource: CameraSource)

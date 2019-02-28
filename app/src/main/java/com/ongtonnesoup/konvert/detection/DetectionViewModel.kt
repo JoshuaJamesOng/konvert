@@ -16,27 +16,40 @@ import com.ww.roxie.BaseViewModel
 import com.ww.roxie.Reducer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import javax.inject.Inject
 
 sealed class State : BaseState, Parcelable {
-    @Parcelize object Idle : State()
-    @Parcelize object Ready : State()
-    @Parcelize data class Price(val price: String) : State()
-    @Parcelize object Error : State()
+    @Parcelize
+    object Idle : State()
+
+    @Parcelize
+    object WaitingForCameraSource : State()
+
+    @Parcelize
+    data class Ready(@Transient val cameraSource: @RawValue CameraSource) : State() // TODO Check this RawValue stuff
+
+    @Parcelize
+    data class Price(val price: String) : State()
+
+    @Parcelize
+    object Error : State()
 }
 
 sealed class Action : BaseAction {
     object OnViewAvailable : Action()
     object OnViewUnavailable : Action()
-    object Ready : Action()
+    object CameraAvailable : Action() // TODO Rename
     data class PriceDetected(val price: String) : Action()
     data class Error(val throwable: Throwable) : Action()
 }
 
 sealed class Change {
+    object WaitingForCameraSource : Change()
+    data class CameraAvailable(val cameraSource: CameraSource) : Change()
     data class ShowPrice(val price: String) : Change()
 }
 
@@ -50,12 +63,14 @@ class DetectionViewModel(
 
     override val initialState = initialState ?: State.Idle
 
-    val cameraSources: Subject<Optional<CameraSource>> = BehaviorSubject.create()
-    // TODO Confirm if we can re-se or if this only work because we re-init on resume
+    private val internalChanges: Subject<Change> = PublishSubject.create()
+    private var cameraSource: CameraSource? = null
 
-    private val reducer: Reducer<State, Change> = { state, change ->
+    private val reducer: Reducer<State, Change> = { _, change ->
         when (change) {
             is Change.ShowPrice -> State.Price(change.price)
+            is Change.WaitingForCameraSource -> State.WaitingForCameraSource
+            is Change.CameraAvailable -> State.Ready(change.cameraSource)
         }
     }
 
@@ -75,7 +90,17 @@ class DetectionViewModel(
                     Observable.just(Change.ShowPrice(it.price))
                 }
 
-        disposables += showPriceChange
+        val cameraAvailable: Observable<Change> = actions.ofType<Action.CameraAvailable>(Action.CameraAvailable::class.java)
+                .map { Optional(cameraSource) }
+                .switchMap {
+                    if (it.data == null) {
+                        Observable.just(Change.WaitingForCameraSource)
+                    } else {
+                        Observable.just(Change.CameraAvailable(it.data))
+                    }
+                }
+
+        disposables += Observable.merge(showPriceChange, cameraAvailable, internalChanges)
                 .scan(initialState, reducer)
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -90,18 +115,16 @@ class DetectionViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun stopDetection() {
-        if (cameraSources is BehaviorSubject) {
-            Timber.d { "Manually releasing source" }
-            cameraSources.value?.data?.release()
-        }
+        cameraSource?.release()
     }
 
     override fun onCameraSourceAvailable(cameraSource: CameraSource) {
-        cameraSources.onNext(Optional(cameraSource))
+        this.cameraSource = cameraSource
     }
 
     override fun onCameraSourceReleased() {
-        cameraSources.onNext(Optional())
+        cameraSource = null
+        internalChanges.onNext(Change.WaitingForCameraSource)
     }
 }
 
