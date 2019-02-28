@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Konvert</string>
 
+    <!-- Detection -->
+    <string name="detection_error">Error</string>
+
     <!-- Settings -->
     <string name="settings_link">Settings</string>
 

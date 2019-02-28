@@ -37,12 +37,12 @@ class DetectionFragment : Fragment() {
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE) ?: State.Idle
         viewModel = ViewModelProviders.of(this, DetectionViewModelFactory(initialState, getApplicationComponent(this))).get(DetectionViewModel::class.java)
 
-        viewModel.observableState.observe(this, Observer<State> { uiModel ->
-            when (uiModel) {
-                is State.Idle -> Timber.d { uiModel.toString() }
-                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, uiModel.cameraSource) // TODO Bang bang
-                is State.Price -> Timber.d { uiModel.toString() }
-                is State.Error -> Timber.e { uiModel.toString() }
+        viewModel.observableState.observe(this, Observer<State> { state ->
+            when (state) {
+                is State.Idle -> Timber.d { state.toString() }
+                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource) // TODO Bang bang
+                is State.Price -> Timber.d { state.toString() }
+                is State.Error -> showError(state)
             }
         })
 
@@ -77,6 +77,9 @@ class DetectionFragment : Fragment() {
 
     @SuppressLint("CheckResult", "MissingPermission")
     private fun onSurfaceAndCameraSourceReady(surface: SurfaceHolder, cameraSource: CameraSource) {
+        surfaceView.visibility = View.VISIBLE
+        errorMessage.visibility = View.GONE
+
         fun onPermissionGranted(function: (Boolean) -> Unit) {
             RxPermissions(this)
                     .request(Manifest.permission.CAMERA)
@@ -91,5 +94,11 @@ class DetectionFragment : Fragment() {
         onPermissionGranted {
             cameraSource.start(surface)
         }
+    }
+
+    private fun showError(state: State) {
+        Timber.e { state.toString() }
+        surfaceView.visibility = View.GONE
+        errorMessage.visibility = View.VISIBLE
     }
 }
