@@ -1,6 +1,9 @@
 package com.ongtonnesoup.konvert.detection
 
 import android.os.Parcelable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.common.plusAssign
@@ -40,7 +43,7 @@ sealed class Change {
 class DetectionViewModel(
         initialState: State?,
         component: ApplicationComponent
-) : BaseViewModel<Action, State>(), MobileVisionOcrGateway.View {
+) : BaseViewModel<Action, State>(), LifecycleObserver, MobileVisionOcrGateway.View {
 
     @Inject
     lateinit var detectPrices: DetectPrices
@@ -58,18 +61,12 @@ class DetectionViewModel(
 
     init {
         inject(component)
-        bindSources()
         bindActions()
     }
 
     private fun inject(component: ApplicationComponent) {
         component.getDetectionComponent(MobileVisionModule(this))
                 .inject(this)
-    }
-
-    private fun bindSources() {
-        disposables += detectPrices.detectPrices()
-                .subscribe({ price -> dispatch(Action.PriceDetected(price.text)) }, { error -> dispatch(Action.Error(error)) })
     }
 
     private fun bindActions() {
@@ -83,6 +80,20 @@ class DetectionViewModel(
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(state::setValue, Timber::e)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun detectPrices() {
+        disposables += detectPrices.detectPrices()
+                .subscribe({ price -> dispatch(Action.PriceDetected(price.text)) }, { error -> dispatch(Action.Error(error)) })
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun stopDetection() {
+        if (cameraSources is BehaviorSubject) {
+            Timber.d { "Manually releasing source" }
+            cameraSources.value?.data?.release()
+        }
     }
 
     override fun onCameraSourceAvailable(cameraSource: CameraSource) {

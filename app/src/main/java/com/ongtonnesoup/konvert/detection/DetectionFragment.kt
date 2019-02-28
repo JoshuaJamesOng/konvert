@@ -50,6 +50,8 @@ class DetectionFragment : Fragment() {
             }
         })
 
+        lifecycle.addObserver(viewModel)
+
         listenToSurfaceAndSourceReady()
     }
 
