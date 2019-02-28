@@ -5,39 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
-import com.ongtonnesoup.konvert.android.InitializerFragmentFactory
-import com.ongtonnesoup.konvert.android.addInitializer
+import com.ongtonnesoup.konvert.android.setFragmentManagers
 import com.ongtonnesoup.konvert.detection.DetectionFragment
 import kotlinx.android.synthetic.main.fragment_home.*
+import javax.inject.Inject
 import com.ongtonnesoup.konvert.android.BUNDLE_KEY_SAVED_VIEWMODEL_STATE as SAVED_STATE
 
-class HomeFragment : Fragment() {
+class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFactory) : Fragment() {
 
     private lateinit var viewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setFragmentManagers(this, fragmentFactory)
         super.onCreate(savedInstanceState)
-
-        fun createDetectionFragment(bundle: Bundle?): DetectionFragment {
-            return DetectionFragment()
-        }
-
-        // TODO Set-up DI for this stuff https://www.captechconsulting.com/blogs/using-androidxs-fragmentfactory-with-dagger-for-fragment-dependency-injection
-        val fragmentFactory = InitializerFragmentFactory().apply {
-            addInitializer { bundle ->
-                createDetectionFragment(bundle)
-            }
-        }
-
-        childFragmentManager.apply {
-            this.fragmentFactory = fragmentFactory
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -83,19 +70,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun showCameraView() {
-        childFragmentManager.apply {
-            findFragmentByTag(DetectionFragment.TAG)?.let {
-                if (isAdded) return@apply
-            }
+        childFragmentManager.findFragmentByTag(DetectionFragment.TAG)?.let {
+            if (isAdded) return
+        }
 
+        childFragmentManager.commit {
             val fragment = fragmentFactory.instantiate(
-                    requireActivity().classLoader,
+                    DetectionFragment::class.java.classLoader!!,
                     DetectionFragment::class.java.name,
                     null)
 
-            commit {
-                replace(R.id.fragment_container, fragment, DetectionFragment.TAG)
-            }
+            replace(R.id.fragment_container, fragment, DetectionFragment.TAG)
         }
     }
 
