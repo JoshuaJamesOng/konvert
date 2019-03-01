@@ -3,19 +3,15 @@ package com.ongtonnesoup.konvert
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentFactory
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.ongtonnesoup.konvert.android.getProcessComponent
 import com.ongtonnesoup.konvert.android.setFragmentManagers
 import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.initialisation.CheckLocalRatesAvailable
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Provider
+import com.ongtonnesoup.konvert.android.BUNDLE_KEY_SAVED_VIEWMODEL_STATE as SAVED_STATE
 
 class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
 
@@ -39,36 +35,12 @@ class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
 
         setContentView(R.layout.activity_main)
 
-        val viewModel = ViewModelProviders.of(this, MainViewModelFactory(checkLocalRatesAvailable, dispatchers)).get(MainViewModel::class.java)
+        val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE)
+                ?: State()
+        val viewModel = ViewModelProviders.of(this, MainViewModelFactory(initialState, checkLocalRatesAvailable, dispatchers)).get(MainViewModel::class.java)
+
+        viewModel.dispatch(Action.CheckRates)
     }
 
     override fun get(): ApplicationComponent = component
-}
-
-class MainViewModel(
-        private val checkLocalRatesAvailable: CheckLocalRatesAvailable,
-        private val dispatchers: Dispatchers
-) : ViewModel() {
-    init {
-        checkRates()
-    }
-
-    private fun checkRates() {
-        GlobalScope.launch {
-            withContext(dispatchers.execution) {
-                checkLocalRatesAvailable.checkLocalRatesAvailable()
-            }
-        }
-    }
-}
-
-class MainViewModelFactory(
-        private val checkLocalRatesAvailable: CheckLocalRatesAvailable,
-        private val dispatchers: Dispatchers
-) : ViewModelProvider.NewInstanceFactory() {
-
-    @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return MainViewModel(checkLocalRatesAvailable, dispatchers) as T
-    }
 }
