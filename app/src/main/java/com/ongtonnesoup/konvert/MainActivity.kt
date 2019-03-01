@@ -3,15 +3,14 @@ package com.ongtonnesoup.konvert
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentFactory
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.ongtonnesoup.konvert.android.getProcessComponent
 import com.ongtonnesoup.konvert.android.setFragmentManagers
 import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.di.ApplicationComponent
-import com.ongtonnesoup.konvert.initialisation.InitialiseApp
-import com.ongtonnesoup.konvert.state.AppState
-import com.ongtonnesoup.konvert.state.InitialisationState
-import com.ongtonnesoup.konvert.state.updateInitialisedState
-import io.reactivex.Observable
+import com.ongtonnesoup.konvert.initialisation.CheckLocalRatesAvailable
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,10 +23,7 @@ class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
     lateinit var fragmentFactory: FragmentFactory
 
     @Inject
-    lateinit var appState: AppState
-
-    @Inject
-    lateinit var initialiseApp: InitialiseApp
+    lateinit var checkLocalRatesAvailable: CheckLocalRatesAvailable
 
     @Inject
     lateinit var dispatchers: Dispatchers
@@ -43,30 +39,36 @@ class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
 
         setContentView(R.layout.activity_main)
 
-        initialiseApp()
-    }
-
-    private fun initialiseApp() {
-        listenForInitialisationRequired(appState)
-                .doOnNext {
-                    GlobalScope.launch {
-                        withContext(dispatchers.execution) {
-                            initialiseApp.initialise()
-                        }
-                    }
-                }
-                .subscribe()
-
-        updateInitialisedState(appState, InitialisationState.INITIALISE)
-    }
-
-    private fun listenForInitialisationRequired(appState: AppState): Observable<InitialisationState> {
-        return appState.updates()
-                .doOnSubscribe { }
-                .map { state -> state.initialisationState }
-                .filter { initialisationState -> initialisationState == InitialisationState.INITIALISE }
-                .take(1)
+        val viewModel = ViewModelProviders.of(this, MainViewModelFactory(checkLocalRatesAvailable, dispatchers)).get(MainViewModel::class.java)
     }
 
     override fun get(): ApplicationComponent = component
+}
+
+class MainViewModel(
+        private val checkLocalRatesAvailable: CheckLocalRatesAvailable,
+        private val dispatchers: Dispatchers
+) : ViewModel() {
+    init {
+        checkRates()
+    }
+
+    private fun checkRates() {
+        GlobalScope.launch {
+            withContext(dispatchers.execution) {
+                checkLocalRatesAvailable.checkLocalRatesAvailable()
+            }
+        }
+    }
+}
+
+class MainViewModelFactory(
+        private val checkLocalRatesAvailable: CheckLocalRatesAvailable,
+        private val dispatchers: Dispatchers
+) : ViewModelProvider.NewInstanceFactory() {
+
+    @Suppress("unchecked_cast")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return MainViewModel(checkLocalRatesAvailable, dispatchers) as T
+    }
 }

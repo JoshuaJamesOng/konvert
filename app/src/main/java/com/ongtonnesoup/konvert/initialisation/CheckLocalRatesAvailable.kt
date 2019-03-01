@@ -2,19 +2,16 @@ package com.ongtonnesoup.konvert.initialisation
 
 import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.currency.domain.GetCurrentDataState
-import com.ongtonnesoup.konvert.currency.refresh.ScheduleRefresh
 import com.ongtonnesoup.konvert.state.*
 import javax.inject.Inject
 
-class InitialiseApp @Inject constructor(
+class CheckLocalRatesAvailable @Inject constructor(
         private val getCurrentDataState: GetCurrentDataState,
         private val updateExchangeRates: UpdateExchangeRates,
         private val appState: AppState
 ) {
 
-    suspend fun initialise() {
-        updateInitialisedState(appState, InitialisationState.INITIALISING)
-
+    suspend fun checkLocalRatesAvailable() {
         when (getLocalDataState()) {
             DataState.NO_DATA -> fetchNowThenScheduleRefresh()
             DataState.CACHED_DATA -> scheduleRefresh()
@@ -22,8 +19,6 @@ class InitialiseApp @Inject constructor(
                 throw java.lang.IllegalStateException()
             }
         }
-
-        updateInitialisedState(appState, InitialisationState.INITIALISED)
     }
 
     private suspend fun getLocalDataState(): DataState {

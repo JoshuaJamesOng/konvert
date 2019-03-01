@@ -10,7 +10,7 @@ class GetCurrentDataState @Inject constructor(
         private val appState: AppState
 ) {
     suspend fun load(): DataState {
-        val appState = getFromAppState()
+        val appState = getFromAppState() // TODO if we keep this state objec then it should watch the DB
         return if (appState != DataState.UNKNOWN) {
             appState
         } else {
@@ -21,8 +21,9 @@ class GetCurrentDataState @Inject constructor(
     private fun getFromAppState() = appState.current().dataState
 
     private suspend fun checkLocalStorage(): DataState {
-        return local.getExchangeRates()
-                .map { t -> t.rates.isEmpty() }
+        suspend fun isRatesInLocalStorage() = local.getExchangeRates().map { t -> t.rates.isEmpty() }
+
+        return isRatesInLocalStorage()
                 .fold({ DataState.CACHED_DATA }, { DataState.NO_DATA })
     }
 }
