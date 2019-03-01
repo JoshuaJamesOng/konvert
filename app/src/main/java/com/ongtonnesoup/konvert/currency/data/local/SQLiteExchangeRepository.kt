@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.currency.data.local
 
+import arrow.core.Try
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 
@@ -9,11 +10,11 @@ class SQLiteExchangeRepository(private val dao: ExchangeRatesDao,
                                private val fromLocalMapper: (List<ExchangeRatesDao.ExchangeRate>) ->
                                ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
-    suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
+    suspend override fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
         return runCatching {
             val response = dao.getAll()
-            return fromLocalMapper.invoke(response)
-        }.getOrDefault(ExchangeRepository.NO_DATA)
+            return Try.just(fromLocalMapper.invoke(response))
+        }.getOrElse { Try.raise(ExchangeRepository.NoDataException()) }
     }
 
     suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {

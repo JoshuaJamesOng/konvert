@@ -11,8 +11,9 @@ class RefreshThenRescheduleExchangeRates @Inject constructor(
         private val appState: AppState
 ) {
 
-    suspend fun refreshThenReschedule() {
-        updateExchangeRates.getExchangeRates()
+    suspend fun refreshThenReschedule(): RefreshState {
+        val updated = updateExchangeRates.getExchangeRates()
         updateRefreshState(appState, RefreshState.SCHEDULED)
+        return if (updated) RefreshState.SCHEDULED else TODO()
     }
 }

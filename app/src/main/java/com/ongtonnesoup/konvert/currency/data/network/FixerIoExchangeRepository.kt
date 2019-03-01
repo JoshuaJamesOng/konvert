@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.currency.data.network
 
+import arrow.core.Try
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import com.ongtonnesoup.konvert.isExpectedNetworkException
 
@@ -7,13 +8,13 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
                                 private val fromNetworkMapper: (FixerIoClient.Response) ->
                                 ExchangeRepository.ExchangeRates) : ExchangeRepository {
 
-    suspend override fun getExchangeRates(): ExchangeRepository.ExchangeRates {
+    suspend override fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
         return runCatching {
             val response = client.getLatest(BASE_CURRENCY).await()
-            fromNetworkMapper.invoke(response)
+            Try.just(fromNetworkMapper.invoke(response))
         }.getOrElse { e ->
             if (e.isExpectedNetworkException()) {
-                ExchangeRepository.NO_DATA
+                Try.raise(ExchangeRepository.NoDataException())
             } else {
                 throw e
             }

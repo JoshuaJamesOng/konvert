@@ -5,6 +5,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.konvert.di.Injector
+import com.ongtonnesoup.konvert.state.RefreshState
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -17,12 +18,15 @@ class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : W
         Timber.d { "Starting update exchange rates job" }
         inject()
 
-        runBlocking {
+        val status = runBlocking {
             interactor.refreshThenReschedule()
         }
 
-        // TODO Handle errors
-        return Result.SUCCESS
+        return if (status == RefreshState.SCHEDULED) {
+            Result.SUCCESS
+        } else {
+            Result.FAILURE
+        }
     }
 
     private fun inject() {

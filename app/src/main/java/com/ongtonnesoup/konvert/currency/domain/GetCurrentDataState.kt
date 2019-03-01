@@ -21,10 +21,8 @@ class GetCurrentDataState @Inject constructor(
     private fun getFromAppState() = appState.current().dataState
 
     private suspend fun checkLocalStorage(): DataState {
-        return if (local.getExchangeRates().rates.isEmpty()) {
-            DataState.NO_DATA
-        } else {
-            DataState.CACHED_DATA
-        }
+        return local.getExchangeRates()
+                .map { t -> t.rates.isEmpty() }
+                .fold({ DataState.CACHED_DATA }, { DataState.NO_DATA })
     }
 }

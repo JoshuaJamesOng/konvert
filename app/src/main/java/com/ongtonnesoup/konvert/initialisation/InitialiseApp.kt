@@ -3,13 +3,7 @@ package com.ongtonnesoup.konvert.initialisation
 import com.ongtonnesoup.konvert.currency.UpdateExchangeRates
 import com.ongtonnesoup.konvert.currency.domain.GetCurrentDataState
 import com.ongtonnesoup.konvert.currency.refresh.ScheduleRefresh
-import com.ongtonnesoup.konvert.state.AppState
-import com.ongtonnesoup.konvert.state.DataState
-import com.ongtonnesoup.konvert.state.InitialisationState
-import com.ongtonnesoup.konvert.state.RefreshState
-import com.ongtonnesoup.konvert.state.updateDataState
-import com.ongtonnesoup.konvert.state.updateInitialisedState
-import com.ongtonnesoup.konvert.state.updateRefreshState
+import com.ongtonnesoup.konvert.state.*
 import javax.inject.Inject
 
 class InitialiseApp @Inject constructor(
@@ -39,8 +33,12 @@ class InitialiseApp @Inject constructor(
 
     private suspend fun fetchNowThenScheduleRefresh() {
         updateRefreshState(appState, RefreshState.REFRESHING)
-        updateExchangeRates.getExchangeRates()
-        updateDataState(appState, DataState.CACHED_DATA)
+        val updated = updateExchangeRates.getExchangeRates()
+        if (updated) {
+            updateDataState(appState, DataState.CACHED_DATA)
+        } else {
+            updateDataState(appState, DataState.NO_DATA)
+        }
         scheduleRefresh()
     }
 
