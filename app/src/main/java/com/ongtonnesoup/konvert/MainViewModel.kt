@@ -3,19 +3,16 @@ package com.ongtonnesoup.konvert
 import android.os.Parcelable
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.common.plusAssign
+import com.ongtonnesoup.common.toSuspendableCompletable
 import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.initialisation.CheckLocalRatesAvailable
 import com.ww.roxie.BaseAction
 import com.ww.roxie.BaseState
 import com.ww.roxie.BaseViewModel
 import com.ww.roxie.Reducer
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 enum class Availability {
     UNKNOWN,
@@ -57,24 +54,9 @@ class MainViewModel(
     }
 
     private fun bindActions() {
-        fun checkLocalRates(): Completable {
-            return Completable.create { emitter ->
-                GlobalScope.launch {
-                    withContext(dispatchers.execution) {
-                        runCatching {
-                            checkLocalRatesAvailable.checkLocalRatesAvailable()
-                            emitter.onComplete()
-                        }.getOrElse {
-                            emitter.onError(it)
-                        }
-                    }
-                }
-            }
-        }
-
         val checkRates: Observable<Change> = actions.ofType<Action.CheckRates>(Action.CheckRates::class.java)
                 .switchMapSingle {
-                    checkLocalRates()
+                    toSuspendableCompletable({ checkLocalRatesAvailable.checkLocalRatesAvailable() }, dispatchers)
                             .toSingleDefault<Change>(Change.RatesAvailable)
                             .onErrorReturn { Change.RatesUnavailable }
                 }
