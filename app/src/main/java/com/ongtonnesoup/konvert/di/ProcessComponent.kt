@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.di
 
+import com.ongtonnesoup.konvert.KonvertApplication
 import com.ongtonnesoup.konvert.di.scopes.PerProcess
 import dagger.Component
 
@@ -8,9 +9,11 @@ import dagger.Component
     ProcessModule::class,
     StateModule::class,
     NetworkModule::class,
-    DatabaseModule::class
+    DatabaseModule::class,
+    SchedulerModule::class
 ])
 interface ProcessComponent {
+    fun inject(application: KonvertApplication)
 
     fun getApplicationComponent(): ApplicationComponent
 

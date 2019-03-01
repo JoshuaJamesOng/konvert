@@ -1,6 +1,8 @@
 package com.ongtonnesoup.konvert.currency.refresh
 
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.ongtonnesoup.konvert.constraintsBuilder
 import com.ongtonnesoup.konvert.periodicWorkRequestBuilder
@@ -10,6 +12,22 @@ import java.util.UUID
 class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
 
     fun schedule(): UUID? {
+        val name = RefreshExchangeRatesWorker::class.java.name
+        val existingWork = getExistingUniqueWork(name)
+        return existingWork?.id ?: enqueueNewUniqueWork(name)
+    }
+
+    private fun getExistingUniqueWork(name: String): WorkInfo? {
+        val existingWorkSource = workManager.getWorkInfosForUniqueWork(name)
+        val existingWork = existingWorkSource.get() // TODO Check if this ListenableFuture stuff is safe for interruptions
+        return when {
+            existingWork.size == 0 -> null
+            1 < existingWork.size -> throw IllegalStateException("Unique work $name queued more than once")
+            else -> existingWork[0]
+        }
+    }
+
+    private fun enqueueNewUniqueWork(name: String): UUID {
         val constraint = constraintsBuilder {
             setRequiredNetworkType(NetworkType.CONNECTED)
         }
@@ -18,7 +36,11 @@ class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
             setConstraints(constraint)
         }
 
-        workManager.enqueue(update)
+        workManager.enqueueUniquePeriodicWork(
+                name,
+                ExistingPeriodicWorkPolicy.KEEP,
+                update
+        )
 
         return update.id
     }

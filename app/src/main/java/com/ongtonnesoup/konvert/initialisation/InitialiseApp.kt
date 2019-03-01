@@ -9,7 +9,6 @@ import javax.inject.Inject
 class InitialiseApp @Inject constructor(
         private val getCurrentDataState: GetCurrentDataState,
         private val updateExchangeRates: UpdateExchangeRates,
-        private val scheduleRefresh: ScheduleRefresh,
         private val appState: AppState
 ) {
 
@@ -43,7 +42,7 @@ class InitialiseApp @Inject constructor(
     }
 
     private fun scheduleRefresh() {
-        scheduleRefresh.scheduleRefresh()
+//        scheduleRefresh.scheduleRefresh()
         updateRefreshState(appState, RefreshState.SCHEDULED)
     }
 }
