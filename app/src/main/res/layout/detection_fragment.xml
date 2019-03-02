@@ -16,4 +16,11 @@
         android:text="@string/detection_error"
         android:visibility="gone" />
 
+    <include
+        android:id="@+id/permissionsMessage"
+        layout="@layout/component_permission_required"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
 </FrameLayout>

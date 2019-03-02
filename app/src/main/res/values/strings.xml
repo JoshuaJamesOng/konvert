@@ -3,6 +3,7 @@
 
     <!-- Detection -->
     <string name="detection_error">Error</string>
+    <string name="detection_permission_required">Camera permission required to use Konvert</string>
 
     <!-- Settings -->
     <string name="settings_link">Settings</string>

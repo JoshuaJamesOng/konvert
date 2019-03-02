@@ -79,7 +79,9 @@ class DetectionFragment : Fragment() {
     private fun onSurfaceAndCameraSourceReady(surface: SurfaceHolder, cameraSource: CameraSource) {
         surfaceView.visibility = View.VISIBLE
         errorMessage.visibility = View.GONE
+        permissionsMessage.visibility = View.GONE
 
+        // TODO if we hide the surface by default, we could request permissions before showing
         fun onPermissionGranted(function: (Boolean) -> Unit) {
             RxPermissions(this)
                     .request(Manifest.permission.CAMERA)
@@ -87,6 +89,8 @@ class DetectionFragment : Fragment() {
                     .subscribe { granted ->
                         if (granted) {
                             function.invoke(granted)
+                        } else {
+                            showPermissionsBlocker()
                         }
                     }
         }
@@ -100,5 +104,12 @@ class DetectionFragment : Fragment() {
         Timber.e { state.toString() }
         surfaceView.visibility = View.GONE
         errorMessage.visibility = View.VISIBLE
+        permissionsMessage.visibility = View.GONE
+    }
+
+    private fun showPermissionsBlocker() {
+        surfaceView.visibility = View.GONE
+        errorMessage.visibility = View.GONE
+        permissionsMessage.visibility = View.VISIBLE
     }
 }
