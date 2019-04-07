@@ -23,9 +23,9 @@ class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : W
         }
 
         return if (status == RefreshState.SCHEDULED) {
-            Result.SUCCESS
+            Result.success()
         } else {
-            Result.FAILURE
+            Result.failure()
         }
     }
 

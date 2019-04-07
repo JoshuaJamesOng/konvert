@@ -15,7 +15,9 @@ class LicensesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val isFromSettings = LicensesFragmentArgs.fromBundle(arguments).fromSettings
-        text.text = "Is from settings? $isFromSettings"
+        savedInstanceState?.let {
+            val isFromSettings = LicensesFragmentArgs.fromBundle(it).fromSettings
+            text.text = "Is from settings? $isFromSettings"
+        }
     }
 }
