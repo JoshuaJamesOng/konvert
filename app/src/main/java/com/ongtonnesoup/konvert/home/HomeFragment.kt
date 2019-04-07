@@ -44,7 +44,9 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
         })
 
         viewModel.observableEffects.observe(this, Observer { effect ->
-            effect?.let { renderEffect(effect) }
+            effect?.let {
+                effect.ifNotHandled { renderEffect(it) }
+            }
         })
 
         settingsLink.setOnClickListener {

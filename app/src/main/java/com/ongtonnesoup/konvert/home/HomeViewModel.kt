@@ -1,17 +1,16 @@
 package com.ongtonnesoup.konvert.home
 
 import android.os.Parcelable
+import androidx.lifecycle.MutableLiveData
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.common.plusAssign
-import com.ongtonnesoup.konvert.android.SingleLiveEvent
+import com.ongtonnesoup.konvert.common.Event
 import com.ww.roxie.BaseAction
 import com.ww.roxie.BaseState
 import com.ww.roxie.BaseViewModel
 import com.ww.roxie.Reducer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -38,7 +37,7 @@ class HomeViewModel(
 
     override val initialState = initialState ?: State()
 
-    val observableEffects = SingleLiveEvent<Effect>()
+    val observableEffects = MutableLiveData<Event<Effect>>()
 
     private val reducer: Reducer<State, Change> = { state, change ->
         when (change) {
@@ -59,7 +58,7 @@ class HomeViewModel(
         disposables += actions.ofType<Action.ShowSettings>(Action.ShowSettings::class.java)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { Effect.ShowSettings }
-                .subscribe(observableEffects::postValue, Timber::e)
+                .subscribe({ effect -> observableEffects.postValue(Event(effect)) }, Timber::e)
 
         disposables += showOcrChange
                 .scan(initialState, reducer)
