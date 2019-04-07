@@ -79,8 +79,7 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
         childFragmentManager.commit {
             val fragment = fragmentFactory.instantiate(
                     DetectionFragment::class.java.classLoader!!,
-                    DetectionFragment::class.java.name,
-                    null)
+                    DetectionFragment::class.java.name)
 
             replace(R.id.fragment_container, fragment, DetectionFragment.TAG)
         }
