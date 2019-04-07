@@ -40,7 +40,7 @@ class DetectionFragment : Fragment() {
         viewModel.observableState.observe(this, Observer<State> { state ->
             when (state) {
                 is State.Idle -> Timber.d { state.toString() }
-                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource) // TODO Bang bang
+                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource!!) // TODO Bang bang
                 is State.Price -> Timber.d { state.toString() }
                 is State.Error -> showError(state)
             }

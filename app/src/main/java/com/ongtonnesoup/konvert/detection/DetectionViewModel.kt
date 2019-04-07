@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.detection
 
+import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -18,8 +19,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import javax.inject.Inject
 
 sealed class State : BaseState, Parcelable {
@@ -30,7 +31,13 @@ sealed class State : BaseState, Parcelable {
     object WaitingForCameraSource : State()
 
     @Parcelize
-    data class Ready(@Transient val cameraSource: @RawValue CameraSource) : State() // TODO Check this RawValue stuff
+    data class Ready(val cameraSource: CameraSource?) : State() {
+        private companion object : Parceler<Ready> {
+            override fun Ready.write(parcel: Parcel, flags: Int) = Unit
+
+            override fun create(parcel: Parcel): Ready = Ready(null)
+        }
+    }// TODO Check this stuff
 
     @Parcelize
     data class Price(val price: String) : State()
