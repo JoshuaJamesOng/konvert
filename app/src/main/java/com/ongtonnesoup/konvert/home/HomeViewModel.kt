@@ -1,6 +1,7 @@
 package com.ongtonnesoup.konvert.home
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.github.ajalt.timberkt.Timber
 import com.ongtonnesoup.common.plusAssign
@@ -37,7 +38,8 @@ class HomeViewModel(
 
     override val initialState = initialState ?: State()
 
-    val observableEffects = MutableLiveData<Event<Effect>>()
+    private val _observableEffects = MutableLiveData<Event<Effect>>()
+    val observableEffects: LiveData<Event<Effect>> get() = _observableEffects
 
     private val reducer: Reducer<State, Change> = { state, change ->
         when (change) {
@@ -58,7 +60,7 @@ class HomeViewModel(
         disposables += actions.ofType<Action.ShowSettings>(Action.ShowSettings::class.java)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { Effect.ShowSettings }
-                .subscribe({ effect -> observableEffects.postValue(Event(effect)) }, Timber::e)
+                .subscribe({ effect -> _observableEffects.postValue(Event(effect)) }, Timber::e)
 
         disposables += showOcrChange
                 .scan(initialState, reducer)
