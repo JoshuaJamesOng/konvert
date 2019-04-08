@@ -1,21 +1,17 @@
 package com.ongtonnesoup.konvert.currency.data.network
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import arrow.core.Try
+import com.nhaarman.mockitokotlin2.*
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
+import junit.framework.Assert.fail
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldHaveTheSameClassAs
 import org.junit.Test
 import java.io.IOException
 
-private const val TEST_ACCESS_KEY = ""
-private val TEST_CLIENT_CONFIGURATION = FixerIoExchangeRepository.Configuration(TEST_ACCESS_KEY)
-private const val BASE_CURRENCY = "EUR"
+private const val BASE_CURRENCY = "GBP"
 
 class FixerIoExchangeRepositoryTest {
 
@@ -26,7 +22,7 @@ class FixerIoExchangeRepositoryTest {
         // Given
         val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn CompletableDeferred(networkResponse)
+            on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
         }
 
         val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
@@ -35,12 +31,12 @@ class FixerIoExchangeRepositoryTest {
         }
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
+        cut = FixerIoExchangeRepository(client, mapper)
         val result = runBlocking { cut.getExchangeRates() }
 
         // Then
-        result shouldEqual mappedResponse
-        verify(client).getLatest(BASE_CURRENCY, TEST_ACCESS_KEY)
+        result shouldEqual Try.just(mappedResponse)
+        verify(client).getLatest(BASE_CURRENCY)
         argumentCaptor<FixerIoClient.Response>().apply {
             verify(mapper).invoke(capture())
 
@@ -49,24 +45,24 @@ class FixerIoExchangeRepositoryTest {
     }
 
     @Test
-    fun getExchangeRatesClientErrorReturnsDefaultValue() {
+    fun raisesNetworkError() {
         // Given
         val networkError = CompletableDeferred<FixerIoClient.Response>()
         networkError.completeExceptionally(IOException())
 
         val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn networkError
+            on { getLatest(BASE_CURRENCY) } doReturn networkError
         }
 
         val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates>()
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
+        cut = FixerIoExchangeRepository(client, mapper)
         val result = runBlocking { cut.getExchangeRates() }
 
         // Then
-        result shouldEqual ExchangeRepository.ExchangeRates(emptyList())
-        verify(client).getLatest(BASE_CURRENCY, TEST_ACCESS_KEY)
+        result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+        verify(client).getLatest(BASE_CURRENCY)
         verifyZeroInteractions(mapper)
     }
 
@@ -75,7 +71,7 @@ class FixerIoExchangeRepositoryTest {
         // Given
         val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
         val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY, TEST_ACCESS_KEY) } doReturn CompletableDeferred(networkResponse)
+            on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
         }
 
         val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
@@ -83,7 +79,7 @@ class FixerIoExchangeRepositoryTest {
         }
 
         // When
-        cut = FixerIoExchangeRepository(client, mapper, TEST_CLIENT_CONFIGURATION)
+        cut = FixerIoExchangeRepository(client, mapper)
         runBlocking { cut.getExchangeRates() }
 
         // Then

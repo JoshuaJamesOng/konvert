@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.currency.domain
 
+import arrow.core.Try
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.ongtonnesoup.konvert.state.AppState
@@ -29,7 +30,7 @@ class GetCurrentDataStateTest : Spek({
         }
 
         val local = mock<ExchangeRepository> {
-            onBlocking { getExchangeRates() } doReturn ExchangeRepository.ExchangeRates(emptyList())
+            onBlocking { getExchangeRates() } doReturn Try.just(ExchangeRepository.ExchangeRates(emptyList()))
         }
 
         val cut = GetCurrentDataState(local, appState)
@@ -55,7 +56,7 @@ class GetCurrentDataStateTest : Spek({
         }
 
         val local = mock<ExchangeRepository> {
-            onBlocking { getExchangeRates() } doReturn ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("", 1.0)))
+            onBlocking { getExchangeRates() } doReturn Try.just(ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("", 1.0))))
         }
 
         val cut = GetCurrentDataState(local, appState)

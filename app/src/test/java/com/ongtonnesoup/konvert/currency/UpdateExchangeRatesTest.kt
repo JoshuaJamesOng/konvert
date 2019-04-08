@@ -1,5 +1,7 @@
 package com.ongtonnesoup.konvert.currency
 
+import arrow.core.Try
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.runBlocking
@@ -22,7 +24,7 @@ class UpdateExchangeRatesTest : Spek({
         val exchangeRates = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("network", 1.0)))
 
         val get = mock<GetLatestExchangeRates> {
-            onBlocking { this.getExchangeRates() } doReturn exchangeRates // TODO Confirm why we switched methods
+            onBlocking { this.getExchangeRates() } doReturn Try.just(exchangeRates) // TODO Confirm why we switched methods
         }
 
         val save = mock<SaveExchangeRates>()
