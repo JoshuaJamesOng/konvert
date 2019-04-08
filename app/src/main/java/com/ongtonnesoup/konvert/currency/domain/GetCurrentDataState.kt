@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.currency.domain
 
+import arrow.core.Try
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
 import javax.inject.Inject
@@ -21,9 +22,20 @@ class GetCurrentDataState @Inject constructor(
     private fun getFromAppState() = appState.current().dataState
 
     private suspend fun checkLocalStorage(): DataState {
-        suspend fun isRatesInLocalStorage() = local.getExchangeRates().map { t -> t.rates.isEmpty() }
+        suspend fun isRatesInLocalStorage() = local.getExchangeRates()
+                .map { t -> !t.rates.isEmpty() }
+                .flatMap { isRates ->
+                    if (isRates) {
+                        Try.just(true)
+                    } else {
+                        Try.raise(ExchangeRepository.NoDataException())
+                    }
+                }
 
         return isRatesInLocalStorage()
-                .fold({ DataState.CACHED_DATA }, { DataState.NO_DATA })
+                .fold(
+                        ifSuccess = { DataState.CACHED_DATA },
+                        ifFailure = { DataState.NO_DATA }
+                )
     }
 }
