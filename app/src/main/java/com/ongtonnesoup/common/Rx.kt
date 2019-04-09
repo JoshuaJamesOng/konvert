@@ -12,7 +12,6 @@ operator fun CompositeDisposable.plusAssign(disposable: Disposable) {
     this.add(disposable)
 }
 
-
 // TODO could this be of use? rxCompletable: https://bit.ly/2VF2ZQh
 fun toSuspendableCompletable(func: suspend () -> Unit, dispatchers: Dispatchers): Completable {
     return Completable.create { emitter ->

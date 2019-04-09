@@ -37,7 +37,7 @@ sealed class State : BaseState, Parcelable {
 
             override fun create(parcel: Parcel): Ready = Ready(null)
         }
-    }// TODO Check this stuff
+    } // TODO Check this stuff
 
     @Parcelize
     data class Price(val price: String) : State()

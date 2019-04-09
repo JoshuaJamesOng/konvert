@@ -69,4 +69,3 @@ class HomeViewModel(
                 .subscribe(state::setValue, Timber::e)
     }
 }
-

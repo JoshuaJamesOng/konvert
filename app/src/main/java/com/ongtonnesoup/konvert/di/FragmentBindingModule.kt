@@ -15,7 +15,7 @@ abstract class FragmentBindingModule {
     @Binds
     @IntoMap
     @FragmentKey(HomeFragment::class)
-    abstract fun bindHomeFragment(homeFragment: HomeFragment) : Fragment
+    abstract fun bindHomeFragment(homeFragment: HomeFragment): Fragment
 
     @Binds
     abstract fun bindFragmentFactory(factory: DaggerFragmentInjectionFactory): FragmentFactory
