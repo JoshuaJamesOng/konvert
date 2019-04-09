@@ -8,11 +8,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
-import junit.framework.Assert.fail
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldHaveTheSameClassAs
+import org.junit.Assert.fail
 import org.junit.Test
 import java.io.IOException
 

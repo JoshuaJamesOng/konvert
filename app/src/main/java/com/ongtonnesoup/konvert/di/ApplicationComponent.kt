@@ -20,4 +20,9 @@ interface ApplicationComponent {
     fun inject(hostFragment: NavHostFragment)
 
     fun getDetectionComponent(module: MobileVisionModule): DetectionComponent
+
+    // Not a typo. Dagger's generated code does not fully quality it's `Provider` import
+    interface Providerr {
+        fun get(): ApplicationComponent
+    }
 }

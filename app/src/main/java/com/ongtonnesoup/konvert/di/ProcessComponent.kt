@@ -18,4 +18,9 @@ interface ProcessComponent {
     fun getApplicationComponent(): ApplicationComponent
 
     fun getWorkerComponent(): WorkerComponent
+
+    // Not a typo. Dagger's generated code does not fully quality it's `Provider` import
+    interface Providerr {
+        fun get(): ProcessComponent
+    }
 }

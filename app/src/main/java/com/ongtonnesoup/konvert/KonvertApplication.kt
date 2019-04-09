@@ -5,15 +5,13 @@ import androidx.lifecycle.LifecycleObserver
 import com.ongtonnesoup.konvert.currency.refresh.EnableBackgroundSync
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.DaggerProcessComponent
-import com.ongtonnesoup.konvert.di.Injector
 import com.ongtonnesoup.konvert.di.ProcessComponent
 import com.ongtonnesoup.konvert.di.ProcessModule
 import javax.inject.Inject
-import javax.inject.Provider
 
 class KonvertApplication : Application(),
-        Provider<ProcessComponent>,
-        Injector<RefreshExchangeRatesWorker>,
+        ProcessComponent.Providerr,
+        RefreshExchangeRatesWorker.Injector,
         LifecycleObserver {
 
     @Inject

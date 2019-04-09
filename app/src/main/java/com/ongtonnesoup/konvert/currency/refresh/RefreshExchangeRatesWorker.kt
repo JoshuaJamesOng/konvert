@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.github.ajalt.timberkt.Timber
-import com.ongtonnesoup.konvert.di.Injector
 import com.ongtonnesoup.konvert.state.RefreshState
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -30,6 +29,10 @@ class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : W
     }
 
     private fun inject() {
-        (applicationContext as Injector<RefreshExchangeRatesWorker>).inject(this)
+        (applicationContext as Injector).inject(this)
+    }
+
+    interface Injector {
+        fun inject(target: RefreshExchangeRatesWorker)
     }
 }

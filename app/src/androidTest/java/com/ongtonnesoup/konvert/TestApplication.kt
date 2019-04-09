@@ -7,11 +7,10 @@ import com.ongtonnesoup.konvert.currency.di.TestApplicationComponent
 import com.ongtonnesoup.konvert.currency.di.TestWorkerComponent
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.DaggerTestProcessComponent
-import com.ongtonnesoup.konvert.di.Injector
 import com.ongtonnesoup.konvert.di.ProcessModule
 import com.ongtonnesoup.konvert.di.TestProcessComponent
 
-class TestApplication : Application(), Injector<RefreshExchangeRatesWorker> {
+class TestApplication : Application(), RefreshExchangeRatesWorker.Injector {
 
     private lateinit var processComponent: TestProcessComponent
 

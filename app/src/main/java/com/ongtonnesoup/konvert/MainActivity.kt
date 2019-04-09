@@ -10,10 +10,9 @@ import com.ongtonnesoup.konvert.common.Dispatchers
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 import com.ongtonnesoup.konvert.initialisation.CheckLocalRatesAvailable
 import javax.inject.Inject
-import javax.inject.Provider
 import com.ongtonnesoup.konvert.android.BUNDLE_KEY_SAVED_VIEWMODEL_STATE as SAVED_STATE
 
-class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
+class MainActivity : AppCompatActivity(), ApplicationComponent.Providerr {
 
     @Inject
     lateinit var fragmentFactory: FragmentFactory
