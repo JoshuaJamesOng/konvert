@@ -19,7 +19,8 @@ class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
 
     private fun getExistingUniqueWork(name: String): WorkInfo? {
         val existingWorkSource = workManager.getWorkInfosForUniqueWork(name)
-        val existingWork = existingWorkSource.get() // TODO Check if this ListenableFuture stuff is safe for interruptions
+        // TODO Check if this ListenableFuture stuff is safe for interruptions
+        val existingWork = existingWorkSource.get()
         return when {
             existingWork.size == 0 -> null
             1 < existingWork.size -> throw IllegalStateException("Unique work $name queued more than once")

@@ -37,7 +37,10 @@ class MainActivity : AppCompatActivity(), Provider<ApplicationComponent> {
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE)
                 ?: State()
-        val viewModel = ViewModelProviders.of(this, MainViewModelFactory(initialState, checkLocalRatesAvailable, dispatchers)).get(MainViewModel::class.java)
+        val viewModel = ViewModelProviders.of(
+                this,
+                MainViewModelFactory(initialState, checkLocalRatesAvailable, dispatchers)
+        ).get(MainViewModel::class.java)
 
         viewModel.dispatch(Action.CheckRates)
     }

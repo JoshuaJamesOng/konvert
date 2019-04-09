@@ -97,15 +97,16 @@ class DetectionViewModel(
                     Observable.just(Change.ShowPrice(it.price))
                 }
 
-        val cameraAvailable: Observable<Change> = actions.ofType<Action.CameraAvailable>(Action.CameraAvailable::class.java)
-                .map { Optional(cameraSource) }
-                .switchMap {
-                    if (it.data == null) {
-                        Observable.just(Change.WaitingForCameraSource)
-                    } else {
-                        Observable.just(Change.CameraAvailable(it.data))
-                    }
-                }
+        val cameraAvailable: Observable<Change> =
+                actions.ofType<Action.CameraAvailable>(Action.CameraAvailable::class.java)
+                        .map { Optional(cameraSource) }
+                        .switchMap {
+                            if (it.data == null) {
+                                Observable.just(Change.WaitingForCameraSource)
+                            } else {
+                                Observable.just(Change.CameraAvailable(it.data))
+                            }
+                        }
 
         disposables += Observable.merge(showPriceChange, cameraAvailable, internalChanges)
                 .scan(initialState, reducer)
@@ -117,7 +118,10 @@ class DetectionViewModel(
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun detectPrices() {
         disposables += detectPrices.detectPrices()
-                .subscribe({ price -> dispatch(Action.PriceDetected(price.text)) }, { error -> dispatch(Action.Error(error)) })
+                .subscribe(
+                        { price -> dispatch(Action.PriceDetected(price.text)) },
+                        { error -> dispatch(Action.Error(error)) }
+                )
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

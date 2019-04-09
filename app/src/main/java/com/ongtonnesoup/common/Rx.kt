@@ -13,7 +13,7 @@ operator fun CompositeDisposable.plusAssign(disposable: Disposable) {
 }
 
 
-// TODO could this be of use? https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-rx2/kotlinx.coroutines.rx2/kotlinx.coroutines.-coroutine-scope/rx-completable.html
+// TODO could this be of use? rxCompletable: https://bit.ly/2VF2ZQh
 fun toSuspendableCompletable(func: suspend () -> Unit, dispatchers: Dispatchers): Completable {
     return Completable.create { emitter ->
         GlobalScope.launch {

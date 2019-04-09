@@ -35,7 +35,10 @@ class DetectionFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE) ?: State.Idle
-        viewModel = ViewModelProviders.of(this, DetectionViewModelFactory(initialState, getApplicationComponent(this))).get(DetectionViewModel::class.java)
+        viewModel = ViewModelProviders.of(
+                this,
+                DetectionViewModelFactory(initialState, getApplicationComponent(this))
+        ).get(DetectionViewModel::class.java)
 
         viewModel.observableState.observe(this, Observer<State> { state ->
             when (state) {
