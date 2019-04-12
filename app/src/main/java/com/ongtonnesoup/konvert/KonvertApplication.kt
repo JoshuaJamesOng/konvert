@@ -6,7 +6,6 @@ import com.ongtonnesoup.konvert.currency.refresh.EnableBackgroundSync
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.DaggerProcessComponent
 import com.ongtonnesoup.konvert.di.ProcessComponent
-import com.ongtonnesoup.konvert.di.ProcessModule
 import javax.inject.Inject
 
 class KonvertApplication : Application(),
@@ -29,9 +28,8 @@ class KonvertApplication : Application(),
     }
 
     private fun createProcessComponent(): ProcessComponent {
-        return DaggerProcessComponent.builder()
-                .processModule(ProcessModule(this))
-                .build()
+        return DaggerProcessComponent.factory()
+                .create(this)
     }
 
     override fun get() = processComponent

@@ -7,7 +7,6 @@ import com.ongtonnesoup.konvert.currency.di.TestApplicationComponent
 import com.ongtonnesoup.konvert.currency.di.TestWorkerComponent
 import com.ongtonnesoup.konvert.currency.refresh.RefreshExchangeRatesWorker
 import com.ongtonnesoup.konvert.di.DaggerTestProcessComponent
-import com.ongtonnesoup.konvert.di.ProcessModule
 import com.ongtonnesoup.konvert.di.TestProcessComponent
 
 class TestApplication : Application(), RefreshExchangeRatesWorker.Injector {
@@ -28,9 +27,8 @@ class TestApplication : Application(), RefreshExchangeRatesWorker.Injector {
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         Timber.plant(timber.log.Timber.DebugTree())
 
-        processComponent = DaggerTestProcessComponent.builder()
-                .processModule(ProcessModule(this))
-                .build()
+        processComponent = DaggerTestProcessComponent.factory()
+                .create(this)
     }
 
     override fun inject(target: RefreshExchangeRatesWorker) {
