@@ -1,93 +1,111 @@
 package com.ongtonnesoup.konvert.currency.data.network
 
 import arrow.core.Try
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.*
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldHaveTheSameClassAs
 import org.junit.Assert.fail
-import org.junit.Test
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.gherkin.Feature
 import java.io.IOException
+import kotlin.test.assertFailsWith
 
 private const val BASE_CURRENCY = "GBP"
 
-class FixerIoExchangeRepositoryTest {
+object FixerIoExchangeRepositoryTest : Spek({
+    lateinit var cut: FixerIoExchangeRepository
 
-    private lateinit var cut: FixerIoExchangeRepository
+    Feature("FixerIOExchangeRepository") {
 
-    @Test
-    fun getExchangeRates() {
-        // Given
+        val client by memoized { mock<FixerIoClient>() }
+        val mapper by memoized { mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates>() }
         val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
-        val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
+        val networkError = CompletableDeferred<FixerIoClient.Response>().apply {
+            completeExceptionally(IOException())
         }
-
         val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
-        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
-            on { invoke(networkResponse) } doReturn mappedResponse
+
+        Scenario("Successful network call") {
+
+            Given("Rates available") {
+                client.stub {
+                    on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
+                }
+                mapper.stub {
+                    on { invoke(networkResponse) } doReturn mappedResponse
+                }
+            }
+
+            lateinit var result: Try<ExchangeRepository.ExchangeRates>
+            When("Exchange rates fetched") {
+                cut = FixerIoExchangeRepository(client, mapper)
+                result = runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("API call made") {
+                verify(client).getLatest(BASE_CURRENCY)
+            }
+
+            Then("API response is mapped") {
+                argumentCaptor<FixerIoClient.Response>().apply {
+                    verify(mapper).invoke(capture())
+
+                    firstValue shouldEqual networkResponse
+                }
+            }
+
+            Then("Mapped response is returned") {
+                result shouldEqual Try.just(mappedResponse)
+            }
         }
 
-        // When
-        cut = FixerIoExchangeRepository(client, mapper)
-        val result = runBlocking { cut.getExchangeRates() }
+        Scenario("Unsuccessful network call") {
 
-        // Then
-        result shouldEqual Try.just(mappedResponse)
-        verify(client).getLatest(BASE_CURRENCY)
-        argumentCaptor<FixerIoClient.Response>().apply {
-            verify(mapper).invoke(capture())
+            Given("Network error") {
+                client.stub {
+                    on { getLatest(BASE_CURRENCY) } doReturn networkError
+                }
+            }
 
-            firstValue shouldEqual networkResponse
+            lateinit var result: Try<ExchangeRepository.ExchangeRates>
+            When("Exchange rates fetched") {
+                cut = FixerIoExchangeRepository(client, mapper)
+                result = runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("API call made") {
+                verify(client).getLatest(BASE_CURRENCY)
+            }
+
+            Then("Nothing to map") {
+                verifyZeroInteractions(mapper)
+            }
+
+            Then("Exception is returned") {
+                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+            }
+        }
+
+        Scenario("Mapper error") {
+
+            Given("Mapping error") {
+                client.stub {
+                    on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
+                }
+                mapper.stub {
+                    on { invoke(networkResponse) } doThrow RuntimeException()
+                }
+            }
+
+            When("Exchange rates fetched") {
+                cut = FixerIoExchangeRepository(client, mapper)
+                assertFailsWith<RuntimeException> {
+                    runBlocking { cut.getExchangeRates() }
+                }
+            }
         }
     }
-
-    @Test
-    fun raisesNetworkError() {
-        // Given
-        val networkError = CompletableDeferred<FixerIoClient.Response>()
-        networkError.completeExceptionally(IOException())
-
-        val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY) } doReturn networkError
-        }
-
-        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates>()
-
-        // When
-        cut = FixerIoExchangeRepository(client, mapper)
-        val result = runBlocking { cut.getExchangeRates() }
-
-        // Then
-        result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
-        verify(client).getLatest(BASE_CURRENCY)
-        verifyZeroInteractions(mapper)
-    }
-
-    @Test(expected = RuntimeException::class)
-    fun getExchangeRatesMapperErrorThrows() {
-        // Given
-        val networkResponse = FixerIoClient.Response("base", "date", emptyMap())
-        val client = mock<FixerIoClient> {
-            on { getLatest(BASE_CURRENCY) } doReturn CompletableDeferred(networkResponse)
-        }
-
-        val mapper = mock<(FixerIoClient.Response) -> ExchangeRepository.ExchangeRates> {
-            on { invoke(networkResponse) } doThrow RuntimeException()
-        }
-
-        // When
-        cut = FixerIoExchangeRepository(client, mapper)
-        runBlocking { cut.getExchangeRates() }
-
-        // Then
-        // Throws
-    }
-}
+})

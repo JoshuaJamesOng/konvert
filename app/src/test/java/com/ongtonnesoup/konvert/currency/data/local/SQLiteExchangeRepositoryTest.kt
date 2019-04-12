@@ -1,95 +1,139 @@
 package com.ongtonnesoup.konvert.currency.data.local
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import arrow.core.Try
+import com.nhaarman.mockitokotlin2.*
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldEqual
-import org.junit.Test
+import org.amshove.kluent.shouldHaveTheSameClassAs
+import org.junit.Assert.fail
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.gherkin.Feature
 
-class SQLiteExchangeRepositoryTest {
+object SQLiteExchangeRepositoryTest : Spek({
+    Feature("Local data") {
 
-    @Test
-    fun getExchangeRates() {
-        // Given
+        val dao by memoized { mock<ExchangeRatesDao>() }
+        val localToDomainMapper by memoized { mock<(List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates>() }
+        val domainToLocalMapper by memoized { mock<(ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>>() }
         val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
-        val dao = mock<ExchangeRatesDao> {
-            on { getAll() } doReturn localResponse
-        }
-
         val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))
-        val localToDomainMapper = mock<(List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates> {
-            on { invoke(localResponse) } doReturn mapperResponse
+        val newRates = ExchangeRepository.ExchangeRates(emptyList())
+
+        Scenario("Successful database call") {
+
+            Given("Rates available") {
+                dao.stub {
+                    on { getAll() } doReturn localResponse
+                }
+                localToDomainMapper.stub {
+                    on { invoke(localResponse) } doReturn mapperResponse
+                }
+            }
+
+            lateinit var result: Try<ExchangeRepository.ExchangeRates>
+            When("Exchange rates fetched") {
+                val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
+                result = runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("Database queried") {
+                verify(dao).getAll()
+            }
+
+            Then("Data model mapped to domain model") {
+                argumentCaptor<List<ExchangeRatesDao.ExchangeRate>>().apply {
+                    verify(localToDomainMapper).invoke(capture())
+
+                    firstValue shouldEqual localResponse
+                }
+            }
+
+            Then("Mapped response is returned") {
+                result shouldEqual Try.just(mapperResponse)
+            }
         }
 
-        val domainToLocalMapper = mock<(ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>> {}
+        Scenario("Unsuccessful database calls") {
+            Given("Database error") {
+                dao.stub {
+                    on { getAll() } doThrow RuntimeException()
+                }
+            }
 
-        // When
-        val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val result = runBlocking { cut.getExchangeRates() }
+            lateinit var result: Try<ExchangeRepository.ExchangeRates>
+            When("Exchange rates fetched") {
+                val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
+                result = runBlocking { cut.getExchangeRates() }
+            }
 
-        // Then
-        result shouldEqual mapperResponse
-        verify(dao).getAll()
-        argumentCaptor<List<ExchangeRatesDao.ExchangeRate>>().apply {
-            verify(localToDomainMapper).invoke(capture())
+            Then("Database queried") {
+                verify(dao).getAll()
+            }
 
-            firstValue shouldEqual localResponse
+            Then("Nothing to map") {
+                verifyZeroInteractions(localToDomainMapper)
+            }
+
+            Then("Database error is returned") {
+                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+            }
+        }
+
+        Scenario("Mapper error") {
+            Given("Mapping error") {
+                dao.stub {
+                    on { getAll() } doReturn localResponse
+                }
+                localToDomainMapper.stub {
+                    on { invoke(localResponse) } doThrow RuntimeException()
+                }
+            }
+
+            lateinit var result: Try<ExchangeRepository.ExchangeRates>
+            When("Exchange rates fetched") {
+                val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
+                result = runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("Database queried") {
+                verify(dao).getAll()
+            }
+
+            Then("Data model mapped to domain model") {
+                verify(localToDomainMapper).invoke(localResponse)
+            }
+
+            Then("Mapping error is returned") {
+                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+            }
+        }
+
+        Scenario("Save exchange rates") {
+            lateinit var mappedModel: ExchangeRatesDao.ExchangeRate
+            Given("") {
+                mappedModel = ExchangeRatesDao.ExchangeRate("test-mapped", 2.0)
+                domainToLocalMapper.stub {
+                    on { invoke(newRates) } doReturn listOf(mappedModel, mappedModel, mappedModel, mappedModel)
+                }
+            }
+
+            When("Exchange rates saved") {
+                val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
+                runBlocking { cut.putExchangeRates(newRates) }
+            }
+
+            Then("Existing data cleared") {
+                verify(dao).clear()
+            }
+
+            Then("Rates mapped to data model") {
+                verify(domainToLocalMapper).invoke(newRates)
+            }
+
+            Then("Rates inserted") {
+                verify(dao, times(4)).insert(mappedModel)
+            }
         }
     }
-
-    @Test
-    fun getExchangeRatesDaoErrorReturnsDefaultValue() {
-        // Given
-        val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
-        val dao = mock<ExchangeRatesDao> {
-            on { getAll() } doThrow RuntimeException()
-        }
-
-        val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))
-        val localToDomainMapper = mock<(List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates> {
-            on { invoke(localResponse) } doReturn mapperResponse
-        }
-
-        val domainToLocalMapper = mock<(ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>> {}
-
-        // When
-        val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        val result = runBlocking { cut.getExchangeRates() }
-
-        // Then
-        result shouldEqual ExchangeRepository.ExchangeRates(emptyList())
-
-        verify(dao).getAll()
-        verifyZeroInteractions(localToDomainMapper)
-    }
-
-    @Test
-    fun putExchangeRate() {
-        // Given
-        val rates = ExchangeRepository.ExchangeRates(emptyList())
-
-        val dao = mock<ExchangeRatesDao>()
-
-        val mappedModel = ExchangeRatesDao.ExchangeRate("test-mapped", 2.0)
-        val domainToLocalMapper = mock<(ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>> {
-            on { invoke(rates) } doReturn listOf(mappedModel, mappedModel, mappedModel, mappedModel)
-        }
-
-        val localToDomainMapper = mock<(List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates>()
-
-        // When
-        val cut = SQLiteExchangeRepository(dao, domainToLocalMapper, localToDomainMapper)
-        runBlocking { cut.putExchangeRates(rates) }
-
-        // Then
-        verify(dao).clear()
-        verify(domainToLocalMapper).invoke(rates)
-        verify(dao, times(4)).insert(mappedModel)
-    }
-}
+})
