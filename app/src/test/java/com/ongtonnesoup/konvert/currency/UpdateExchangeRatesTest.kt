@@ -3,45 +3,65 @@ package com.ongtonnesoup.konvert.currency
 import arrow.core.Try
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.stub
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import kotlinx.coroutines.runBlocking
+import org.amshove.kluent.Verify
+import org.amshove.kluent.VerifyNotCalled
 import org.amshove.kluent.called
 import org.amshove.kluent.on
 import org.amshove.kluent.that
-import org.amshove.kluent.Verify
 import org.amshove.kluent.was
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
-import org.junit.platform.runner.JUnitPlatform
-import org.junit.runner.RunWith
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.gherkin.Feature
 
-@RunWith(JUnitPlatform::class)
-class UpdateExchangeRatesTest : Spek({
+object UpdateExchangeRatesTest : Spek({
 
-    given("latest exchange rates response") {
+    Feature("Updating rates") {
+        val get by memoized { mock<GetLatestExchangeRates>() }
+        val save by memoized { mock<SaveExchangeRates>() }
+
         val exchangeRates = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("network", 1.0)))
 
-        val get = mock<GetLatestExchangeRates> {
-            onBlocking { this.getExchangeRates() } doReturn Try.just(exchangeRates) // TODO Confirm why we switched methods
-        }
-
-        val save = mock<SaveExchangeRates>()
-
-        val cut = UpdateExchangeRates(get, save)
-
-        on("get") {
-            runBlocking {
-                cut.getExchangeRates()
+        Scenario("Rates updated") {
+            Given("Exchange rates available") {
+                get.stub {
+                    onBlocking { getExchangeRates() } doReturn Try.just(exchangeRates) // TODO Confirm why we switched methods
+                }
             }
 
-            it("should fetch") {
+            When("Updating exchange rates") {
+                val cut = UpdateExchangeRates(get, save)
+                runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("Exchange rates fetched") {
                 runBlocking { Verify on get that get.getExchangeRates() was called }
             }
 
-            it("should save") {
+            Then("Exchange rates saved") {
                 runBlocking { Verify on save that save.save(exchangeRates) was called }
+            }
+        }
+
+        Scenario("Rates not updated") {
+            Given("Exchange rates not available") {
+                get.stub {
+                    onBlocking { getExchangeRates() } doReturn Try.raise(ExchangeRepository.NoDataException())
+                }
+            }
+
+            When("Updating exchange rates") {
+                val cut = UpdateExchangeRates(get, save)
+                runBlocking { cut.getExchangeRates() }
+            }
+
+            Then("Exchange rates fetched") {
+                runBlocking { Verify on get that get.getExchangeRates() was called }
+            }
+
+            Then("Nothing to save") {
+                runBlocking { VerifyNotCalled on save that save.save(exchangeRates) }
             }
         }
     }

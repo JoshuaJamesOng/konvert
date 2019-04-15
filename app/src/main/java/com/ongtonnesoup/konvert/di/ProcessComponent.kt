@@ -25,12 +25,13 @@ interface ProcessComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance @PerProcess @ContextType(Type.APPLICATION) context: Context): ProcessComponent
+        fun create(
+                @BindsInstance @PerProcess @ContextType(Type.APPLICATION) context: Context
+        ): ProcessComponent
     }
 
     // Not a typo. Dagger's generated code does not fully quality it's `Provider` import
     interface Providerr {
         fun get(): ProcessComponent
-
     }
 }

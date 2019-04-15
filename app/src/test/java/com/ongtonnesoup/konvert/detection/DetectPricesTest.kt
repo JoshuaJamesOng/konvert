@@ -7,36 +7,33 @@ import com.rubylichtenstein.rxtest.assertions.shouldEmit
 import com.rubylichtenstein.rxtest.extentions.test
 import com.rubylichtenstein.rxtest.matchers.values
 import io.reactivex.Observable
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
-class DetectPricesTest : Spek({
+object DetectPricesTest : Spek({
 
-    val testCases = mapOf(
-            "Product Name" to Metadata(containsNumber = false),
-            "12" to Metadata(containsNumber = true),
-            "12.00" to Metadata(containsNumber = true),
-            "£12" to Metadata(expectedSymbol = "£"),
-            "$12.00" to Metadata(expectedSymbol = "$"),
-            "Reduced to €12.00" to Metadata(expectedSymbol = "€"),
-            "Was ¥12 now ¥10" to Metadata(expectedSymbol = "¥")
-    )
+    describe("When detecting prices") {
+        val testCases = mapOf(
+                "Product Name" to Metadata(containsNumber = false),
+                "12" to Metadata(containsNumber = true),
+                "12.00" to Metadata(containsNumber = true),
+                "£12" to Metadata(expectedSymbol = "£"),
+                "$12.00" to Metadata(expectedSymbol = "$"),
+                "Reduced to €12.00" to Metadata(expectedSymbol = "€"),
+                "Was ¥12 now ¥10" to Metadata(expectedSymbol = "¥")
+        )
 
-    given("price detector") {
-        val gateway = mock<OcrGateway>()
-        val cut = DetectPrices(gateway)
+        testCases.forEach { (detectedText, metadata) ->
+            val gateway = mock<OcrGateway>()
+            val cut = DetectPrices(gateway)
 
-        testCases.forEach { detectedText, metadata ->
-
-            on("$detectedText") {
+            context("$detectedText") {
                 val parsedText = ParsedText(detectedText)
                 whenever(gateway.init()).thenReturn(Observable.just(parsedText))
 
                 val containsNumber = metadata.containsNumber
 
-                it(if (containsNumber) "it is returned" else "it is not returned") {
+                it(if (containsNumber) "should be returned" else "should not be returned") {
                     cut.detectPrices().test {
                         if (containsNumber) {
                             val hasSymbol = metadata.expectedSymbol != null
