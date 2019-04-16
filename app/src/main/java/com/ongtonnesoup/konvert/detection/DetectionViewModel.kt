@@ -2,9 +2,8 @@ package com.ongtonnesoup.konvert.detection
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.common.plusAssign
@@ -63,7 +62,7 @@ sealed class Change {
 class DetectionViewModel(
         initialState: State?,
         component: ApplicationComponent
-) : BaseViewModel<Action, State>(), LifecycleObserver, MobileVisionOcrGateway.View {
+) : BaseViewModel<Action, State>(), DefaultLifecycleObserver, MobileVisionOcrGateway.View {
 
     @Inject
     lateinit var detectPrices: DetectPrices
@@ -115,8 +114,12 @@ class DetectionViewModel(
                 .subscribe(state::setValue, Timber::e)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun detectPrices() {
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        detectPrices()
+    }
+
+    private fun detectPrices() {
         disposables += detectPrices.detectPrices()
                 .subscribe(
                         { price -> dispatch(Action.PriceDetected(price.text)) },
@@ -124,8 +127,12 @@ class DetectionViewModel(
                 )
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun stopDetection() {
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        stopDetection()
+    }
+
+    private fun stopDetection() {
         cameraSource?.release()
     }
 
