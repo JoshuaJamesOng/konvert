@@ -8,4 +8,8 @@
     <!-- Settings -->
     <string name="settings_link">Settings</string>
 
+    <!-- Notifications -->
+    <string name="default_channel_name">Default Notifications</string>
+    <string name="default_channel_description">Notification not belonging to a specific channel</string>
+
 </resources>

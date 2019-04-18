@@ -16,6 +16,11 @@
             app:summary="Fetch latest exchange rates periodically in the background"
             app:title="Exchange rate sync" />
 
+        <SwitchPreferenceCompat
+            app:key="sync_notification"
+            app:summary="Receive notification when exchange rates sync"
+            app:title="Sync notification" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
