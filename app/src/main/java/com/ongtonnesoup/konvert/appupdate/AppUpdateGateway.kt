@@ -7,5 +7,4 @@ interface AppUpdateGateway<T> {
     fun isUpdateInProgress(): Boolean
 
     fun update(updater: T)
-
 }

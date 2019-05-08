@@ -37,7 +37,7 @@ class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : W
         (applicationContext as Injector).inject(this)
     }
 
-    private fun isSyncNotificationRequired() : Boolean {
+    private fun isSyncNotificationRequired(): Boolean {
         val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         return preferences.getBoolean("sync_notification", false)
     }

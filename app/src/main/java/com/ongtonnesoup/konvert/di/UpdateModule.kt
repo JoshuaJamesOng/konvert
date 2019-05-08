@@ -9,9 +9,12 @@ import dagger.Module
 abstract class UpdateModule {
 
     @Binds
-    abstract fun provideAppUpdateGateway(googlePlayAppUpdater: GooglePlayAppUpdater): AppUpdateGateway<GooglePlayAppUpdater.Updater>
+    abstract fun provideAppUpdateGateway(
+        googlePlayAppUpdater: GooglePlayAppUpdater
+    ): AppUpdateGateway<GooglePlayAppUpdater.Updater>
 
     @Binds
-    abstract fun provideUnknownAppUpdateGateway(googlePlayAppUpdater: GooglePlayAppUpdater): AppUpdateGateway<*>
-
+    abstract fun provideUnknownAppUpdateGateway(
+        googlePlayAppUpdater: GooglePlayAppUpdater
+    ): AppUpdateGateway<*>
 }
