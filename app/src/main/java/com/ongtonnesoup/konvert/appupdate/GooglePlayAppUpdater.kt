@@ -23,6 +23,12 @@ class GooglePlayAppUpdater @Inject constructor(@ContextType private val context:
         } ?: false
     }
 
+    override fun isUpdateInProgress(): Boolean {
+        return getAppUpdate { _, updateInfo ->
+            updateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+        } ?: false
+    }
+
     override fun update(updater: Updater) {
         getAppUpdate(andThen = { updateManager, updateInfo ->
             updater.update(updateManager, updateInfo)

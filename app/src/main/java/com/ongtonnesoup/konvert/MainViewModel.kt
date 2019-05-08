@@ -44,7 +44,7 @@ sealed class Change {
 
 class MainViewModel(
     initialState: State?,
-    private val ifAppCheckRequired: CheckAppUpdateRequired,
+    private val checkAppUpdateRequired: CheckAppUpdateRequired,
     private val checkLocalRatesAvailable: CheckLocalRatesAvailable,
     private val dispatchers: Dispatchers
 ) : BaseViewModel<Action, State>() {
@@ -68,7 +68,7 @@ class MainViewModel(
         val checkUpdates: Observable<Change> =
             actions.ofType<Action.CheckUpdate>(Action.CheckUpdate::class.java)
                 .switchMapSingle {
-                    Single.defer { Single.just(ifAppCheckRequired.appUpdateRequired()) }
+                    Single.defer { Single.just(checkAppUpdateRequired.appUpdateRequired()) }
                         .map { Change.UpdateRequired }
                 }
 

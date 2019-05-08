@@ -4,6 +4,8 @@ interface AppUpdateGateway<T> {
 
     fun isUpdateRequired(): Boolean
 
+    fun isUpdateInProgress(): Boolean
+
     fun update(updater: T)
 
 }

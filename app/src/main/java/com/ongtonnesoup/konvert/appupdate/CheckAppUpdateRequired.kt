@@ -6,6 +6,6 @@ class CheckAppUpdateRequired @Inject constructor(
     private val gateway: AppUpdateGateway<*>
 ) {
     fun appUpdateRequired(): Boolean {
-        return gateway.isUpdateRequired()
+        return gateway.isUpdateInProgress() || gateway.isUpdateRequired()
     }
 }
