@@ -11,5 +11,9 @@
     <!-- Notifications -->
     <string name="default_channel_name">Default Notifications</string>
     <string name="default_channel_description">Notification not belonging to a specific channel</string>
+    <string name="sync_channel_name">Sync notifications</string>
+    <string name="sync_channel_description">Receive notifications when exchange rates sync</string>
+    <string name="sync_notification_title">Rates synced</string>
+    <string name="sync_notification_text">Lorem ipsum</string>
 
 </resources>

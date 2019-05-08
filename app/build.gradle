@@ -12,7 +12,7 @@ apply plugin: "de.mannodermaus.android-junit5"
 
 android {
     compileSdkVersion 'android-Q'
-    buildToolsVersion "29.0.0 rc2"
+    buildToolsVersion "29.0.0 rc3"
     defaultConfig {
         applicationId "com.ongtonnesoup.konvert"
         minSdkVersion 23
