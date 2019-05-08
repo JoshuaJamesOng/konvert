@@ -8,11 +8,14 @@ import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
 import dagger.Subcomponent
 
 @PerAppForegroundProcess
-@Subcomponent(modules = [
-    DataSourcesModule::class,
-    ClientModule::class,
-    FragmentBindingModule::class
-])
+@Subcomponent(
+    modules = [
+        DataSourcesModule::class,
+        ClientModule::class,
+        FragmentBindingModule::class,
+        UpdateModule::class
+    ]
+)
 interface ApplicationComponent {
 
     fun inject(activity: MainActivity)

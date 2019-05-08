@@ -137,6 +137,8 @@ dependencies {
     implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
     kapt    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
 
+    implementation 'com.google.android.play:core:1.5.0'
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
     testImplementation 'org.amshove.kluent:kluent-android:1.49'

@@ -3,10 +3,10 @@ package com.ongtonnesoup.konvert.di
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.ongtonnesoup.konvert.android.DaggerFragmentInjectionFactory
+import com.ongtonnesoup.konvert.di.key.FragmentKey
 import com.ongtonnesoup.konvert.home.HomeFragment
 import dagger.Binds
 import dagger.Module
-import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 
 @Module
@@ -14,7 +14,7 @@ abstract class FragmentBindingModule {
 
     @Binds
     @IntoMap
-    @ClassKey(HomeFragment::class)
+    @FragmentKey(HomeFragment::class)
     abstract fun bindHomeFragment(homeFragment: HomeFragment): Fragment
 
     @Binds
