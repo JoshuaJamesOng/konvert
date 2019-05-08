@@ -66,7 +66,10 @@ class MainViewModel(
 
     private fun bindActions() {
         val checkUpdates: Observable<Change> =
-            actions.ofType<Action.CheckUpdate>(Action.CheckUpdate::class.java)
+            Observable.merge(
+                actions.ofType<Action.CheckUpdate>(Action.CheckUpdate::class.java),
+                actions.ofType<Action.RetryUpdate>(Action.RetryUpdate::class.java)
+            )
                 .switchMapSingle {
                     Single.defer { Single.just(checkAppUpdateRequired.appUpdateRequired()) }
                         .map { Change.UpdateRequired }
