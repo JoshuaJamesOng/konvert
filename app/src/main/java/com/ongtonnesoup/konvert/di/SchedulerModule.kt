@@ -1,8 +1,11 @@
 package com.ongtonnesoup.konvert.di
 
+import android.content.Context
 import androidx.work.WorkManager
 import com.ongtonnesoup.konvert.currency.refresh.Scheduler
 import com.ongtonnesoup.konvert.currency.refresh.WorkManagerScheduler
+import com.ongtonnesoup.konvert.di.qualifiers.ContextType
+import com.ongtonnesoup.konvert.di.qualifiers.Type
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,6 +20,6 @@ abstract class SchedulerModule {
     object Statics {
         @Provides
         @JvmStatic
-        fun provideWorkManager() = WorkManager.getInstance()
+        fun provideWorkManager(@ContextType(Type.APPLICATION) context: Context) = WorkManager.getInstance(context)
     }
 }

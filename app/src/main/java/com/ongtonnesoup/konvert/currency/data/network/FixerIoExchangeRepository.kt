@@ -14,7 +14,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
             Try.just(fromNetworkMapper.invoke(response))
         }.getOrElse { e ->
             if (e.isExpectedNetworkException()) {
-                Try.raise(ExchangeRepository.NoDataException())
+                Try.raiseError(ExchangeRepository.NoDataException())
             } else {
                 throw e
             }

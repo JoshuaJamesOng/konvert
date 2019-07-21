@@ -28,7 +28,7 @@ class GetCurrentDataState @Inject constructor(
                     if (isRates) {
                         Try.just(true)
                     } else {
-                        Try.raise(ExchangeRepository.NoDataException())
+                        Try.raiseError(ExchangeRepository.NoDataException())
                     }
                 }
 
