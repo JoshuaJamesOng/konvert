@@ -47,7 +47,7 @@ object UpdateExchangeRatesTest : Spek({
         Scenario("Rates not updated") {
             Given("Exchange rates not available") {
                 get.stub {
-                    onBlocking { getExchangeRates() } doReturn Try.raise(ExchangeRepository.NoDataException())
+                    onBlocking { getExchangeRates() } doReturn Try.raiseError(ExchangeRepository.NoDataException())
                 }
             }
 
