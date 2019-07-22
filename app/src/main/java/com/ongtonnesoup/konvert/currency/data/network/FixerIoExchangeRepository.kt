@@ -4,11 +4,13 @@ import arrow.core.Try
 import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 import com.ongtonnesoup.konvert.isExpectedNetworkException
 
-class FixerIoExchangeRepository(private val client: FixerIoClient,
-                                private val fromNetworkMapper: (FixerIoClient.Response) ->
-                                ExchangeRepository.ExchangeRates) : ExchangeRepository {
+class FixerIoExchangeRepository(
+    private val client: FixerIoClient,
+    private val fromNetworkMapper: (FixerIoClient.Response) ->
+    ExchangeRepository.ExchangeRates
+) : ExchangeRepository {
 
-    suspend override fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
+    override suspend fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
         return runCatching {
             val response = client.getLatest(BASE_CURRENCY).await()
             Try.just(fromNetworkMapper.invoke(response))
@@ -21,7 +23,7 @@ class FixerIoExchangeRepository(private val client: FixerIoClient,
         }
     }
 
-    suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+    override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
         UnsupportedOperationException()
     }
 

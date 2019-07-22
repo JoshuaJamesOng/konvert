@@ -4,11 +4,11 @@ sealed class Number(val text: String) {
     data class PossiblePrice(val parsedText: String) : Number(parsedText)
 
     data class Price(
-            val parsedText: String,
-            val currency: Currency?
+        val parsedText: String,
+        val currency: Currency?
     ) : Number(parsedText)
 }
 
 data class Currency(
-        val symbol: String
+    val symbol: String
 )

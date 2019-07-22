@@ -14,13 +14,13 @@ object DetectPricesTest : Spek({
 
     describe("When detecting prices") {
         val testCases = mapOf(
-                "Product Name" to Metadata(containsNumber = false),
-                "12" to Metadata(containsNumber = true),
-                "12.00" to Metadata(containsNumber = true),
-                "£12" to Metadata(expectedSymbol = "£"),
-                "$12.00" to Metadata(expectedSymbol = "$"),
-                "Reduced to €12.00" to Metadata(expectedSymbol = "€"),
-                "Was ¥12 now ¥10" to Metadata(expectedSymbol = "¥")
+            "Product Name" to Metadata(containsNumber = false),
+            "12" to Metadata(containsNumber = true),
+            "12.00" to Metadata(containsNumber = true),
+            "£12" to Metadata(expectedSymbol = "£"),
+            "$12.00" to Metadata(expectedSymbol = "$"),
+            "Reduced to €12.00" to Metadata(expectedSymbol = "€"),
+            "Was ¥12 now ¥10" to Metadata(expectedSymbol = "¥")
         )
 
         testCases.forEach { (detectedText, metadata) ->
@@ -54,8 +54,8 @@ object DetectPricesTest : Spek({
 })
 
 private class Metadata(
-        val containsNumber: Boolean = true,
-        val expectedSymbol: String? = null
+    val containsNumber: Boolean = true,
+    val expectedSymbol: String? = null
 ) {
     fun containsNumber() = expectedSymbol != null
 }

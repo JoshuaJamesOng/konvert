@@ -27,8 +27,11 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -36,8 +39,9 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
         super.onViewCreated(view, savedInstanceState)
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE)
-                ?: State(BuildConfig.USE_OCR)
-        viewModel = ViewModelProviders.of(this, HomeViewModelFactory(initialState)).get(HomeViewModel::class.java)
+            ?: State(BuildConfig.USE_OCR)
+        viewModel = ViewModelProviders.of(this, HomeViewModelFactory(initialState))
+            .get(HomeViewModel::class.java)
 
         viewModel.observableState.observe(this, Observer { state ->
             state?.let { renderState(state) }
@@ -78,8 +82,9 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
 
         childFragmentManager.commit {
             val fragment = fragmentFactory.instantiate(
-                    DetectionFragment::class.java.classLoader!!,
-                    DetectionFragment::class.java.name)
+                DetectionFragment::class.java.classLoader!!,
+                DetectionFragment::class.java.name
+            )
 
             replace(R.id.fragment_container, fragment, DetectionFragment.TAG)
         }

@@ -9,13 +9,15 @@ import dagger.BindsInstance
 import dagger.Component
 
 @PerProcess
-@Component(modules = [
-    ProcessModule::class,
-    StateModule::class,
-    NetworkModule::class,
-    DatabaseModule::class,
-    SchedulerModule::class
-])
+@Component(
+    modules = [
+        ProcessModule::class,
+        StateModule::class,
+        NetworkModule::class,
+        DatabaseModule::class,
+        SchedulerModule::class
+    ]
+)
 interface ProcessComponent {
     fun inject(application: KonvertApplication)
 
@@ -26,7 +28,7 @@ interface ProcessComponent {
     @Component.Factory
     interface Factory {
         fun create(
-                @BindsInstance @PerProcess @ContextType(Type.APPLICATION) context: Context
+            @BindsInstance @PerProcess @ContextType(Type.APPLICATION) context: Context
         ): ProcessComponent
     }
 

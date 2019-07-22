@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.ongtonnesoup.konvert.di.ApplicationComponent
 
 class DetectionViewModelFactory(
-        private val initialState: State?,
-        private val component: ApplicationComponent
+    private val initialState: State?,
+    private val component: ApplicationComponent
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("unchecked_cast")

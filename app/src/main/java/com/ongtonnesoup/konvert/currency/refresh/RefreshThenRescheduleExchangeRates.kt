@@ -7,8 +7,8 @@ import com.ongtonnesoup.konvert.state.updateRefreshState
 import javax.inject.Inject
 
 class RefreshThenRescheduleExchangeRates @Inject constructor(
-        private val updateExchangeRates: UpdateExchangeRates,
-        private val appState: AppState
+    private val updateExchangeRates: UpdateExchangeRates,
+    private val appState: AppState
 ) {
 
     suspend fun refreshThenReschedule(): RefreshState {

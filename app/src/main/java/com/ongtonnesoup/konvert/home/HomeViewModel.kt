@@ -16,7 +16,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class State(
-        val showCameraView: Boolean = false
+    val showCameraView: Boolean = false
 ) : BaseState, Parcelable
 
 sealed class Action : BaseAction {
@@ -33,7 +33,7 @@ sealed class Change {
 }
 
 class HomeViewModel(
-        initialState: State?
+    initialState: State?
 ) : BaseViewModel<Action, State>() {
 
     override val initialState = initialState ?: State()
@@ -52,20 +52,21 @@ class HomeViewModel(
     }
 
     private fun bindActions() {
-        val showOcrChange: Observable<Change> = actions.ofType<Action.OcrSupported>(Action.OcrSupported::class.java)
+        val showOcrChange: Observable<Change> =
+            actions.ofType<Action.OcrSupported>(Action.OcrSupported::class.java)
                 .switchMap {
                     Observable.just(Change.ShowOcr)
                 }
 
         disposables += actions.ofType<Action.ShowSettings>(Action.ShowSettings::class.java)
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { Effect.ShowSettings }
-                .subscribe({ effect -> _observableEffects.postValue(Event(effect)) }, Timber::e)
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { Effect.ShowSettings }
+            .subscribe({ effect -> _observableEffects.postValue(Event(effect)) }, Timber::e)
 
         disposables += showOcrChange
-                .scan(initialState, reducer)
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(state::setValue, Timber::e)
+            .scan(initialState, reducer)
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(state::setValue, Timber::e)
     }
 }

@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 import androidx.room.PrimaryKey
+import androidx.room.Query
 
 @Dao
 interface ExchangeRatesDao {
@@ -21,9 +21,9 @@ interface ExchangeRatesDao {
 
     @Entity(tableName = "exchange_rates")
     data class ExchangeRate(
-            val currency: String,
-            val rate: Double,
-            val timestamp: Long = System.currentTimeMillis(),
-            @PrimaryKey(autoGenerate = true) val id: Long = 0
+        val currency: String,
+        val rate: Double,
+        val timestamp: Long = System.currentTimeMillis(),
+        @PrimaryKey(autoGenerate = true) val id: Long = 0
     )
 }

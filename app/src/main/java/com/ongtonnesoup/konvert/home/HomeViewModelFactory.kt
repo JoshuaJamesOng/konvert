@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class HomeViewModelFactory(
-        private val initialState: State?
+    private val initialState: State?
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("unchecked_cast")

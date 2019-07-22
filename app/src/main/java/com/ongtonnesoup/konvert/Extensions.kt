@@ -37,9 +37,10 @@ inline fun constraintsBuilder(func: Constraints.Builder.() -> Unit): Constraints
 }
 
 inline fun <reified T : Worker> periodicWorkRequestBuilder(
-        repeatInterval: Long,
-        repeatIntervalTimeUnit: TimeUnit,
-        func: PeriodicWorkRequest.Builder.() -> Unit): PeriodicWorkRequest {
+    repeatInterval: Long,
+    repeatIntervalTimeUnit: TimeUnit,
+    func: PeriodicWorkRequest.Builder.() -> Unit
+): PeriodicWorkRequest {
     val builder = PeriodicWorkRequestBuilder<T>(repeatInterval, repeatIntervalTimeUnit)
     func.invoke(builder)
     return builder.build()

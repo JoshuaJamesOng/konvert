@@ -9,8 +9,8 @@ import javax.inject.Provider
 
 @PerAppForegroundProcess
 class DaggerFragmentInjectionFactory @Inject constructor(
-        private val creators: Map<Class<out Fragment>,
-        @JvmSuppressWildcards Provider<Fragment>> // TODO Why do we need the suppression again?
+    private val creators: Map<Class<out Fragment>,
+            @JvmSuppressWildcards Provider<Fragment>> // TODO Why do we need the suppression again?
 ) : FragmentFactory() {
 
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {

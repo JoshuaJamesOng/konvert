@@ -5,14 +5,14 @@ import com.ongtonnesoup.konvert.currency.domain.GetCurrentDataState
 import com.ongtonnesoup.konvert.state.AppState
 import com.ongtonnesoup.konvert.state.DataState
 import com.ongtonnesoup.konvert.state.RefreshState
-import com.ongtonnesoup.konvert.state.updateRefreshState
 import com.ongtonnesoup.konvert.state.updateDataState
+import com.ongtonnesoup.konvert.state.updateRefreshState
 import javax.inject.Inject
 
 class CheckLocalRatesAvailable @Inject constructor(
-        private val getCurrentDataState: GetCurrentDataState,
-        private val updateExchangeRates: UpdateExchangeRates,
-        private val appState: AppState
+    private val getCurrentDataState: GetCurrentDataState,
+    private val updateExchangeRates: UpdateExchangeRates,
+    private val appState: AppState
 ) {
 
     suspend fun checkLocalRatesAvailable() {

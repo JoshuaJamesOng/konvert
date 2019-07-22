@@ -1,8 +1,8 @@
 package com.ongtonnesoup.konvert.state
 
 data class State(
-        val dataState: DataState = DataState.UNKNOWN,
-        val refreshState: RefreshState = RefreshState.UNKNOWN
+    val dataState: DataState = DataState.UNKNOWN,
+    val refreshState: RefreshState = RefreshState.UNKNOWN
 )
 
 enum class DataState {

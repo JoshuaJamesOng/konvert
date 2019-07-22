@@ -5,7 +5,7 @@ import com.ongtonnesoup.konvert.currency.domain.ExchangeRepository
 
 class FixedExchangeRepository : ExchangeRepository {
 
-    suspend override fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
+    override suspend fun getExchangeRates(): Try<ExchangeRepository.ExchangeRates> {
         val rates = ExchangeRepository.ExchangeRates(
                 listOf(
                         ExchangeRepository.ExchangeRate("GBP", 1.00),
@@ -16,7 +16,7 @@ class FixedExchangeRepository : ExchangeRepository {
         return Try.just(rates)
     }
 
-    suspend override fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
+    override suspend fun putExchangeRates(rates: ExchangeRepository.ExchangeRates) {
         throw UnsupportedOperationException()
     }
 }

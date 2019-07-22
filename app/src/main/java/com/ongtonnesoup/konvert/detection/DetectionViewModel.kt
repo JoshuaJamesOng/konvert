@@ -60,8 +60,8 @@ sealed class Change {
 }
 
 class DetectionViewModel(
-        initialState: State?,
-        component: ApplicationComponent
+    initialState: State?,
+    component: ApplicationComponent
 ) : BaseViewModel<Action, State>(), DefaultLifecycleObserver, MobileVisionOcrGateway.View {
 
     @Inject
@@ -87,31 +87,32 @@ class DetectionViewModel(
 
     private fun inject(component: ApplicationComponent) {
         component.getDetectionComponent(MobileVisionModule(this))
-                .inject(this)
+            .inject(this)
     }
 
     private fun bindActions() {
-        val showPriceChange: Observable<Change> = actions.ofType<Action.PriceDetected>(Action.PriceDetected::class.java)
+        val showPriceChange: Observable<Change> =
+            actions.ofType<Action.PriceDetected>(Action.PriceDetected::class.java)
                 .switchMap {
                     Observable.just(Change.ShowPrice(it.price))
                 }
 
         val cameraAvailable: Observable<Change> =
-                actions.ofType<Action.CameraAvailable>(Action.CameraAvailable::class.java)
-                        .map { Optional(cameraSource) }
-                        .switchMap {
-                            if (it.data == null) {
-                                Observable.just(Change.WaitingForCameraSource)
-                            } else {
-                                Observable.just(Change.CameraAvailable(it.data))
-                            }
-                        }
+            actions.ofType<Action.CameraAvailable>(Action.CameraAvailable::class.java)
+                .map { Optional(cameraSource) }
+                .switchMap {
+                    if (it.data == null) {
+                        Observable.just(Change.WaitingForCameraSource)
+                    } else {
+                        Observable.just(Change.CameraAvailable(it.data))
+                    }
+                }
 
         disposables += Observable.merge(showPriceChange, cameraAvailable, internalChanges)
-                .scan(initialState, reducer)
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(state::setValue, Timber::e)
+            .scan(initialState, reducer)
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(state::setValue, Timber::e)
     }
 
     override fun onStart(owner: LifecycleOwner) {
@@ -121,10 +122,10 @@ class DetectionViewModel(
 
     private fun detectPrices() {
         disposables += detectPrices.detectPrices()
-                .subscribe(
-                        { price -> dispatch(Action.PriceDetected(price.text)) },
-                        { error -> dispatch(Action.Error(error)) }
-                )
+            .subscribe(
+                { price -> dispatch(Action.PriceDetected(price.text)) },
+                { error -> dispatch(Action.Error(error)) }
+            )
     }
 
     override fun onStop(owner: LifecycleOwner) {

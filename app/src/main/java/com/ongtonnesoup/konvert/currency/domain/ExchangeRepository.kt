@@ -11,11 +11,11 @@ interface ExchangeRepository {
     suspend fun putExchangeRates(rates: ExchangeRates)
 
     data class ExchangeRates(
-            val rates: List<ExchangeRate>
+        val rates: List<ExchangeRate>
     )
 
     data class ExchangeRate(
-            val currency: String,
-            val rate: Double
+        val currency: String,
+        val rate: Double
     )
 }
