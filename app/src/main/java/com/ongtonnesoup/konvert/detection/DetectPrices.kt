@@ -10,18 +10,20 @@ class DetectPrices @Inject constructor(private val gateway: OcrGateway) {
 
     fun detectPrices(): Observable<Number> {
         return gateway.init()
-                .filter { isNumber(it) }
-                .map { parsedText ->
+            .filter { isNumber(it) }
+            .map { parsedText ->
+                with(parsedText) {
                     val currency = getCurrency(parsedText)
 
                     // TODO Check symbol is near numbers and not e.g. 'Save £££ on the 13/10/2018`
                     currency?.let { symbol ->
-                        Number.Price(parsedText.text, symbol)
+                        Number.Price(text, symbol, position)
                     } ?: run {
-                        Number.PossiblePrice(parsedText.text)
+                        Number.PossiblePrice(text, position)
                     }
                 }
-                .doOnDispose { gateway.release() }
+            }
+            .doOnDispose { gateway.release() }
     }
 
     private fun isNumber(parsedText: ParsedText) = parsedText.text.matches(CONTAINS_NUMBERS.toRegex())

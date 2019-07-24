@@ -44,7 +44,7 @@ class DetectionFragment : Fragment() {
             when (state) {
                 is State.Idle -> Timber.d { state.toString() }
                 is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource!!) // TODO Bang bang
-                is State.Price -> Timber.d { state.toString() }
+                is State.Price -> showPrice(state)
                 is State.Error -> showError(state)
             }
         })
@@ -100,7 +100,13 @@ class DetectionFragment : Fragment() {
 
         onPermissionGranted {
             cameraSource.start(surface)
+            overlay.setPreviewSize(cameraSource.previewSize)
         }
+    }
+
+    private fun showPrice(state: State.Price) {
+        overlay.showPrice(state.position)
+        Timber.d { state.toString() }
     }
 
     private fun showError(state: State) {

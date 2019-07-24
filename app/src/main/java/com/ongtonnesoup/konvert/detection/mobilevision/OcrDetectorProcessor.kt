@@ -4,16 +4,23 @@ import android.util.SparseArray
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.text.TextBlock
 import com.ongtonnesoup.konvert.detection.ParsedText
+import com.ongtonnesoup.konvert.detection.DetectionPosition
 import io.reactivex.ObservableEmitter
 
-class OcrDetectorProcessor(private val emitter: ObservableEmitter<ParsedText>) : Detector.Processor<TextBlock> {
+class OcrDetectorProcessor(
+    private val emitter: ObservableEmitter<ParsedText>
+) : Detector.Processor<TextBlock> {
 
     override fun receiveDetections(detections: Detector.Detections<TextBlock>) {
         detections.detectedItems.toList()
-                .filter { textBlock -> textBlock.value != null }
-                .map { textBlock -> textBlock.value }
-                .map { text -> ParsedText(text) }
-                .forEach { parsedText -> emitter.onNext(parsedText) }
+            .filter { textBlock -> textBlock.value != null }
+            .map { textBlock ->
+                ParsedText(
+                    textBlock.value,
+                    DetectionPosition.fromRect(textBlock.boundingBox)
+                )
+            }
+            .forEach { parsedText -> emitter.onNext(parsedText) }
     }
 
     override fun release() {}

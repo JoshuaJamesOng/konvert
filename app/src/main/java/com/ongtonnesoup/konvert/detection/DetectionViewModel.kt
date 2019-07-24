@@ -39,7 +39,7 @@ sealed class State : BaseState, Parcelable {
     } // TODO Check this stuff
 
     @Parcelize
-    data class Price(val price: String) : State()
+    data class Price(val price: String, val position: DetectionPosition) : State() // TODO Use VM class
 
     @Parcelize
     object Error : State()
@@ -49,14 +49,14 @@ sealed class Action : BaseAction {
     object OnViewAvailable : Action()
     object OnViewUnavailable : Action()
     object CameraAvailable : Action() // TODO Rename
-    data class PriceDetected(val price: String) : Action()
+    data class PriceDetected(val price: String, val position: DetectionPosition) : Action()
     data class Error(val throwable: Throwable) : Action()
 }
 
 sealed class Change {
     object WaitingForCameraSource : Change()
     data class CameraAvailable(val cameraSource: CameraSource) : Change()
-    data class ShowPrice(val price: String) : Change()
+    data class ShowPrice(val price: String, val position: DetectionPosition) : Change()
 }
 
 class DetectionViewModel(
@@ -74,7 +74,7 @@ class DetectionViewModel(
 
     private val reducer: Reducer<State, Change> = { _, change ->
         when (change) {
-            is Change.ShowPrice -> State.Price(change.price)
+            is Change.ShowPrice -> State.Price(change.price, change.position)
             is Change.WaitingForCameraSource -> State.WaitingForCameraSource
             is Change.CameraAvailable -> State.Ready(change.cameraSource)
         }
@@ -94,7 +94,7 @@ class DetectionViewModel(
         val showPriceChange: Observable<Change> =
             actions.ofType<Action.PriceDetected>(Action.PriceDetected::class.java)
                 .switchMap {
-                    Observable.just(Change.ShowPrice(it.price))
+                    Observable.just(Change.ShowPrice(it.price, it.position))
                 }
 
         val cameraAvailable: Observable<Change> =
@@ -123,7 +123,7 @@ class DetectionViewModel(
     private fun detectPrices() {
         disposables += detectPrices.detectPrices()
             .subscribe(
-                { price -> dispatch(Action.PriceDetected(price.text)) },
+                { price -> dispatch(Action.PriceDetected(price.text, price.position)) },
                 { error -> dispatch(Action.Error(error)) }
             )
     }
