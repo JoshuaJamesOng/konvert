@@ -5,7 +5,7 @@ import java.lang.RuntimeException
 
 interface OcrGateway {
 
-    fun init(): Observable<ParsedText>
+    fun init(): Observable<List<ParsedText>>
 
     fun release()
 

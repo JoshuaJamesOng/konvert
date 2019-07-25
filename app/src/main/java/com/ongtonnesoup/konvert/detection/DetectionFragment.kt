@@ -105,7 +105,7 @@ class DetectionFragment : Fragment() {
     }
 
     private fun showPrice(state: State.Price) {
-        overlay.showPrice(state.position)
+        overlay.showPrices(state.prices)
         Timber.d { state.toString() }
     }
 

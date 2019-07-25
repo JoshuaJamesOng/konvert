@@ -23,8 +23,8 @@ class MobileVisionOcrGateway @Inject constructor(
     private var detector: OcrDetectorProcessor? = null
 
     @Suppress("ReturnCount")
-    override fun init(): Observable<ParsedText> {
-        return Observable.create<ParsedText> { emitter ->
+    override fun init(): Observable<List<ParsedText>> {
+        return Observable.create { emitter ->
             if (!hasGoogleServices()) {
                 emitter.onError(OcrGateway.InitializationError())
                 return@create
@@ -71,7 +71,7 @@ class MobileVisionOcrGateway @Inject constructor(
         return textRecognizer
     }
 
-    private fun createDetector(emitter: ObservableEmitter<ParsedText>): OcrDetectorProcessor {
+    private fun createDetector(emitter: ObservableEmitter<List<ParsedText>>): OcrDetectorProcessor {
         return OcrDetectorProcessor(emitter)
     }
 

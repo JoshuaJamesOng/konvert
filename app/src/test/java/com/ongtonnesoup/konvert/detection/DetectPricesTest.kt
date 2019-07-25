@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.detection
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.rubylichtenstein.rxtest.assertions.should
@@ -28,8 +29,9 @@ object DetectPricesTest : Spek({
             val cut = DetectPrices(gateway)
 
             context("$detectedText") {
-                val parsedText = ParsedText(detectedText)
-                whenever(gateway.init()).thenReturn(Observable.just(parsedText))
+                val position = DetectionPosition(0, 0, 0, 0)
+                val parsedText = ParsedText(detectedText, position)
+                whenever(gateway.init()).doReturn(Observable.just(listOf(parsedText)))
 
                 val containsNumber = metadata.containsNumber
 
@@ -39,12 +41,12 @@ object DetectPricesTest : Spek({
                             val hasSymbol = metadata.expectedSymbol != null
                             if (hasSymbol) {
                                 val symbol = metadata.expectedSymbol
-                                it shouldEmit Number.Price(parsedText.text, Currency(symbol!!))
+                                it shouldEmit listOf(Number.Price(parsedText.text, Currency(symbol!!), position))
                             } else {
-                                it shouldEmit Number.PossiblePrice(parsedText.text)
+                                it shouldEmit listOf(Number.PossiblePrice(parsedText.text, position))
                             }
                         } else {
-                            it should values() // Not emit
+                            it should values(emptyList()) // Not emit
                         }
                     }
                 }

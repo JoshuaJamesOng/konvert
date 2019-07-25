@@ -40,28 +40,33 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
         scaleFactorY = (bottom - top).toFloat() / previewSize.width
     }
 
-    fun showPrice(position: DetectionPosition) {
-        val point = with(position) {
-            val top = top * scaleFactorY
-            val right = right * scaleFactorX
-            RectF(
-                right,
-                top - pointDiameter,
-                right + pointDiameter,
-                top
-            )
-        }
+    fun showPrices(prices: List<Price>) {
+        detectionPositions.clear()
 
-        val border = with(position) {
-            Rect(
-                (left * scaleFactorX).toInt(),
-                (top * scaleFactorY).toInt(),
-                (right * scaleFactorX).toInt(),
-                (bottom * scaleFactorY).toInt()
-            )
-        }
+        prices.map { it.position }
+            .forEach { position ->
+                val point = with(position) {
+                    val top = top * scaleFactorY
+                    val right = right * scaleFactorX
+                    RectF(
+                        right,
+                        top - pointDiameter,
+                        right + pointDiameter,
+                        top
+                    )
+                }
 
-        detectionPositions.add(Pair(point, border))
+                val border = with(position) {
+                    Rect(
+                        (left * scaleFactorX).toInt(),
+                        (top * scaleFactorY).toInt(),
+                        (right * scaleFactorX).toInt(),
+                        (bottom * scaleFactorY).toInt()
+                    )
+                }
+
+                detectionPositions.add(Pair(point, border))
+            }
 
         postInvalidate()
     }
