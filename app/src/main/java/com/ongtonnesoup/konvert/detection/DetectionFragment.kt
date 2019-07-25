@@ -76,6 +76,10 @@ class DetectionFragment : Fragment() {
                 surface = null
             }
         })
+
+        overlay.clickedPoints.subscribe { price ->
+            viewModel.onPriceClicked(price)
+        }
     }
 
     @SuppressLint("CheckResult", "MissingPermission")

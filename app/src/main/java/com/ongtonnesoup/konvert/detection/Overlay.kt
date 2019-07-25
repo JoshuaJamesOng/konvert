@@ -8,15 +8,25 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import com.google.android.gms.common.images.Size
 import com.ongtonnesoup.konvert.BuildConfig
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 
 private const val POINT_DIAMETER_IN_DP = 24f
 
+typealias Rects = Pair<RectF, Rect>
+typealias Detection = Pair<Price, Rects>
+
 class Overlay(context: Context, attributes: AttributeSet) : View(context, attributes) {
 
-    private val detectionPositions: ArrayList<Pair<RectF, Rect>> = arrayListOf()
+    private val _clickedPoints = PublishSubject.create<Price>()
+    val clickedPoints: Observable<Price>
+        get() = _clickedPoints
+
+    private val detectionPositions: ArrayList<Detection> = arrayListOf()
     private val borderPaint = Paint().apply {
         color = Color.CYAN
         style = Paint.Style.STROKE
@@ -33,6 +43,8 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
     private var scaleFactorX: Float = 1f
     private var scaleFactorY: Float = 1f
 
+    private var selectedPrice: Detection? = null
+
     fun setPreviewSize(previewSize: Size) {
         this.previewSize = previewSize
 
@@ -43,9 +55,8 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
     fun showPrices(prices: List<Price>) {
         detectionPositions.clear()
 
-        prices.map { it.position }
-            .forEach { position ->
-                val point = with(position) {
+        prices.forEach { price ->
+            val point = with(price.position) {
                     val top = top * scaleFactorY
                     val right = right * scaleFactorX
                     RectF(
@@ -56,7 +67,7 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
                     )
                 }
 
-                val border = with(position) {
+            val border = with(price.position) {
                     Rect(
                         (left * scaleFactorX).toInt(),
                         (top * scaleFactorY).toInt(),
@@ -65,21 +76,54 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
                     )
                 }
 
-                detectionPositions.add(Pair(point, border))
+            detectionPositions.add(Detection(price, Rects(point, border)))
             }
 
         postInvalidate()
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val clickedPoint = detectionPositions.asSequence()
+                .filter {
+                    it.second.first.contains(event.x, event.y)
+                }
+                .firstOrNull()
+
+            clickedPoint?.let {
+                onPointClicked(it)
+                return true
+            }
+        }
+
+        selectedPrice = null
+        return super.onTouchEvent(event)
+    }
+
+    private fun onPointClicked(price: Detection) {
+        selectedPrice = price
+        _clickedPoints.onNext(price.first)
+    }
+
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
-        for ((point, border) in detectionPositions) {
-            canvas.drawOval(point, pointPaint)
+        selectedPrice?.let {
+            draw(it.second, canvas)
+            return
+        }
 
-            if (BuildConfig.DEBUG) {
-                canvas.drawRect(border, borderPaint)
-            }
+        for ((_, rects) in detectionPositions) {
+            draw(rects, canvas)
+        }
+    }
+
+    private fun draw(rects: Rects, canvas: Canvas) {
+        val (point, border) = rects
+        canvas.drawOval(point, pointPaint)
+
+        if (BuildConfig.DEBUG) {
+            canvas.drawRect(border, borderPaint)
         }
     }
 }

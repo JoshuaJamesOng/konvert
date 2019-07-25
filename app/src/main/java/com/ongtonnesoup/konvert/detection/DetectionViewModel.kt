@@ -148,6 +148,10 @@ class DetectionViewModel(
         cameraSource = null
         internalChanges.onNext(Change.WaitingForCameraSource)
     }
+
+    fun onPriceClicked(price: Price) {
+        Timber.d { "Price clicked: $price" }
+    }
 }
 
 // TODO Use Arrow
