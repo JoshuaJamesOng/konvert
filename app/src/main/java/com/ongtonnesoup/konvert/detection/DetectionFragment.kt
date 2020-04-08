@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.github.ajalt.timberkt.Timber
 import com.google.android.gms.vision.CameraSource
 import com.ongtonnesoup.konvert.R
@@ -35,19 +35,10 @@ class DetectionFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE) ?: State.Idle
-        viewModel = ViewModelProviders.of(
+        viewModel = ViewModelProvider(
                 this,
                 DetectionViewModelFactory(initialState, getApplicationComponent(this))
         ).get(DetectionViewModel::class.java)
-
-        viewModel.observableState.observe(this, Observer<State> { state ->
-            when (state) {
-                is State.Idle -> Timber.d { state.toString() }
-                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource!!) // TODO Bang bang
-                is State.Price -> showPrice(state)
-                is State.Error -> showError(state)
-            }
-        })
 
         lifecycle.addObserver(viewModel)
     }
@@ -63,6 +54,15 @@ class DetectionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.observableState.observe(viewLifecycleOwner, Observer<State> { state ->
+            when (state) {
+                is State.Idle -> Timber.d { state.toString() }
+                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource!!) // TODO Bang bang
+                is State.Price -> showPrice(state)
+                is State.Error -> showError(state)
+            }
+        })
 
         surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {

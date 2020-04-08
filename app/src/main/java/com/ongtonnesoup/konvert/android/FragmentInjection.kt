@@ -9,6 +9,6 @@ fun setFragmentManagers(activity: AppCompatActivity, fragmentFactory: FragmentFa
 }
 
 fun setFragmentManagers(fragment: Fragment, fragmentFactory: FragmentFactory) {
-    fragment.requireFragmentManager().fragmentFactory = fragmentFactory
+    fragment.parentFragmentManager.fragmentFactory = fragmentFactory
     fragment.childFragmentManager.fragmentFactory = fragmentFactory
 }

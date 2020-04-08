@@ -11,8 +11,9 @@ apply plugin: 'androidx.navigation.safeargs'
 apply plugin: "de.mannodermaus.android-junit5"
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.1"
+    compileSdkVersion androidVersions.compileSdk
+    buildToolsVersion androidVersions.buildTools
+
     defaultConfig {
         applicationId "com.ongtonnesoup.konvert"
         minSdkVersion 23
@@ -95,10 +96,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     implementation 'com.ww:roxie:0.4.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
-    implementation 'androidx.fragment:fragment-ktx:1.2.0-alpha01'
-    implementation 'androidx.core:core-ktx:1.2.0-alpha02'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+    implementation 'androidx.fragment:fragment-ktx:1.3.0-alpha03'
+    implementation 'androidx.core:core-ktx:1.3.0-beta01'
 
     implementation 'com.github.ajalt:timberkt:1.5.1'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
@@ -106,25 +107,25 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.14.1'
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
-    implementation 'com.google.android.gms:play-services-vision:18.0.0'
+    implementation 'com.google.android.gms:play-services-vision:19.0.0'
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
 
     implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0-alpha02"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.0-alpha01"
 
-    implementation 'androidx.room:room-runtime:2.2.0-alpha01'
-    kapt 'androidx.room:room-compiler:2.2.0-alpha01'
-    implementation 'androidx.room:room-rxjava2:2.2.0-alpha01'
+    implementation 'androidx.room:room-runtime:2.2.5'
+    kapt 'androidx.room:room-compiler:2.2.5'
+    implementation 'androidx.room:room-rxjava2:2.2.5'
 
-    implementation 'androidx.work:work-runtime-ktx:2.1.0'
+    implementation 'androidx.work:work-runtime-ktx:2.3.4'
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.1.0-beta02"
-    implementation "androidx.navigation:navigation-ui-ktx:2.1.0-beta02"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.0-alpha04"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.0-alpha04"
 
-    implementation "androidx.preference:preference-ktx:1.1.0-rc01"
+    implementation "androidx.preference:preference-ktx:1.1.0"
 
     implementation 'com.google.dagger:dagger:2.22.1'
     kapt 'com.google.dagger:dagger-compiler:2.22.1'
@@ -132,7 +133,7 @@ dependencies {
     implementation "io.arrow-kt:arrow-syntax:$arrow_version"
     implementation "io.arrow-kt:arrow-typeclasses:$arrow_version"
 
-    implementation 'com.google.android.play:core:1.6.1'
+    implementation 'com.google.android.play:core:1.7.2'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
@@ -147,13 +148,13 @@ dependencies {
     testImplementation 'org.spekframework.spek2:spek-runner-junit5:2.0.2'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
 
-    androidTestImplementation 'androidx.test:rules:1.3.0-alpha02'
-    androidTestImplementation 'androidx.test:runner:1.3.0-alpha02'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2-alpha02'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
-    androidTestImplementation 'androidx.work:work-testing:2.1.0'
-    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0-rc01'
+    androidTestImplementation 'androidx.test:rules:1.3.0-alpha05'
+    androidTestImplementation 'androidx.test:runner:1.3.0-alpha05'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2-alpha05'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha05'
+    androidTestImplementation 'androidx.work:work-testing:2.3.4'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
     androidTestImplementation 'com.google.dagger:dagger:2.22.1'
     kaptAndroidTest 'com.google.dagger:dagger-compiler:2.22.1'
-    androidTestUtil 'androidx.test:orchestrator:1.3.0-alpha02'
+    androidTestUtil 'androidx.test:orchestrator:1.3.0-alpha05'
 }

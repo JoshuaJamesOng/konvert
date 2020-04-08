@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.ongtonnesoup.konvert.BuildConfig
 import com.ongtonnesoup.konvert.R
@@ -40,14 +40,14 @@ class HomeFragment @Inject constructor(private val fragmentFactory: FragmentFact
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE)
             ?: State(BuildConfig.USE_OCR)
-        viewModel = ViewModelProviders.of(this, HomeViewModelFactory(initialState))
+        viewModel = ViewModelProvider(this, HomeViewModelFactory(initialState))
             .get(HomeViewModel::class.java)
 
-        viewModel.observableState.observe(this, Observer { state ->
+        viewModel.observableState.observe(viewLifecycleOwner, Observer { state ->
             state?.let { renderState(state) }
         })
 
-        viewModel.observableEffects.observe(this, Observer { effect ->
+        viewModel.observableEffects.observe(viewLifecycleOwner, Observer { effect ->
             effect?.let {
                 effect.ifNotHandled { renderEffect(it) }
             }

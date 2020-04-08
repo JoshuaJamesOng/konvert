@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.install.model.ActivityResult
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), ApplicationComponent.Providerr {
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE)
             ?: State()
-        viewModel = ViewModelProviders.of(
+        viewModel = ViewModelProvider(
             this,
             MainViewModelFactory(
                 initialState,
