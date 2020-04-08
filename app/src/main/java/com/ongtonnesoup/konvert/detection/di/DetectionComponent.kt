@@ -5,9 +5,11 @@ import com.ongtonnesoup.konvert.di.scopes.PerFragment
 import dagger.Subcomponent
 
 @PerFragment
-@Subcomponent(modules = [
-    MobileVisionModule::class
-])
+@Subcomponent(
+    modules = [
+        MobileVisionModule::class
+    ]
+)
 interface DetectionComponent {
 
     fun inject(target: DetectionViewModel)

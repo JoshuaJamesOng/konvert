@@ -17,7 +17,8 @@ import javax.inject.Inject
 private const val SYNC_CHANNEL_ID = "SYNC_NOTIFICATION_CHANNEL"
 private const val SYNC_NOTIFICATION_ID = 20190509
 
-class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class RefreshExchangeRatesWorker(context: Context, params: WorkerParameters) :
+    Worker(context, params) {
 
     @Inject
     lateinit var interactor: RefreshThenRescheduleExchangeRates

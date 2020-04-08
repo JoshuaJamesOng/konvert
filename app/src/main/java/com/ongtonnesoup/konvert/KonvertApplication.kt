@@ -9,9 +9,9 @@ import com.ongtonnesoup.konvert.di.ProcessComponent
 import javax.inject.Inject
 
 class KonvertApplication : Application(),
-        ProcessComponent.Providerr,
-        RefreshExchangeRatesWorker.Injector,
-        LifecycleObserver {
+    ProcessComponent.Providerr,
+    RefreshExchangeRatesWorker.Injector,
+    LifecycleObserver {
 
     @Inject
     lateinit var enableBackgroundSync: EnableBackgroundSync
@@ -29,7 +29,7 @@ class KonvertApplication : Application(),
 
     private fun createProcessComponent(): ProcessComponent {
         return DaggerProcessComponent.factory()
-                .create(this)
+            .create(this)
     }
 
     override fun get() = processComponent

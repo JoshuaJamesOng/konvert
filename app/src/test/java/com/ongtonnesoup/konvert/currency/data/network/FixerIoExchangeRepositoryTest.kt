@@ -32,7 +32,8 @@ object FixerIoExchangeRepositoryTest : Spek({
         val networkError = CompletableDeferred<FixerIoClient.Response>().apply {
             completeExceptionally(IOException())
         }
-        val mappedResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
+        val mappedResponse =
+            ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test", 1.0)))
 
         Scenario("Successful network call") {
 
@@ -91,7 +92,9 @@ object FixerIoExchangeRepositoryTest : Spek({
             }
 
             Then("Exception is returned") {
-                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+                result.fold(
+                    { it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() },
+                    { fail() })
             }
         }
 

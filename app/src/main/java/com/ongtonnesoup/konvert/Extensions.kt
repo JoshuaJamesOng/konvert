@@ -16,16 +16,16 @@ import java.util.concurrent.TimeUnit
 
 fun OkHttpClient.Builder.default(): OkHttpClient {
     return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor())
-            .build()
+        .addInterceptor(HttpLoggingInterceptor())
+        .build()
 }
 
 fun Retrofit.Builder.default(): Retrofit.Builder {
     return this
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .validateEagerly(true)
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .validateEagerly(true)
 }
 
 fun Throwable.isExpectedNetworkException() = this is HttpException || this is IOException

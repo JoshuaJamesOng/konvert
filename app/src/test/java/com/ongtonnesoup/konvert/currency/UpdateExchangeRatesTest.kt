@@ -21,7 +21,14 @@ object UpdateExchangeRatesTest : Spek({
         val get by memoized { mock<GetLatestExchangeRates>() }
         val save by memoized { mock<SaveExchangeRates>() }
 
-        val exchangeRates = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("network", 1.0)))
+        val exchangeRates = ExchangeRepository.ExchangeRates(
+            listOf(
+                ExchangeRepository.ExchangeRate(
+                    "network",
+                    1.0
+                )
+            )
+        )
 
         Scenario("Rates updated") {
             Given("Exchange rates available") {

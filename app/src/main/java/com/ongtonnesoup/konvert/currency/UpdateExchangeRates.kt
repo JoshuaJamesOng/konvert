@@ -10,9 +10,9 @@ class UpdateExchangeRates @Inject constructor(
     @CheckResult
     suspend fun getExchangeRates(): Boolean {
         return getLatestExchangeRates.getExchangeRates()
-                .fold({ false }, {
-                    saveExchangeRates.save(it)
-                    true
-                })
+            .fold({ false }, {
+                saveExchangeRates.save(it)
+                true
+            })
     }
 }

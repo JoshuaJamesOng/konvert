@@ -30,7 +30,11 @@ class GetCurrentDataStateTest : Spek({
         }
 
         val local = mock<ExchangeRepository> {
-            onBlocking { getExchangeRates() } doReturn Try.just(ExchangeRepository.ExchangeRates(emptyList()))
+            onBlocking { getExchangeRates() } doReturn Try.just(
+                ExchangeRepository.ExchangeRates(
+                    emptyList()
+                )
+            )
         }
 
         val cut = GetCurrentDataState(local, appState)
@@ -56,7 +60,11 @@ class GetCurrentDataStateTest : Spek({
         }
 
         val local = mock<ExchangeRepository> {
-            onBlocking { getExchangeRates() } doReturn Try.just(ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("", 1.0))))
+            onBlocking { getExchangeRates() } doReturn Try.just(
+                ExchangeRepository.ExchangeRates(
+                    listOf(ExchangeRepository.ExchangeRate("", 1.0))
+                )
+            )
         }
 
         val cut = GetCurrentDataState(local, appState)

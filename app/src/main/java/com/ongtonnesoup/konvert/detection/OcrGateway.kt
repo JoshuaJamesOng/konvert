@@ -1,7 +1,6 @@
 package com.ongtonnesoup.konvert.detection
 
 import io.reactivex.Observable
-import java.lang.RuntimeException
 
 interface OcrGateway {
 

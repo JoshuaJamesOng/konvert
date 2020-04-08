@@ -26,7 +26,8 @@ class UpdateExchangeRatesIntegrationTest {
 
     @Before
     fun setUp() {
-        val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestApplication
+        val application =
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TestApplication
         component = application.appComponent
 
         assertTrue("No data", appDatabase.exchangeRatesDao().getAll().count() < 1)
@@ -39,6 +40,9 @@ class UpdateExchangeRatesIntegrationTest {
         runBlocking { updateExchangeRates.getExchangeRates() }
 
         // Then
-        assertTrue("Network data is cached locally", 0 < appDatabase.exchangeRatesDao().getAll().count())
+        assertTrue(
+            "Network data is cached locally",
+            0 < appDatabase.exchangeRatesDao().getAll().count()
+        )
     }
 }

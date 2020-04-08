@@ -38,9 +38,9 @@ class RefreshExchangeRatesWorkRequest(private val workManager: WorkManager) {
         }
 
         workManager.enqueueUniquePeriodicWork(
-                name,
-                ExistingPeriodicWorkPolicy.KEEP,
-                update
+            name,
+            ExistingPeriodicWorkPolicy.KEEP,
+            update
         )
 
         return update.id

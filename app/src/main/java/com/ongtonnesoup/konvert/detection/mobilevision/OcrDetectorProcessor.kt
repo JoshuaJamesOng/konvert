@@ -14,13 +14,13 @@ class OcrDetectorProcessor(
     override fun receiveDetections(detections: Detector.Detections<TextBlock>) =
         emitter.onNext(
             detections.detectedItems.toList()
-            .filter { textBlock -> textBlock.value != null }
-            .map { textBlock ->
-                ParsedText(
-                    textBlock.value,
-                    DetectionPosition.fromRect(textBlock.boundingBox)
-                )
-            }
+                .filter { textBlock -> textBlock.value != null }
+                .map { textBlock ->
+                    ParsedText(
+                        textBlock.value,
+                        DetectionPosition.fromRect(textBlock.boundingBox)
+                    )
+                }
         )
 
     override fun release() = Unit

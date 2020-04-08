@@ -36,8 +36,8 @@ class DetectionFragment : Fragment() {
 
         val initialState: State? = savedInstanceState?.getParcelable(SAVED_STATE) ?: State.Idle
         viewModel = ViewModelProvider(
-                this,
-                DetectionViewModelFactory(initialState, getApplicationComponent(this))
+            this,
+            DetectionViewModelFactory(initialState, getApplicationComponent(this))
         ).get(DetectionViewModel::class.java)
 
         lifecycle.addObserver(viewModel)
@@ -48,7 +48,11 @@ class DetectionFragment : Fragment() {
         outState.putParcelable(SAVED_STATE, viewModel.observableState.value)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.detection_fragment, container, false)
     }
 
@@ -58,7 +62,10 @@ class DetectionFragment : Fragment() {
         viewModel.observableState.observe(viewLifecycleOwner, Observer<State> { state ->
             when (state) {
                 is State.Idle -> Timber.d { state.toString() }
-                is State.Ready -> onSurfaceAndCameraSourceReady(surface!!, state.cameraSource!!) // TODO Bang bang
+                is State.Ready -> onSurfaceAndCameraSourceReady(
+                    surface!!,
+                    state.cameraSource!!
+                ) // TODO Bang bang
                 is State.Price -> showPrice(state)
                 is State.Error -> showError(state)
             }
@@ -70,7 +77,12 @@ class DetectionFragment : Fragment() {
                 viewModel.dispatch(Action.CameraAvailable)
             }
 
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
+            override fun surfaceChanged(
+                holder: SurfaceHolder,
+                format: Int,
+                width: Int,
+                height: Int
+            ) = Unit
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {
                 surface = null
@@ -91,15 +103,15 @@ class DetectionFragment : Fragment() {
         // TODO if we hide the surface by default, we could request permissions before showing
         fun onPermissionGranted(function: (Boolean) -> Unit) {
             RxPermissions(this)
-                    .request(Manifest.permission.CAMERA)
-                    .doOnSubscribe { disposable -> disposables.add(disposable) }
-                    .subscribe { granted ->
-                        if (granted) {
-                            function.invoke(granted)
-                        } else {
-                            showPermissionsBlocker()
-                        }
+                .request(Manifest.permission.CAMERA)
+                .doOnSubscribe { disposable -> disposables.add(disposable) }
+                .subscribe { granted ->
+                    if (granted) {
+                        function.invoke(granted)
+                    } else {
+                        showPermissionsBlocker()
                     }
+                }
         }
 
         onPermissionGranted {

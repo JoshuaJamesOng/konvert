@@ -20,6 +20,7 @@ abstract class SchedulerModule {
     object Statics {
         @Provides
         @JvmStatic
-        fun provideWorkManager(@ContextType(Type.APPLICATION) context: Context) = WorkManager.getInstance(context)
+        fun provideWorkManager(@ContextType(Type.APPLICATION) context: Context) =
+            WorkManager.getInstance(context)
     }
 }

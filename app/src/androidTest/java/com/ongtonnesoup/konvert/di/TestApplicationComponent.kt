@@ -9,11 +9,13 @@ import com.ongtonnesoup.konvert.di.scopes.PerAppForegroundProcess
 import dagger.Subcomponent
 
 @PerAppForegroundProcess
-@Subcomponent(modules = [
-    TestDataSourcesModule::class,
-    SchedulerModule::class,
-    ClientModule::class
-])
+@Subcomponent(
+    modules = [
+        TestDataSourcesModule::class,
+        SchedulerModule::class,
+        ClientModule::class
+    ]
+)
 interface TestApplicationComponent {
 
     fun updateExchangeRates(): UpdateExchangeRates

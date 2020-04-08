@@ -14,10 +14,10 @@ object TestClientModule {
     @JvmStatic
     fun provideRetrofit(okHttpClient: OkHttpClient): FixerIoClient {
         return Retrofit.Builder()
-                .default()
-                .baseUrl("http://data.fixer.io/api/")
-                .client(okHttpClient)
-                .build()
-                .create(FixerIoClient::class.java)
+            .default()
+            .baseUrl("http://data.fixer.io/api/")
+            .client(okHttpClient)
+            .build()
+            .create(FixerIoClient::class.java)
     }
 }

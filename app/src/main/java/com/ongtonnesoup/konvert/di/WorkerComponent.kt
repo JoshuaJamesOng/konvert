@@ -5,10 +5,12 @@ import com.ongtonnesoup.konvert.di.scopes.PerWorker
 import dagger.Subcomponent
 
 @PerWorker
-@Subcomponent(modules = [
-    DataSourcesModule::class,
-    ClientModule::class
-])
+@Subcomponent(
+    modules = [
+        DataSourcesModule::class,
+        ClientModule::class
+    ]
+)
 interface WorkerComponent {
 
     fun inject(target: RefreshExchangeRatesWorker)

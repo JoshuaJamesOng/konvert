@@ -15,10 +15,10 @@ object ClientModule {
     @JvmStatic
     fun provideRetrofit(okHttpClient: OkHttpClient): FixerIoClient {
         return Retrofit.Builder()
-                .default()
-                .baseUrl("https://api.exchangeratesapi.io/")
-                .client(okHttpClient)
-                .build()
-                .create(FixerIoClient::class.java)
+            .default()
+            .baseUrl("https://api.exchangeratesapi.io/")
+            .client(okHttpClient)
+            .build()
+            .create(FixerIoClient::class.java)
     }
 }

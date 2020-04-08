@@ -25,8 +25,8 @@ object TestDataSourcesModule {
             FixedExchangeRepository()
         } else {
             FixerIoExchangeRepository(
-                    retrofitClient,
-                    networkToDomainMapper()
+                retrofitClient,
+                networkToDomainMapper()
             )
         }
     }
@@ -36,9 +36,9 @@ object TestDataSourcesModule {
     @JvmStatic
     fun provideLocalRepository(database: AppDatabase): ExchangeRepository {
         return SQLiteExchangeRepository(
-                database.exchangeRatesDao(),
-                domainToLocalMapper(),
-                localToDomainMapper()
+            database.exchangeRatesDao(),
+            domainToLocalMapper(),
+            localToDomainMapper()
         )
     }
 }

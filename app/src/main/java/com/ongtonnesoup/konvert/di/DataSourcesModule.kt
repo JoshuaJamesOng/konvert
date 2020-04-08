@@ -22,9 +22,9 @@ object DataSourcesModule {
     @JvmStatic
     fun provideLocalRepository(database: AppDatabase): ExchangeRepository {
         return SQLiteExchangeRepository(
-                database.exchangeRatesDao(),
-                domainToLocalMapper(),
-                localToDomainMapper()
+            database.exchangeRatesDao(),
+            domainToLocalMapper(),
+            localToDomainMapper()
         )
     }
 
@@ -36,8 +36,8 @@ object DataSourcesModule {
             FixedExchangeRepository()
         } else {
             FixerIoExchangeRepository(
-                    retrofitClient,
-                    networkToDomainMapper()
+                retrofitClient,
+                networkToDomainMapper()
             )
         }
     }

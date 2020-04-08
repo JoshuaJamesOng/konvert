@@ -41,9 +41,20 @@ object DetectPricesTest : Spek({
                             val hasSymbol = metadata.expectedSymbol != null
                             if (hasSymbol) {
                                 val symbol = metadata.expectedSymbol
-                                it shouldEmit listOf(Number.Price(parsedText.text, Currency(symbol!!), position))
+                                it shouldEmit listOf(
+                                    Number.Price(
+                                        parsedText.text,
+                                        Currency(symbol!!),
+                                        position
+                                    )
+                                )
                             } else {
-                                it shouldEmit listOf(Number.PossiblePrice(parsedText.text, position))
+                                it shouldEmit listOf(
+                                    Number.PossiblePrice(
+                                        parsedText.text,
+                                        position
+                                    )
+                                )
                             }
                         } else {
                             it should values(emptyList()) // Not emit

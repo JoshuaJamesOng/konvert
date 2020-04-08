@@ -39,7 +39,8 @@ sealed class State : BaseState, Parcelable {
     } // TODO Check this stuff
 
     @Parcelize
-    data class Price(val prices: List<com.ongtonnesoup.konvert.detection.Price>) : State() // TODO Use VM class
+    data class Price(val prices: List<com.ongtonnesoup.konvert.detection.Price>) :
+        State() // TODO Use VM class
 
     @Parcelize
     object Error : State()

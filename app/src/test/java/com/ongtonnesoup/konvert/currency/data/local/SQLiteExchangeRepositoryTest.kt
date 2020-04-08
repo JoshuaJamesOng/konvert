@@ -24,7 +24,14 @@ object SQLiteExchangeRepositoryTest : Spek({
         val localToDomainMapper by memoized { mock<(List<ExchangeRatesDao.ExchangeRate>) -> ExchangeRepository.ExchangeRates>() }
         val domainToLocalMapper by memoized { mock<(ExchangeRepository.ExchangeRates) -> List<ExchangeRatesDao.ExchangeRate>>() }
         val localResponse = listOf(ExchangeRatesDao.ExchangeRate("test", 1.0))
-        val mapperResponse = ExchangeRepository.ExchangeRates(listOf(ExchangeRepository.ExchangeRate("test-mapped", 2.0)))
+        val mapperResponse = ExchangeRepository.ExchangeRates(
+            listOf(
+                ExchangeRepository.ExchangeRate(
+                    "test-mapped",
+                    2.0
+                )
+            )
+        )
         val newRates = ExchangeRepository.ExchangeRates(emptyList())
 
         Scenario("Successful database call") {
@@ -83,7 +90,9 @@ object SQLiteExchangeRepositoryTest : Spek({
             }
 
             Then("Database error is returned") {
-                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+                result.fold(
+                    { it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() },
+                    { fail() })
             }
         }
 
@@ -112,7 +121,9 @@ object SQLiteExchangeRepositoryTest : Spek({
             }
 
             Then("Mapping error is returned") {
-                result.fold({ it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() }, { fail() })
+                result.fold(
+                    { it shouldHaveTheSameClassAs ExchangeRepository.NoDataException() },
+                    { fail() })
             }
         }
 
@@ -121,7 +132,12 @@ object SQLiteExchangeRepositoryTest : Spek({
             Given("") {
                 mappedModel = ExchangeRatesDao.ExchangeRate("test-mapped", 2.0)
                 domainToLocalMapper.stub {
-                    on { invoke(newRates) } doReturn listOf(mappedModel, mappedModel, mappedModel, mappedModel)
+                    on { invoke(newRates) } doReturn listOf(
+                        mappedModel,
+                        mappedModel,
+                        mappedModel,
+                        mappedModel
+                    )
                 }
             }
 

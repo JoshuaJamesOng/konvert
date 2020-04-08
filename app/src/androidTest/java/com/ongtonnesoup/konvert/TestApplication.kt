@@ -28,7 +28,7 @@ class TestApplication : Application(), RefreshExchangeRatesWorker.Injector {
         Timber.plant(timber.log.Timber.DebugTree())
 
         processComponent = DaggerTestProcessComponent.factory()
-                .create(this)
+            .create(this)
     }
 
     override fun inject(target: RefreshExchangeRatesWorker) {

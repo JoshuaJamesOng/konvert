@@ -28,7 +28,8 @@ class DetectPrices @Inject constructor(private val gateway: OcrGateway) {
             .doOnDispose { gateway.release() }
     }
 
-    private fun isNumber(parsedText: ParsedText) = parsedText.text.matches(CONTAINS_NUMBERS.toRegex())
+    private fun isNumber(parsedText: ParsedText) =
+        parsedText.text.matches(CONTAINS_NUMBERS.toRegex())
 
     private fun getCurrency(parsedText: ParsedText): Currency? {
         val result = CONTAINS_SYMBOL.toRegex().find(parsedText.text)

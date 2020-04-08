@@ -1,5 +1,6 @@
 package com.ongtonnesoup.konvert.detection
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
@@ -57,31 +58,32 @@ class Overlay(context: Context, attributes: AttributeSet) : View(context, attrib
 
         prices.forEach { price ->
             val point = with(price.position) {
-                    val top = top * scaleFactorY
-                    val right = right * scaleFactorX
-                    RectF(
-                        right,
-                        top - pointDiameter,
-                        right + pointDiameter,
-                        top
-                    )
-                }
+                val top = top * scaleFactorY
+                val right = right * scaleFactorX
+                RectF(
+                    right,
+                    top - pointDiameter,
+                    right + pointDiameter,
+                    top
+                )
+            }
 
             val border = with(price.position) {
-                    Rect(
-                        (left * scaleFactorX).toInt(),
-                        (top * scaleFactorY).toInt(),
-                        (right * scaleFactorX).toInt(),
-                        (bottom * scaleFactorY).toInt()
-                    )
-                }
+                Rect(
+                    (left * scaleFactorX).toInt(),
+                    (top * scaleFactorY).toInt(),
+                    (right * scaleFactorX).toInt(),
+                    (bottom * scaleFactorY).toInt()
+                )
+            }
 
             detectionPositions.add(Detection(price, Rects(point, border)))
-            }
+        }
 
         postInvalidate()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val clickedPoint = detectionPositions.asSequence()

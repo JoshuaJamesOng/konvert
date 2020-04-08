@@ -12,12 +12,14 @@ import dagger.BindsInstance
 import dagger.Component
 
 @PerProcess
-@Component(modules = [
-    ProcessModule::class,
-    StateModule::class,
-    TestNetworkModule::class,
-    TestDatabaseModule::class
-])
+@Component(
+    modules = [
+        ProcessModule::class,
+        StateModule::class,
+        TestNetworkModule::class,
+        TestDatabaseModule::class
+    ]
+)
 interface TestProcessComponent {
 
     fun getApplicationComponent(): TestApplicationComponent
